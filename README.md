@@ -1,6 +1,6 @@
 ## Diagrama ER
 
-erDiagram
+```erDiagram
     USUARIO ||--o{ REPORTE_AUDITORIA : "realiza"
     USUARIO ||--o{ ACCION_CORRECTIVA : "inicia"
     USUARIO ||--o{ ACCION_CORRECTIVA : "responsable_de"
@@ -82,3 +82,4 @@ erDiagram
         string tipo_referencia "AUDITORIA, RAC"
         string url_archivo
     }
+    ```
