@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Diagrama ER
 
-## Getting Started
+erDiagram
+    USUARIO ||--o{ REPORTE_AUDITORIA : "realiza"
+    USUARIO ||--o{ ACCION_CORRECTIVA : "inicia"
+    USUARIO ||--o{ ACCION_CORRECTIVA : "responsable_de"
+    
+    AREA ||--o{ REPORTE_AUDITORIA : "pertenece a"
+    AREA ||--o{ ACCION_CORRECTIVA : "asociada"
+    
+    REPORTE_AUDITORIA ||--o{ EVIDENCIA : "tiene"
+    ACCION_CORRECTIVA ||--o{ EVIDENCIA : "tiene"
 
-First, run the development server:
+    USUARIO {
+        uuid id PK
+        string nombre
+        string correo
+        string rol "ADMIN, CALIDAD, GENERAL, AUDITOR"
+        string microsoft_id
+    }
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+    AREA {
+        int id PK
+        string nombre "Baldwin State, Pizza Tray, etc."
+        string encargado_email
+    }
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+    REPORTE_AUDITORIA {
+        uuid id PK
+        int area_id FK
+        uuid auditor_id FK
+        timestamp fecha
+        int semana
+        string linea_o_ubicacion
+        string coordinador_o_picker
+        jsonb respuestas "Pasa/Falla por pregunta"
+        text comentarios
+        boolean es_negativo "Calculado: >50% falla"
+    }
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+    REPORTE_EOLA {
+        uuid id PK
+        uuid auditor_id FK
+        string tipo "EOLA / Picking"
+        string unidad_negocio
+        string sku
+        string upc
+        int orden_tamano
+        int cant_inspeccionada
+        int cant_aceptada
+        text comentarios
+    }
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+    REPORTE_NCR {
+        uuid id PK
+        string ncr_code
+        date fecha
+        int semana
+        string numero_parte
+        string proveedor
+        text defecto
+        string excel_path "Ruta al archivo en servidor"
+    }
 
-## Learn More
+    ACCION_CORRECTIVA {
+        uuid id PK
+        uuid iniciador_id FK
+        uuid responsable_id FK
+        int area_id FK
+        string numero_parte
+        string ponderancia "LOW, MEDIUM, HIGH"
+        decimal porcentaje_falla
+        text descripcion_problema
+        text feedback_superior
+        string plan_accion_path
+        string estado "PENDIENTE, VALIDADO"
+    }
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+    EVIDENCIA {
+        uuid id PK
+        uuid referencia_id "FK a Auditoria o RAC"
+        string tipo_referencia "AUDITORIA, RAC"
+        string url_archivo
+    }
