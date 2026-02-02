@@ -1,9 +1,9 @@
 import { SectionContainer } from "@/components/shared/SectionContainer";
 
-export default function HomePage() {
+export default function RacPage() {
   return (
     <SectionContainer>
-      <p>Esta es la página de Inicio</p>
+      <p>Esta es la página de Requerimiento de Acción Correctiva</p>
     </SectionContainer>
   );
 }

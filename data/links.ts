@@ -1,0 +1,98 @@
+import {
+  ClipboardList,
+  House,
+  UsersRound,
+  Container,
+  Forklift,
+  Layers,
+  PackageOpen,
+  Library,
+  Grid2x2,
+  Grid2x2Check,
+  BetweenHorizontalEnd,
+  Handshake,
+  PackageX,
+} from "lucide-react";
+import { Links } from "@/components/reports/types/Report";
+
+export const links: Links[] = [
+  { href: "/home", title: "Inicio", Icon: House, subLinks: [] },
+  {
+    href: "/reports",
+    title: "Reportes",
+    Icon: ClipboardList,
+    subLinks: [
+      {
+        href: "/baldwin-state",
+        title: "Baldwin State",
+        accordionTitle: "",
+        Icon: Container,
+        state: "",
+      },
+      {
+        href: "/baldwin-reserve-supply",
+        title: "Baldwin Reserve Surtido de Materiales",
+        accordionTitle: "Surtido de Materiales",
+        Icon: Forklift,
+        state: "construction",
+      },
+      {
+        href: "/baldwin-reserve-stacking",
+        title: "Baldwin Reserve Proceso de Stacking",
+        accordionTitle: "Proceso de Stacking",
+        Icon: Layers,
+        state: "maintenance",
+      },
+      {
+        href: "/baldwin-reserve-packing",
+        title: "Baldwin Reserve Empaque",
+        accordionTitle: "Empaque",
+        Icon: PackageOpen,
+        state: "construction",
+      },
+      {
+        href: "/baldwin-reserve-general",
+        title: "Baldwin Reserve Generales",
+        accordionTitle: "Generales",
+        Icon: Library,
+        state: "construction",
+      },
+      {
+        href: "/display-area",
+        title: "Display Area",
+        accordionTitle: "",
+        Icon: Grid2x2,
+        state: "construction",
+      },
+      {
+        href: "/pizza-tray",
+        title: "Pizza Tray",
+        accordionTitle: "",
+        Icon: Grid2x2Check,
+        state: "construction",
+      },
+      {
+        href: "/eola",
+        title: "EOLA",
+        accordionTitle: "",
+        Icon: BetweenHorizontalEnd,
+        state: "construction",
+      },
+      {
+        href: "/ncr",
+        title: "Reporte de Producto no Conforme",
+        accordionTitle: "",
+        Icon: PackageX,
+        state: "",
+      },
+      {
+        href: "/rac",
+        title: "Requerimiento de Acción Correctiva",
+        accordionTitle: "",
+        Icon: Handshake,
+        state: "construction",
+      },
+    ],
+  },
+  { href: "/users", title: "Usuarios", Icon: UsersRound, subLinks: [] },
+];

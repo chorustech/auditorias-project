@@ -1,9 +1,10 @@
 import { SectionContainer } from "@/components/shared/SectionContainer";
+import { Reports } from "@/pages/Reports";
 
-export default function HomePage() {
+export default function ReportsPage() {
   return (
     <SectionContainer>
-      <p>Esta es la página de Inicio</p>
+      <Reports />
     </SectionContainer>
   );
 }
