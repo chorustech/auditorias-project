@@ -1,5 +1,5 @@
 import { SectionContainer } from "@/components/shared/SectionContainer";
-import { Reports } from "@/pages/Reports";
+import { Reports } from "@/content/Reports";
 
 export default function ReportsPage() {
   return (
