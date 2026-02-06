@@ -1,3 +1,12 @@
+## Montar proyecto
+```
+En CMD:
+git clone https://github.com/chorustech/auditorias-project.git
+cd auditorias-project
+npm install
+npm run dev
+```
+
 ## Diagrama ER
 
 ```erDiagram
