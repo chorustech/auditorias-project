@@ -1,4 +1,4 @@
-import { SectionContainer } from "@/components/shared/SectionContainer";
+import { SectionContainer } from "@/components/shared/sectionContainer/SectionContainer";
 
 export default function BaldwinReserveSupplyPage() {
   return (

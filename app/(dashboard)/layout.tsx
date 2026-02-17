@@ -1,5 +1,5 @@
-import { RouteTitle } from "@/components/shared/RouteTitle";
-import { Sidebar } from "@/components/shared/Sidebar";
+import { RouteTitle } from "@/components/shared/routeTitle/RouteTitle";
+import { Sidebar } from "@/components/shared/sidebar/Sidebar";
 
 export default function DashboardLayout({
   children,

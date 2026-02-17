@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { links } from "@/data/links";
+import { links } from "@/content/reports/data/links";
 import { ChevronRight, Menu } from "lucide-react";
 import { useSidebarStore } from "@/stores/SidebarStore";
 import Link from "next/link";

@@ -5,7 +5,7 @@ import AssaAbloyTitle from "@/svg/AssaAbloyTitle";
 import { Menu, LogOut, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { links } from "@/data/links";
+import { links } from "@/content/reports/data/links";
 
 export function Sidebar() {
   const { expanded, toggleSidebar } = useSidebarStore();

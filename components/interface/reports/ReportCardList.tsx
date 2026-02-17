@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { ReportCard } from "./ReportCard";
 import Link from "next/link";
-import { links } from "@/data/links";
+import { links } from "@/content/reports/data/links";
 
 export function ReportCardList() {
   return (

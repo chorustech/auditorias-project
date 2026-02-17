@@ -1,4 +1,4 @@
-import { ReportCardList } from "@/components/reports/ReportCardList";
+import { ReportCardList } from "@/components/interface/reports/ReportCardList";
 
 export function Reports() {
   return (

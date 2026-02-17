@@ -13,7 +13,7 @@ import {
   Handshake,
   PackageX,
 } from "lucide-react";
-import { Links } from "@/components/reports/types/Report";
+import { Links } from "@/content/reports/types/Report";
 
 export const links: Links[] = [
   { href: "/home", title: "Inicio", Icon: House, subLinks: [] },
