@@ -1,11 +1,11 @@
 "use client";
 
-import { useSidebarStore } from "@/stores/SidebarStore";
+import { useSidebarStore } from "@/stores/sidebar/SidebarStore";
 import AssaAbloyTitle from "@/svg/AssaAbloyTitle";
 import { Menu, LogOut, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { links } from "@/content/reports/data/links";
+import { links } from "@/content/reports/data/links/links";
 
 export function Sidebar() {
   const { expanded, toggleSidebar } = useSidebarStore();
