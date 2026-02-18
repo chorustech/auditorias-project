@@ -1,9 +1,5 @@
-import { SectionContainer } from "@/components/shared/sectionContainer/SectionContainer";
+import { DinamicTableContent } from "@/content/reports/management/DinamicTableContent";
 
 export default function NcrPage() {
-  return (
-    <SectionContainer>
-      <p>Esta es la página de Producto no Conforme</p>
-    </SectionContainer>
-  );
+  return <DinamicTableContent pointer="ncr" />;
 }

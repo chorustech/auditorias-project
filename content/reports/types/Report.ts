@@ -10,7 +10,6 @@ export type Links = {
 export type SubLink = {
   href: string;
   title: string;
-  accordionTitle: string;
   Icon: LucideIcon;
   state: "" | "construction" | "maintenance";
 };

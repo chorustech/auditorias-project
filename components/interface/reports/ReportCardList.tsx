@@ -24,7 +24,6 @@ export function ReportCardList() {
                     Icon: info.Icon,
                     state: info.state,
                     href: "",
-                    accordionTitle: "",
                   }}
                 />
               </Link>
@@ -35,7 +34,6 @@ export function ReportCardList() {
                   Icon: info.Icon,
                   state: info.state,
                   href: "",
-                  accordionTitle: "",
                 }}
               />
             )}

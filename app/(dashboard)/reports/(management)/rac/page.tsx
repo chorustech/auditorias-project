@@ -1,9 +1,5 @@
-import { SectionContainer } from "@/components/shared/sectionContainer/SectionContainer";
+import { DinamicTableContent } from "@/content/reports/management/DinamicTableContent";
 
 export default function RacPage() {
-  return (
-    <SectionContainer>
-      <p>Esta es la página de Requerimiento de Acción Correctiva</p>
-    </SectionContainer>
-  );
+  return <DinamicTableContent pointer="rac" />;
 }

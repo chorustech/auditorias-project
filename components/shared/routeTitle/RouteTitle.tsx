@@ -15,9 +15,19 @@ export function RouteTitle() {
 
   const mainRoute = links.find((link) => link.href === `/${segments[0]}`);
 
-  const subRoute =
+  const secondRoute =
     mainRoute && segments.length > 1
       ? mainRoute.subLinks.find((sub) => sub.href === `/${segments[1]}`)
+      : null;
+
+  const addSegment =
+    mainRoute && segments.length > 2
+      ? segments.find((sub) => sub === `add`)
+      : null;
+  
+  const updateSegment =
+    mainRoute && segments.length > 2
+      ? segments.find((sub) => sub === `update`)
       : null;
 
   return (
@@ -34,10 +44,30 @@ export function RouteTitle() {
           {mainRoute?.title}
         </Link>
 
-        {subRoute && (
+        {secondRoute && (
           <>
             <ChevronRight className="size-4 text-cyan-800" />
-            <span className="text-lg">{subRoute.title}</span>
+            <Link className="text-lg" href={`${mainRoute?.href}${secondRoute?.href}`}>
+              {secondRoute.title}
+            </Link>
+          </>
+        )}
+
+        {addSegment && (
+          <>
+            <ChevronRight className="size-4 text-cyan-800" />
+            <Link className="text-lg" href={""}>
+              Agregar
+            </Link>
+          </>
+        )}
+
+        {updateSegment && (
+          <>
+            <ChevronRight className="size-4 text-cyan-800" />
+            <Link className="text-lg" href={""}>
+              Actualizar
+            </Link>
           </>
         )}
       </div>

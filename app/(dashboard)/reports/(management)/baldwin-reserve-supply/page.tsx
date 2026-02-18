@@ -1,9 +1,5 @@
-import { SectionContainer } from "@/components/shared/sectionContainer/SectionContainer";
+import { DinamicTableContent } from "@/content/reports/management/DinamicTableContent";
 
 export default function BaldwinReserveSupplyPage() {
-  return (
-    <SectionContainer>
-      <p>Esta es la página de Baldwin Reserve Supply</p>
-    </SectionContainer>
-  );
+  return <DinamicTableContent pointer="baldwin-reserve-supply" />;
 }

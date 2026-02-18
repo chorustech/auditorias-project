@@ -1,9 +1,5 @@
-import { SectionContainer } from "@/components/shared/sectionContainer/SectionContainer";
+import { DinamicTableContent } from "@/content/reports/management/DinamicTableContent";
 
 export default function PizzaTrayPage() {
-  return (
-    <SectionContainer>
-      <p>Esta es la página de Pizza Tray</p>
-    </SectionContainer>
-  );
+  return <DinamicTableContent pointer="pizza-tray" />;
 }
