@@ -128,7 +128,7 @@ export function DinamicTableBody({
           <p>
             Total:{" "}
             <span className="font-semibold text-[#00A0D0]">
-              {products.count}
+              {loading ? "Cargando" : products.count}
             </span>{" "}
             resultados
           </p>
@@ -144,7 +144,7 @@ export function DinamicTableBody({
             borderHover="2px solid #00A0D0"
             twClassName="w-fit h-fit px-4 py-2 rounded-xl"
           >
-            <ChevronLeft className="size-5"/>
+            <ChevronLeft className="size-5" />
             <p>Anterior</p>
           </BouncingButton>
           <BouncingButton
@@ -158,15 +158,21 @@ export function DinamicTableBody({
             twClassName="w-fit h-fit px-4 py-2 rounded-xl"
           >
             <p>Siguiente</p>
-            <ChevronRight className="size-5"/>
+            <ChevronRight className="size-5" />
           </BouncingButton>
         </div>
         <div>
           <p>
-            Página: {(filter?.page ?? 0) + 1} de{" "}
-            {Math.ceil(products.count ?? 0) / (filter?.perPage ?? 1) === 0
-              ? "1"
-              : Math.ceil((products.count ?? 0) / (filter?.perPage ?? 1))}
+            {loading ? (
+              <p>Cargando...</p>
+            ) : (
+              <p>
+                Página: {(filter?.page ?? 0) + 1} de{" "}
+                {Math.ceil(products.count ?? 0) / (filter?.perPage ?? 1) === 0
+                  ? "1"
+                  : Math.ceil((products.count ?? 0) / (filter?.perPage ?? 1))}
+              </p>
+            )}
           </p>
         </div>
       </div>
