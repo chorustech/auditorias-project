@@ -7,11 +7,5 @@ export default async function BaldwinReservePackingUpdatePage({
 }) {
   const { id } = await params;
 
-  return (
-    <SharedAddUpdateReportContent
-      pointer="baldwin-reserve-packing"
-      isUpdate
-      id={id}
-    />
-  );
+  return <SharedAddUpdateReportContent isUpdate id={id} />;
 }

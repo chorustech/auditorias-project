@@ -25,6 +25,26 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 } */
 
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #cecece;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #00A0D0;
+  border-radius: 10px;
+}
+
+::selection {
+    background-color: #00A0D0;
+    color: white;
+  }
+
 body {
   background-color: #ffffff;
 }

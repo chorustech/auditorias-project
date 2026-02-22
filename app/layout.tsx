@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 
-const poppins = Poppins({ weight: "400" });
+const poppins = Poppins({ weight: ["100", "200", "300", "400"] });
 
 export const metadata: Metadata = {
   title: "Módulos de Auditoría",

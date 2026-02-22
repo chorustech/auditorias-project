@@ -7,11 +7,5 @@ export default async function DisplayAreaUpdatePage({
 }) {
   const { id } = await params;
 
-  return (
-    <SharedAddUpdateReportContent
-      pointer="display-area"
-      isUpdate
-      id={id}
-    />
-  );
+  return <SharedAddUpdateReportContent isUpdate id={id} />;
 }

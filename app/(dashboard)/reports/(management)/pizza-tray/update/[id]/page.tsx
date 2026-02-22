@@ -7,11 +7,5 @@ export default async function PizzaTrayUpdatePage({
 }) {
   const { id } = await params;
 
-  return (
-    <SharedAddUpdateReportContent
-      pointer="pizza-tray"
-      isUpdate
-      id={id}
-    />
-  );
+  return <SharedAddUpdateReportContent isUpdate id={id} />;
 }

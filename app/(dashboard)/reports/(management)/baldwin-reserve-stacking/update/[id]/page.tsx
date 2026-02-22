@@ -7,11 +7,5 @@ export default async function BaldwinReserveStackingUpdatePage({
 }) {
   const { id } = await params;
 
-  return (
-    <SharedAddUpdateReportContent
-      pointer="baldwin-reserve-stacking"
-      isUpdate
-      id={id}
-    />
-  );
+  return <SharedAddUpdateReportContent isUpdate id={id} />;
 }

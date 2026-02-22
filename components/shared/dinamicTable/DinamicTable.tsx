@@ -1,20 +1,14 @@
 import { DinamicTableHeader } from "./DinamicTableHeader";
 import { DinamicTableBody } from "./DinamicTableBody";
 
-export function DinamicTable({
-  pointer,
-  columns,
-}: {
-  pointer: string;
-  columns: string[];
-}) {
+export function DinamicTable() {
   return (
-    <div className="flex flex-col h-full overflow-y-auto">
+    <div className="flex flex-col h-full">
       {/* HEADER */}
-      <DinamicTableHeader pointer={pointer} />
+      <DinamicTableHeader />
 
       {/* BODY */}
-      <DinamicTableBody pointer={pointer} columns={columns} />
+      <DinamicTableBody />
     </div>
   );
 }

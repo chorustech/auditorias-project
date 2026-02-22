@@ -40,14 +40,14 @@ export function RouteTitle() {
           <Menu className="size-4" />
         </button>
 
-        <Link className="text-lg" href={`${mainRoute?.href}`}>
+        <Link className="text-xl font-light" href={`${mainRoute?.href}`}>
           {mainRoute?.title}
         </Link>
 
         {secondRoute && (
           <>
             <ChevronRight className="size-4 text-cyan-800" />
-            <Link className="text-lg" href={`${mainRoute?.href}${secondRoute?.href}`}>
+            <Link className="text-xl font-light" href={`${mainRoute?.href}${secondRoute?.href}`}>
               {secondRoute.title}
             </Link>
           </>
@@ -56,7 +56,7 @@ export function RouteTitle() {
         {addSegment && (
           <>
             <ChevronRight className="size-4 text-cyan-800" />
-            <Link className="text-lg" href={""}>
+            <Link className="text-xl font-light" href={""}>
               Agregar
             </Link>
           </>
@@ -65,7 +65,7 @@ export function RouteTitle() {
         {updateSegment && (
           <>
             <ChevronRight className="size-4 text-cyan-800" />
-            <Link className="text-lg" href={""}>
+            <Link className="text-xl font-light" href={""}>
               Actualizar
             </Link>
           </>

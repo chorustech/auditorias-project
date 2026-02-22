@@ -3,9 +3,15 @@
 import { useRouter } from "next/navigation";
 import { ArrowLeft, SlidersHorizontal, Plus, Sheet } from "lucide-react";
 import { BouncingButton } from "../bouncingButton/BouncingButton";
+import { usePathname } from "next/navigation";
 
-export function DinamicTableHeader({ pointer }: { pointer: string }) {
+export function DinamicTableHeader() {
   const router = useRouter();
+
+  const pathname = usePathname();
+
+  const rawPath = pathname.split("/").at(-1);
+  const path = rawPath ?? null;
 
   return (
     <div className="flex flex-col items-center p-6 justify-between gap-4 lg:flex-row md:flex-row">
@@ -42,7 +48,7 @@ export function DinamicTableHeader({ pointer }: { pointer: string }) {
       <div className="flex justify-between w-full gap-4 lg:justify-end md:justify-end">
         {/* BOTÓN AGREGAR */}
         <BouncingButton
-          action={() => router.push(`/reports/${pointer}/add`)}
+          action={() => router.push(`/reports/${path}/add`)}
           backgroundColorHover="#ffffff"
           backgroundColor="#00A0D0"
           textColor="#ffffff"
@@ -56,7 +62,7 @@ export function DinamicTableHeader({ pointer }: { pointer: string }) {
 
         {/* BOTÓN EXPORTAR EXCEL */}
         <BouncingButton
-          action={() => router.push(`/reports/${pointer}/add`)}
+          action={() => {}}
           backgroundColorHover="#ffffff"
           backgroundColor="#1D6F42"
           textColor="#ffffff"

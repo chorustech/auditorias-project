@@ -18,7 +18,7 @@ interface FilterStore {
   setFilter: (data: Filter) => void;
 }
 
-export const useFilterModal = create<FilterStore>((set) => ({
+export const useFilter = create<FilterStore>((set) => ({
   filter: {
     perPage: 10,
     page: 0,

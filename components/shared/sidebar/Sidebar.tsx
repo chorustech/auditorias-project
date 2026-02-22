@@ -20,7 +20,7 @@ export function Sidebar() {
 
   return (
     <aside
-      className={`flex flex-col z-50 transition-all bg-white duration-300 justify-between h-dvh border-r border-r-neutral-200 absolute lg:static ${expanded ? "w-64 left-0" : "lg:w-18 w-64 -left-64"}`}
+      className={`flex flex-col z-50 transition-all bg-white duration-300 justify-between h-dvh border-r border-r-neutral-200 absolute lg:static ${expanded ? "w-64" : "lg:w-18 w-64 -left-64"}`}
     >
       <div className="w-full h-fit flex flex-col p-4">
         <div
