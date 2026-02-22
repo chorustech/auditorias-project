@@ -11,18 +11,22 @@ export function DinamicRow({
   index: number;
   report: ReportType;
 }) {
+  const getTwBgColor = () => {
+    return index % 2 ? "bg-neutral-100" : "bg-white";
+  };
+
   return (
     <tr
-      className={`border-b border-neutral-200 hover:bg-[#00A0D0]/20 transition-all duration-200 ${index % 2 ? "bg-neutral-100" : "bg-white"}`}
+      className={`border-b border-neutral-200 hover:bg-[#00A0D0]/20 transition-all relative duration-200 ${getTwBgColor()}`}
     >
       {report.kind === "general" ? (
-        <GeneralRowBody report={report} />
+        <GeneralRowBody report={report} twBgColor={`${getTwBgColor()}`} />
       ) : report.kind === "eola" ? (
-        <EolaRowBody report={report} />
+        <EolaRowBody report={report} twBgColor={`${getTwBgColor()}`} />
       ) : report.kind === "ncr" ? (
-        <NcrRowBody report={report} />
+        <NcrRowBody report={report} twBgColor={`${getTwBgColor()}`} />
       ) : report.kind === "rac" ? (
-        <RacRowBody report={report} />
+        <RacRowBody report={report} twBgColor={`${getTwBgColor()}`} />
       ) : (
         <></>
       )}

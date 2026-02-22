@@ -2,11 +2,17 @@
 
 import { ReportType } from "@/temp/serverActionSimulado";
 import { useRouter } from "next/navigation";
-import { SquarePen, Trash2, Check, X } from "lucide-react";
+import { SquarePen, Trash2 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";
 
-export function GeneralRowBody({ report }: { report: ReportType }) {
+export function GeneralRowBody({
+  report,
+  twBgColor,
+}: {
+  report: ReportType;
+  twBgColor: string;
+}) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -17,7 +23,9 @@ export function GeneralRowBody({ report }: { report: ReportType }) {
     <>
       {report.kind === "general" ? (
         <>
-          <td className="py-6 whitespace-nowrap px-3 flex gap-2 justify-center">
+          <td
+            className={`py-6 whitespace-nowrap w-fit px-3 flex gap-2 justify-center sticky left-0 ${twBgColor}`}
+          >
             <BouncingButton
               action={() =>
                 router.push(`/reports/${path}/update/${report.data.id}`)
@@ -78,15 +86,6 @@ export function GeneralRowBody({ report }: { report: ReportType }) {
               {report.data.ubicacion}
             </td>
           )}
-          {/* {report.data.respuestas.map((respuesta, index) => (
-            <td key={index} className="px-3 py-6 text-left whitespace-nowrap">
-              {respuesta ? (
-                <Check className="size-5 text-green-500" />
-              ) : (
-                <X className="size-5 text-red-500" />
-              )}
-            </td>
-          ))} */}
           {report.data.respuestas.map((respuesta, index) => (
             <td key={index} className="px-3 py-6 text-left whitespace-nowrap">
               {respuesta ? (
@@ -99,16 +98,6 @@ export function GeneralRowBody({ report }: { report: ReportType }) {
               )}
             </td>
           ))}
-          {/* {report.data.respuestas.map((respuesta, index) => (
-            <td
-              key={index}
-              className={`py-6 text-left whitespace-nowrap ${index === 0 ? "pl-3" : index === report.data.respuestas.length - 1 ? "pr-3" : ""}`}
-            >
-              <div
-                className={`w-10 min-w-full h-5 ${index === 0 ? "rounded-l-full" : index === report.data.respuestas.length - 1 ? "rounded-r-full" : ""} ${respuesta ? "bg-green-400" : "bg-red-400"}`}
-              />
-            </td>
-          ))} */}
         </>
       ) : (
         <></>

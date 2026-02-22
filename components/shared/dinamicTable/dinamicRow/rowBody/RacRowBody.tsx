@@ -1,50 +1,56 @@
 "use client";
 
 import { ReportType } from "@/temp/serverActionSimulado";
-import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { SquarePen, Trash2 } from "lucide-react";
+import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";
 
-export function RacRowBody({ report }: { report: ReportType }) {
+export function RacRowBody({
+  report,
+  twBgColor,
+}: {
+  report: ReportType;
+  twBgColor: string;
+}) {
   const router = useRouter();
 
   return (
     <>
       {report.kind === "rac" ? (
         <>
-          <td className="px-2 py-6 whitespace-nowrap">
-            <motion.div
-              onClick={() =>
+          <td
+            className={`py-6 whitespace-nowrap w-fit px-3 flex gap-2 justify-center sticky left-0 ${twBgColor}`}
+          >
+            <BouncingButton
+              action={() =>
                 router.push(`/reports/rac/update/${report.data.numRac}`)
               }
-              className="p-2 rounded-lg hover:cursor-pointer w-fit hover:bg-blue-100"
-              whileTap={{ scale: 0.9 }}
-              transition={{
-                type: "spring",
-                stiffness: 300,
-                damping: 20,
-              }}
+              backgroundColorHover="#ffffff"
+              backgroundColor="#fbbf24"
+              textColor="#ffffff"
+              textColorHover="#fbbf24"
+              border="2px solid #ffffff"
+              borderHover="2px solid #fbbf24"
+              twClassName="p-2 rounded-lg w-fit h-fit"
             >
-              <SquarePen className="size-6 text-yellow-600" />
-            </motion.div>
-          </td>
-          <td className="pr-2 py-6 whitespace-nowrap">
-            <motion.div
-              onClick={() => /* openEditDeleteModal(
-                              dato.usuario.id,
-                              dato,
-                              "ELIMINAR",
-                            ) */ {}}
-              className="p-2 rounded-lg hover:cursor-pointer w-fit hover:bg-red-100"
-              whileTap={{ scale: 0.9 }}
-              transition={{
-                type: "spring",
-                stiffness: 300,
-                damping: 20,
-              }}
+              <SquarePen className="size-5" />
+            </BouncingButton>
+            <BouncingButton
+              action={() => /* openEditDeleteModal(
+                                                      dato.usuario.id,
+                                                      dato,
+                                                      "ELIMINAR",
+                                                    ) */ {}}
+              backgroundColorHover="#ffffff"
+              backgroundColor="#ef4444"
+              textColor="#ffffff"
+              textColorHover="#ef4444"
+              border="2px solid #ffffff"
+              borderHover="2px solid #ef4444"
+              twClassName="p-2 rounded-lg w-fit h-fit"
             >
-              <Trash2 className="size-6 text-red-600" />
-            </motion.div>
+              <Trash2 className="size-5" />
+            </BouncingButton>
           </td>
           <td className="px-3 py-6 text-left whitespace-nowrap">
             {report.data.numRac}

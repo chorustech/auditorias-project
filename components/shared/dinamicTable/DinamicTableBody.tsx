@@ -41,7 +41,7 @@ export function DinamicTableBody() {
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
+        transition={{ duration: 0.5, ease: "easeInOut" }}
         className="flex-1 px-6 pb-6 overflow-y-auto"
       >
         <div className="relative w-full h-full overflow-x-auto overflow-y-auto">
@@ -50,27 +50,43 @@ export function DinamicTableBody() {
           ) : reports.count === 0 ? (
             <p>No se encontró información</p>
           ) : (
-            <table className="w-full">
-              <thead className="sticky top-0 rounded-lg z-10">
-                <tr className="rounded-lg bg-neutral-100">
-                  {data[path ?? ""].map((column, index) => (
-                    <th
-                      key={index}
-                      className={`font-medium py-4 text-left text-green-950 ${
-                        column === "" ? "px-0" : "px-3"
-                      }`}
-                    >
-                      {column}
-                    </th>
+            <motion.div
+              className="w-full bg-amber-400"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+            >
+              <table className="w-full table-auto">
+                <colgroup>
+                  {[
+                    <col key="actions" className="w-[1%]" />,
+                    ...data[path ?? ""].slice(1).map((_, i) => <col key={i} />),
+                  ]}
+                </colgroup>
+
+                <thead className="sticky top-0 rounded-lg z-10">
+                  <tr className="rounded-lg bg-neutral-100 relative">
+                    {data[path ?? ""].map((column, index) => (
+                      <th
+                        key={index}
+                        className={`font-medium py-4 text-left text-blue-950 ${
+                          column === ""
+                            ? "px-0 bg-neutral-100 sticky left-0 whitespace-nowrap"
+                            : "px-3"
+                        }`}
+                      >
+                        {column}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="bg-white">
+                  {reports.data.map((report, index) => (
+                    <DinamicRow key={index} index={index} report={report} />
                   ))}
-                </tr>
-              </thead>
-              <tbody className="bg-white">
-                {reports.data.map((report, index) => (
-                  <DinamicRow key={index} index={index} report={report} />
-                ))}
-              </tbody>
-            </table>
+                </tbody>
+              </table>
+            </motion.div>
           )}
         </div>
       </motion.div>
