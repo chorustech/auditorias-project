@@ -2,7 +2,7 @@
 
 import { ReportType } from "@/temp/serverActionSimulado";
 import { useRouter } from "next/navigation";
-import { SquarePen, Trash2 } from "lucide-react";
+import { Check, SquarePen, Trash2, X } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";
 
@@ -24,7 +24,7 @@ export function GeneralRowBody({
       {report.kind === "general" ? (
         <>
           <td
-            className={`py-6 whitespace-nowrap w-fit px-3 flex gap-2 justify-center sticky left-0 ${twBgColor}`}
+            className={`py-6 whitespace-nowrap w-fit px-3 flex gap-2 justify-center sticky left-0 z-10 ${twBgColor}`}
           >
             <BouncingButton
               action={() =>
@@ -89,11 +89,15 @@ export function GeneralRowBody({
           {report.data.respuestas.map((respuesta, index) => (
             <td key={index} className="px-3 py-6 text-left whitespace-nowrap">
               {respuesta ? (
-                <div className="p-2 bg-green-400 rounded-full w-fit" />
+                <div className="p-1 bg-green-400 rounded-full w-fit">
+                  <Check className="size-3 text-white" />
+                </div>
               ) : (
                 <div className="relative w-fit">
-                  <div className="p-2 bg-red-400 rounded-full animate-ping absolute z-0"></div>
-                  <div className="p-2 bg-red-400 rounded-full"></div>
+                  <div className="w-full h-full bg-red-400 rounded-full animate-ping absolute z-0"></div>
+                  <div className="p-1 bg-red-400 rounded-full">
+                    <X className="size-3 text-white" />
+                  </div>
                 </div>
               )}
             </td>

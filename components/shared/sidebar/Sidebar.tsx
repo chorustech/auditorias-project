@@ -96,7 +96,7 @@ export function Sidebar() {
       <div
         onClick={toggleSidebar}
         className={`absolute w-[calc(100%-16rem)] top-0 left-64 bg-black/50 h-screen transition-all duration-300 z-50 lg:hidden lg:pointer-events-none ${
-          expanded ? "opacity-100" : "opacity-0"
+          expanded ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       ></div>
     </>

@@ -13,3 +13,12 @@ export type SubLink = {
   Icon: LucideIcon;
   state: "" | "construction" | "maintenance";
 };
+
+export type ReportFormValues = {
+  linea?: string;
+  coord?: string;
+  picker?: string;
+  ubicacion?: string;
+  worktable?: string;
+  respuestas: boolean[];
+};

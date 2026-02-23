@@ -19,7 +19,7 @@ export function EolaRowBody({
       {report.kind === "eola" ? (
         <>
           <td
-            className={`py-6 whitespace-nowrap w-fit px-3 flex gap-2 justify-center sticky left-0 ${twBgColor}`}
+            className={`py-6 whitespace-nowrap w-fit px-3 flex gap-2 justify-center sticky left-0 z-10 ${twBgColor}`}
           >
             <BouncingButton
               action={() =>
