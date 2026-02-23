@@ -4,12 +4,12 @@ export interface Encuesta {
 }
 
 export interface Respuesta {
-  pregunta: Pregunta;
+  id_pregunta: number;
   respuesta: boolean;
 }
 
 export interface Pregunta {
-  id: number;
+  id_pregunta: number;
   categoria: "coordinador" | "matrices" | "herramientas" | "operador";
   texto: string;
 }
