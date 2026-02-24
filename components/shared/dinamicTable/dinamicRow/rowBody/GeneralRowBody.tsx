@@ -23,32 +23,32 @@ export function GeneralRowBody({
     <>
       {report.kind === "general" ? (
         <>
-          <td className="px-3 py-6 text-left whitespace-nowrap">
+          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
             {report.data.auditor}
           </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap">
+          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
             {report.data.fecha}
           </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap">
+          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
             {report.data.semana}
           </td>
           {report.data.linea && (
-            <td className="px-3 py-6 text-left whitespace-nowrap">
+            <td className="px-3 py-6 text-left whitespace-nowrap w-full">
               {report.data.linea}
             </td>
           )}
           {report.data.coord && (
-            <td className="px-3 py-6 text-left whitespace-nowrap">
+            <td className="px-3 py-6 text-left whitespace-nowrap w-full">
               {report.data.coord}
             </td>
           )}
           {report.data.picker && (
-            <td className="px-3 py-6 text-left whitespace-nowrap">
+            <td className="px-3 py-6 text-left whitespace-nowrap w-full">
               {report.data.picker}
             </td>
           )}
           {report.data.ubicacion && (
-            <td className="px-3 py-6 text-left whitespace-nowrap">
+            <td className="px-3 py-6 text-left whitespace-nowrap w-full">
               {report.data.ubicacion}
             </td>
           )}
@@ -82,6 +82,7 @@ export function GeneralRowBody({
               border="2px solid #ffffff"
               borderHover="2px solid #fbbf24"
               twClassName="p-2 rounded-lg w-fit h-fit"
+              disabled={false}
             >
               <SquarePen className="size-5" />
             </BouncingButton>
@@ -98,6 +99,7 @@ export function GeneralRowBody({
               border="2px solid #ffffff"
               borderHover="2px solid #ef4444"
               twClassName="p-2 rounded-lg w-fit h-fit"
+              disabled={false}
             >
               <Trash2 className="size-5" />
             </BouncingButton>

@@ -38,6 +38,9 @@ import { ReportFormValues } from "@/content/reports/types/Report";
 /* UTILS */
 import { getDate, getWeekNumber } from "@/utils/date";
 
+/* LIBS */
+import { motion } from "framer-motion";
+
 export function SharedAddUpdateReportContent({
   isUpdate,
   id,
@@ -107,7 +110,12 @@ export function SharedAddUpdateReportContent({
   };
 
   return (
-    <div className="w-full h-full p-6 max-h-full flex flex-col gap-6">
+    <motion.div
+      className="w-full h-full p-6 max-h-full flex flex-col gap-6"
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: "easeInOut" }}
+    >
       {/* HEADER */}
       <div className="w-full flex items-center justify-between h-fit">
         {/* BOTÓN IR HACIA ATRÁS */}
@@ -120,6 +128,7 @@ export function SharedAddUpdateReportContent({
           border="2px solid #ffffff"
           borderHover="2px solid #00A0D0"
           twClassName="w-fit h-fit p-4 rounded-2xl"
+          disabled={false}
         >
           <ArrowLeft className="size-5" />
         </BouncingButton>
@@ -189,6 +198,7 @@ export function SharedAddUpdateReportContent({
                                       border="2px solid #22c55e"
                                       borderHover="2px solid #22c55e"
                                       twClassName="w-fit h-fit px-4 py-2 rounded-2xl"
+                                      disabled={false}
                                     >
                                       <Check className="size-4" />
                                       <p>Pasa</p>
@@ -202,6 +212,7 @@ export function SharedAddUpdateReportContent({
                                       border="2px solid #ef4444"
                                       borderHover="2px solid #ef4444"
                                       twClassName="w-fit h-fit px-4 py-2 rounded-2xl"
+                                      disabled={false}
                                     >
                                       <X className="size-4" />
                                       <p>Falla</p>
@@ -492,6 +503,7 @@ export function SharedAddUpdateReportContent({
                 border="2px solid #ffffff"
                 borderHover="2px solid #00A0D0"
                 twClassName="w-full h-fit px-4 py-2 rounded-2xl"
+                disabled={saving ? true : false}
               >
                 {saving ? (
                   <>
@@ -510,6 +522,6 @@ export function SharedAddUpdateReportContent({
           </div>
         </FormProvider>
       </div>
-    </div>
+    </motion.div>
   );
 }

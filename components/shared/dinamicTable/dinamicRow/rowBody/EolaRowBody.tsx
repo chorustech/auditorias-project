@@ -18,22 +18,22 @@ export function EolaRowBody({
     <>
       {report.kind === "eola" ? (
         <>
-          <td className="px-3 py-6 text-left whitespace-nowrap">
+          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
             {report.data.numOrden}
           </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap">
+          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
             {report.data.auditor}
           </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap">
+          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
             {report.data.fecha}
           </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap">
+          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
             {report.data.semana}
           </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap">
+          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
             {report.data.uniNegocio}
           </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap">
+          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
             {report.data.linea}
           </td>
           <td
@@ -50,6 +50,7 @@ export function EolaRowBody({
               border="2px solid #ffffff"
               borderHover="2px solid #fbbf24"
               twClassName="p-2 rounded-lg w-fit h-fit"
+              disabled={false}
             >
               <SquarePen className="size-5" />
             </BouncingButton>
@@ -66,6 +67,7 @@ export function EolaRowBody({
               border="2px solid #ffffff"
               borderHover="2px solid #ef4444"
               twClassName="p-2 rounded-lg w-fit h-fit"
+              disabled={false}
             >
               <Trash2 className="size-5" />
             </BouncingButton>

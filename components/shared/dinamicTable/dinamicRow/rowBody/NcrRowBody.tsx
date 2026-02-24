@@ -18,19 +18,19 @@ export function NcrRowBody({
     <>
       {report.kind === "ncr" ? (
         <>
-          <td className="px-3 py-6 text-left whitespace-nowrap">
+          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
             {report.data.numNcr}
           </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap">
+          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
             {report.data.fecha}
           </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap">
+          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
             {report.data.semana}
           </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap">
+          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
             {report.data.numParte}
           </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap">
+          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
             {report.data.proveedor}
           </td>
           <td
@@ -47,6 +47,7 @@ export function NcrRowBody({
               border="2px solid #ffffff"
               borderHover="2px solid #fbbf24"
               twClassName="p-2 rounded-lg w-fit h-fit"
+              disabled={false}
             >
               <SquarePen className="size-5" />
             </BouncingButton>
@@ -63,6 +64,7 @@ export function NcrRowBody({
               border="2px solid #ffffff"
               borderHover="2px solid #ef4444"
               twClassName="p-2 rounded-lg w-fit h-fit"
+              disabled={false}
             >
               <Trash2 className="size-5" />
             </BouncingButton>
