@@ -18,6 +18,24 @@ export function EolaRowBody({
     <>
       {report.kind === "eola" ? (
         <>
+          <td className="px-3 py-6 text-left whitespace-nowrap">
+            {report.data.numOrden}
+          </td>
+          <td className="px-3 py-6 text-left whitespace-nowrap">
+            {report.data.auditor}
+          </td>
+          <td className="px-3 py-6 text-left whitespace-nowrap">
+            {report.data.fecha}
+          </td>
+          <td className="px-3 py-6 text-left whitespace-nowrap">
+            {report.data.semana}
+          </td>
+          <td className="px-3 py-6 text-left whitespace-nowrap">
+            {report.data.uniNegocio}
+          </td>
+          <td className="px-3 py-6 text-left whitespace-nowrap">
+            {report.data.linea}
+          </td>
           <td
             className={`py-6 whitespace-nowrap w-fit px-3 flex gap-2 justify-center sticky left-0 z-10 ${twBgColor}`}
           >
@@ -51,24 +69,6 @@ export function EolaRowBody({
             >
               <Trash2 className="size-5" />
             </BouncingButton>
-          </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap">
-            {report.data.numOrden}
-          </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap">
-            {report.data.auditor}
-          </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap">
-            {report.data.fecha}
-          </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap">
-            {report.data.semana}
-          </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap">
-            {report.data.uniNegocio}
-          </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap">
-            {report.data.linea}
           </td>
         </>
       ) : (

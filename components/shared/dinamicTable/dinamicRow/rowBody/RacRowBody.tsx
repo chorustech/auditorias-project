@@ -18,6 +18,21 @@ export function RacRowBody({
     <>
       {report.kind === "rac" ? (
         <>
+          <td className="px-3 py-6 text-left whitespace-nowrap">
+            {report.data.numRac}
+          </td>
+          <td className="px-3 py-6 text-left whitespace-nowrap">
+            {report.data.fecha}
+          </td>
+          <td className="px-3 py-6 text-left whitespace-nowrap">
+            {report.data.estado}
+          </td>
+          <td className="px-3 py-6 text-left whitespace-nowrap">
+            {report.data.ponderancia}
+          </td>
+          <td className="px-3 py-6 text-left whitespace-nowrap">
+            {report.data.area}
+          </td>
           <td
             className={`py-6 whitespace-nowrap w-fit px-3 flex gap-2 justify-center sticky left-0 z-10 ${twBgColor}`}
           >
@@ -51,21 +66,6 @@ export function RacRowBody({
             >
               <Trash2 className="size-5" />
             </BouncingButton>
-          </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap">
-            {report.data.numRac}
-          </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap">
-            {report.data.fecha}
-          </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap">
-            {report.data.estado}
-          </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap">
-            {report.data.ponderancia}
-          </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap">
-            {report.data.area}
           </td>
         </>
       ) : (

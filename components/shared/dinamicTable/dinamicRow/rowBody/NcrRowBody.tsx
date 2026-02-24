@@ -18,6 +18,21 @@ export function NcrRowBody({
     <>
       {report.kind === "ncr" ? (
         <>
+          <td className="px-3 py-6 text-left whitespace-nowrap">
+            {report.data.numNcr}
+          </td>
+          <td className="px-3 py-6 text-left whitespace-nowrap">
+            {report.data.fecha}
+          </td>
+          <td className="px-3 py-6 text-left whitespace-nowrap">
+            {report.data.semana}
+          </td>
+          <td className="px-3 py-6 text-left whitespace-nowrap">
+            {report.data.numParte}
+          </td>
+          <td className="px-3 py-6 text-left whitespace-nowrap">
+            {report.data.proveedor}
+          </td>
           <td
             className={`py-6 whitespace-nowrap w-fit px-3 flex gap-2 justify-center sticky left-0 z-10 ${twBgColor}`}
           >
@@ -51,21 +66,6 @@ export function NcrRowBody({
             >
               <Trash2 className="size-5" />
             </BouncingButton>
-          </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap">
-            {report.data.numNcr}
-          </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap">
-            {report.data.fecha}
-          </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap">
-            {report.data.semana}
-          </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap">
-            {report.data.numParte}
-          </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap">
-            {report.data.proveedor}
           </td>
         </>
       ) : (

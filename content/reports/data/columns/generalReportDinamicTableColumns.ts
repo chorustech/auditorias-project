@@ -4,7 +4,6 @@ type ColumnsDictionary = {
 
 export const generalReportDinamicTableColumns: ColumnsDictionary = {
   "baldwin-state": [
-    "",
     "Auditor",
     "Fecha",
     "Semana",
@@ -27,9 +26,9 @@ export const generalReportDinamicTableColumns: ColumnsDictionary = {
     "15",
     "16",
     "17",
+    "",
   ],
   "baldwin-reserve-supply": [
-    "",
     "Auditor",
     "Fecha",
     "Semana",
@@ -42,9 +41,9 @@ export const generalReportDinamicTableColumns: ColumnsDictionary = {
     "6",
     "7",
     "8",
+    "",
   ],
   "baldwin-reserve-stacking": [
-    "",
     "Auditor",
     "Fecha",
     "Semana",
@@ -59,9 +58,9 @@ export const generalReportDinamicTableColumns: ColumnsDictionary = {
     "8",
     "9",
     "10",
+    "",
   ],
   "baldwin-reserve-packing": [
-    "",
     "Auditor",
     "Fecha",
     "Semana",
@@ -78,9 +77,9 @@ export const generalReportDinamicTableColumns: ColumnsDictionary = {
     "10",
     "11",
     "12",
+    "",
   ],
   "baldwin-reserve-general": [
-    "",
     "Auditor",
     "Fecha",
     "Semana",
@@ -89,9 +88,9 @@ export const generalReportDinamicTableColumns: ColumnsDictionary = {
     "2",
     "3",
     "4",
+    "",
   ],
   "display-area": [
-    "",
     "Auditor",
     "Fecha",
     "Semana",
@@ -102,9 +101,9 @@ export const generalReportDinamicTableColumns: ColumnsDictionary = {
     "4",
     "5",
     "6",
+    "",
   ],
   "pizza-tray": [
-    "",
     "Auditor",
     "Fecha",
     "Semana",
@@ -114,16 +113,17 @@ export const generalReportDinamicTableColumns: ColumnsDictionary = {
     "3",
     "4",
     "5",
+    "",
   ],
   "eola": [
-    "",
     "nro. Orden",
     "Auditor",
     "Fecha",
     "Semana",
     "Ud. Negocio",
     "Línea",
+    "",
   ],
-  "ncr": ["", "nro. NCR", "Fecha", "Semana", "nro. Parte", "prov"],
-  "rac": ["", "nro. RAC", "Fecha", "Estado", "Ponderancia", "Área"],
+  "ncr": ["nro. NCR", "Fecha", "Semana", "nro. Parte", "prov", ""],
+  "rac": ["nro. RAC", "Fecha", "Estado", "Ponderancia", "Área", ""],
 };

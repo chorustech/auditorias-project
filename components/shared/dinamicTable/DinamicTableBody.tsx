@@ -51,27 +51,20 @@ export function DinamicTableBody() {
             <p>No se encontró información</p>
           ) : (
             <motion.div
-              className="w-full bg-amber-400"
+              className="w-full"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: "easeInOut" }}
             >
               <table className="w-full table-auto">
-                <colgroup>
-                  {[
-                    <col key="actions" className="w-[1%]" />,
-                    ...data[path ?? ""].slice(1).map((_, i) => <col key={i} />),
-                  ]}
-                </colgroup>
-
-                <thead className="sticky top-0 rounded-lg z-10">
+                <thead className="sticky top-0 rounded-lg z-20">
                   <tr className="rounded-lg bg-neutral-100 relative">
                     {data[path ?? ""].map((column, index) => (
                       <th
                         key={index}
                         className={`font-medium py-4 text-left text-blue-950 ${
                           column === ""
-                            ? "px-0 bg-neutral-100 sticky left-0 whitespace-nowrap"
+                            ? "px-0 bg-neutral-100 sticky right-0 whitespace-nowrap"
                             : "px-3"
                         }`}
                       >
