@@ -1,4 +1,4 @@
-import { EolaAddUpdateReportContent } from "@/content/reports/management/addReport/unique/eola/EolaAddUpdateReportContent";
+import { EolaInsertUpdateReportContent } from "@/content/reports/management/addUpdateReport/unique/eola/EolaInsertUpdateReportContent";
 
 export default async function EolaUpdatePage({
   params,
@@ -7,5 +7,5 @@ export default async function EolaUpdatePage({
 }) {
   const { id } = await params;
 
-  return <EolaAddUpdateReportContent isUpdate id={id} />;
+  return <EolaInsertUpdateReportContent isUpdate id={id} />;
 }

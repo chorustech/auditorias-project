@@ -4,8 +4,9 @@ import { ReportType } from "@/temp/serverActionSimulado";
 import { useRouter } from "next/navigation";
 import { SquarePen, Trash2 } from "lucide-react";
 import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";
+import { DinamicTd } from "@/components/shared/dinamicTable/dinamicRow/DinamicTd";
 
-export function NcrRowBody({
+export function RacRowContent({
   report,
   twBgColor,
 }: {
@@ -16,29 +17,20 @@ export function NcrRowBody({
 
   return (
     <>
-      {report.kind === "ncr" ? (
+      {report.kind === "rac" ? (
         <>
-          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
-            {report.data.numNcr}
-          </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
-            {report.data.fecha}
-          </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
-            {report.data.semana}
-          </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
-            {report.data.numParte}
-          </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
-            {report.data.proveedor}
-          </td>
+          <DinamicTd data={report.data.numRac.toString()} />
+          <DinamicTd data={report.data.fecha} />
+          <DinamicTd data={report.data.estado} />
+          <DinamicTd data={report.data.ponderancia} />
+          <DinamicTd data={report.data.area} />
+
           <td
             className={`py-6 whitespace-nowrap w-fit px-3 flex gap-2 justify-center sticky left-0 z-10 ${twBgColor}`}
           >
             <BouncingButton
               action={() =>
-                router.push(`/reports/ncr/update/${report.data.numNcr}`)
+                router.push(`/reports/rac/update/${report.data.numRac}`)
               }
               backgroundColorHover="#ffffff"
               backgroundColor="#fbbf24"
@@ -53,10 +45,10 @@ export function NcrRowBody({
             </BouncingButton>
             <BouncingButton
               action={() => /* openEditDeleteModal(
-                                              dato.usuario.id,
-                                              dato,
-                                              "ELIMINAR",
-                                            ) */ {}}
+                                                      dato.usuario.id,
+                                                      dato,
+                                                      "ELIMINAR",
+                                                    ) */ {}}
               backgroundColorHover="#ffffff"
               backgroundColor="#ef4444"
               textColor="#ffffff"

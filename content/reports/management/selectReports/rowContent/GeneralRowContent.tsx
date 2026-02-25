@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import { Check, SquarePen, Trash2, X } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";
+import { DinamicTd } from "../../../../../components/shared/dinamicTable/dinamicRow/DinamicTd";
 
-export function GeneralRowBody({
+export function GeneralRowContent({
   report,
   twBgColor,
 }: {
@@ -21,37 +22,17 @@ export function GeneralRowBody({
 
   return (
     <>
-      {report.kind === "general" ? (
+      {report.kind === "general" && (
         <>
-          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
-            {report.data.auditor}
-          </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
-            {report.data.fecha}
-          </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
-            {report.data.semana}
-          </td>
-          {report.data.linea && (
-            <td className="px-3 py-6 text-left whitespace-nowrap w-full">
-              {report.data.linea}
-            </td>
-          )}
-          {report.data.coord && (
-            <td className="px-3 py-6 text-left whitespace-nowrap w-full">
-              {report.data.coord}
-            </td>
-          )}
-          {report.data.picker && (
-            <td className="px-3 py-6 text-left whitespace-nowrap w-full">
-              {report.data.picker}
-            </td>
-          )}
-          {report.data.ubicacion && (
-            <td className="px-3 py-6 text-left whitespace-nowrap w-full">
-              {report.data.ubicacion}
-            </td>
-          )}
+          <DinamicTd data={report.data.auditor} />
+          <DinamicTd data={report.data.fecha} />
+          <DinamicTd data={report.data.semana} />
+
+          {report.data.linea && <DinamicTd data={report.data.linea} />}
+          {report.data.coord && <DinamicTd data={report.data.coord} />}
+          {report.data.picker && <DinamicTd data={report.data.picker} />}
+          {report.data.ubicacion && <DinamicTd data={report.data.ubicacion} />}
+
           {report.data.respuestas.map((respuesta, index) => (
             <td key={index} className="px-3 py-6 text-left whitespace-nowrap">
               {respuesta ? (
@@ -68,6 +49,7 @@ export function GeneralRowBody({
               )}
             </td>
           ))}
+
           <td
             className={`py-6 whitespace-nowrap w-fit px-3 flex gap-2 justify-center sticky right-0 z-10 ${twBgColor}`}
           >
@@ -105,8 +87,6 @@ export function GeneralRowBody({
             </BouncingButton>
           </td>
         </>
-      ) : (
-        <></>
       )}
     </>
   );

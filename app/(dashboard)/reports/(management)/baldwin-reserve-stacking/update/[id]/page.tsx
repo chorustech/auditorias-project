@@ -1,4 +1,4 @@
-import { SharedAddUpdateReportContent } from "@/content/reports/management/addReport/shared/SharedAddUpdateReportContent";
+import { SharedInsertUpdateReportContent } from "@/content/reports/management/addUpdateReport/general/GeneralInsertUpdateReportContent";
 
 export default async function BaldwinReserveStackingUpdatePage({
   params,
@@ -7,5 +7,5 @@ export default async function BaldwinReserveStackingUpdatePage({
 }) {
   const { id } = await params;
 
-  return <SharedAddUpdateReportContent isUpdate id={id} />;
+  return <SharedInsertUpdateReportContent isUpdate id={id} />;
 }

@@ -4,8 +4,9 @@ import { ReportType } from "@/temp/serverActionSimulado";
 import { useRouter } from "next/navigation";
 import { SquarePen, Trash2 } from "lucide-react";
 import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";
+import { DinamicTd } from "@/components/shared/dinamicTable/dinamicRow/DinamicTd";
 
-export function RacRowBody({
+export function NcrRowContent({
   report,
   twBgColor,
 }: {
@@ -16,29 +17,20 @@ export function RacRowBody({
 
   return (
     <>
-      {report.kind === "rac" ? (
+      {report.kind === "ncr" && (
         <>
-          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
-            {report.data.numRac}
-          </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
-            {report.data.fecha}
-          </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
-            {report.data.estado}
-          </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
-            {report.data.ponderancia}
-          </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
-            {report.data.area}
-          </td>
+          <DinamicTd data={report.data.numNcr} />
+          <DinamicTd data={report.data.fecha} />
+          <DinamicTd data={report.data.semana} />
+          <DinamicTd data={report.data.numParte} />
+          <DinamicTd data={report.data.proveedor} />
+
           <td
             className={`py-6 whitespace-nowrap w-fit px-3 flex gap-2 justify-center sticky left-0 z-10 ${twBgColor}`}
           >
             <BouncingButton
               action={() =>
-                router.push(`/reports/rac/update/${report.data.numRac}`)
+                router.push(`/reports/ncr/update/${report.data.numNcr}`)
               }
               backgroundColorHover="#ffffff"
               backgroundColor="#fbbf24"
@@ -53,10 +45,10 @@ export function RacRowBody({
             </BouncingButton>
             <BouncingButton
               action={() => /* openEditDeleteModal(
-                                                      dato.usuario.id,
-                                                      dato,
-                                                      "ELIMINAR",
-                                                    ) */ {}}
+                                              dato.usuario.id,
+                                              dato,
+                                              "ELIMINAR",
+                                            ) */ {}}
               backgroundColorHover="#ffffff"
               backgroundColor="#ef4444"
               textColor="#ffffff"
@@ -70,8 +62,6 @@ export function RacRowBody({
             </BouncingButton>
           </td>
         </>
-      ) : (
-        <></>
       )}
     </>
   );

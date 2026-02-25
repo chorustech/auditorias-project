@@ -17,7 +17,7 @@ type QuestionDictionary = {
   [pointer: string]: Questions;
 };
 
-export const auditReportQuestions: QuestionDictionary = {
+export const reportsQuestions: QuestionDictionary = {
   "baldwin-state": {
     pointer: "baldwin-state",
     sections: [

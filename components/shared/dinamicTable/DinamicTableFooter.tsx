@@ -8,9 +8,11 @@ import { motion } from "framer-motion";
 export function DinamicTableFooter({
   loading,
   count,
+  type,
 }: {
   loading: boolean;
   count: number;
+  type: string;
 }) {
   const { filter } = useFilter();
 
@@ -33,9 +35,11 @@ export function DinamicTableFooter({
             transition={{ duration: 0.5, ease: "easeInOut" }}
           >
             {count}
+            {type}
+            {count >= 1 && "s"}
           </motion.p>
         )}
-        <p>resultados</p>
+        <p>{type}</p>
       </div>
       <div className="flex gap-4">
         <BouncingButton

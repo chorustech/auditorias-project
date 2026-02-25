@@ -1,4 +1,4 @@
-export function EolaAddUpdateReportContent({
+export function EolaInsertUpdateReportContent({
   isUpdate,
   id,
 }: {

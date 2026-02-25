@@ -4,8 +4,9 @@ import { ReportType } from "@/temp/serverActionSimulado";
 import { useRouter } from "next/navigation";
 import { SquarePen, Trash2 } from "lucide-react";
 import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";
+import { DinamicTd } from "@/components/shared/dinamicTable/dinamicRow/DinamicTd";
 
-export function EolaRowBody({
+export function EolaRowContent({
   report,
   twBgColor,
 }: {
@@ -16,26 +17,15 @@ export function EolaRowBody({
 
   return (
     <>
-      {report.kind === "eola" ? (
+      {report.kind === "eola" && (
         <>
-          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
-            {report.data.numOrden}
-          </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
-            {report.data.auditor}
-          </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
-            {report.data.fecha}
-          </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
-            {report.data.semana}
-          </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
-            {report.data.uniNegocio}
-          </td>
-          <td className="px-3 py-6 text-left whitespace-nowrap w-full">
-            {report.data.linea}
-          </td>
+          <DinamicTd data={report.data.numOrden} />
+          <DinamicTd data={report.data.auditor} />
+          <DinamicTd data={report.data.fecha} />
+          <DinamicTd data={report.data.semana} />
+          <DinamicTd data={report.data.uniNegocio} />
+          <DinamicTd data={report.data.linea} />
+
           <td
             className={`py-6 whitespace-nowrap w-fit px-3 flex gap-2 justify-center sticky left-0 z-10 ${twBgColor}`}
           >
@@ -73,8 +63,6 @@ export function EolaRowBody({
             </BouncingButton>
           </td>
         </>
-      ) : (
-        <></>
       )}
     </>
   );

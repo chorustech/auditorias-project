@@ -2,7 +2,7 @@ type ColumnsDictionary = {
   [pointer: string]: string[];
 };
 
-export const generalReportDinamicTableColumns: ColumnsDictionary = {
+export const reportsColumns: ColumnsDictionary = {
   "baldwin-state": [
     "Auditor",
     "Fecha",
