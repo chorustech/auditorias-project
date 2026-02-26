@@ -24,7 +24,7 @@ import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 
 /* SERVER ACTION */
-import { getReports, ReportData } from "@/temp/serverActionSimulado";
+import { getReports, ReportData } from "@/temp/reports/getReports";
 
 /* UTILS */
 import { isPointerArea } from "@/utils/pointerArea";

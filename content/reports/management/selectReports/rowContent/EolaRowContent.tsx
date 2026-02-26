@@ -1,6 +1,6 @@
 "use client";
 
-import { ReportType } from "@/temp/serverActionSimulado";
+import { ReportType } from "@/temp/reports/getReports";
 import { useRouter } from "next/navigation";
 import { SquarePen, Trash2 } from "lucide-react";
 import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";

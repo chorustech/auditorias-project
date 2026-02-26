@@ -23,8 +23,10 @@ export function RouteTitle() {
   const addSegment =
     mainRoute && segments.length > 2
       ? segments.find((sub) => sub === `add`)
-      : null;
-  
+      : mainRoute && segments.length > 1
+        ? segments.find((sub) => sub === `add`)
+        : null;
+
   const updateSegment =
     mainRoute && segments.length > 2
       ? segments.find((sub) => sub === `update`)
@@ -47,7 +49,10 @@ export function RouteTitle() {
         {secondRoute && (
           <>
             <ChevronRight className="size-4 text-cyan-800" />
-            <Link className="text-xl font-light" href={`${mainRoute?.href}${secondRoute?.href}`}>
+            <Link
+              className="text-xl font-light"
+              href={`${mainRoute?.href}${secondRoute?.href}`}
+            >
               {secondRoute.title}
             </Link>
           </>

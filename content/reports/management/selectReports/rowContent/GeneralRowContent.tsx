@@ -1,6 +1,6 @@
 "use client";
 
-import { ReportType } from "@/temp/serverActionSimulado";
+import { ReportType } from "@/temp/reports/getReports";
 import { useRouter } from "next/navigation";
 import { Check, SquarePen, Trash2, X } from "lucide-react";
 import { usePathname } from "next/navigation";

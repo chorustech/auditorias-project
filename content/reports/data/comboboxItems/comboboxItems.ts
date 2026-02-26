@@ -23,3 +23,27 @@ export const worktables: string[] = [
   "WT-09",
   "WT-10",
 ];
+
+export const unidadesNegocio: string[] = [
+  "Unidad 1",
+  "Unidad 2",
+  "Unidad 3",
+  "Unidad 4",
+  "Unidad 5",
+  "Unidad 6",
+  "Unidad 8",
+  "Unidad 9",
+  "Unidad 10",
+  "Unidad 11",
+  "Unidad 12",
+  "Unidad 13",
+  "Unidad 14",
+  "Unidad 15",
+  "Unidad 16",
+  "Unidad 17",
+  "Unidad 18",
+  "Unidad 19",
+  "Unidad 20",
+];
+
+export const tipoEolaReport: string[] = ["EOLA", "Picking"];

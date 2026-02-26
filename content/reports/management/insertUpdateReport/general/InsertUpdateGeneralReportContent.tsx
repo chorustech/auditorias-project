@@ -2,7 +2,6 @@
 
 /* COMPONENTS */
 import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";
-import { useAnnouncement } from "@/stores/announcement/announcementStore";
 import {
   Combobox,
   ComboboxContent,
@@ -41,8 +40,11 @@ import {
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 
-/* SERVER ACTIONS */
-import { insertReport } from "@/temp/serverActionSimulado";
+/* SERVER ACTION */
+import { insertReport } from "@/temp/reports/insertReport";
+
+/* STORES */
+import { useAnnouncement } from "@/stores/announcement/announcementStore";
 
 /* TYPES */
 import { ReportFormValues } from "@/content/reports/types/Report";
@@ -212,7 +214,7 @@ export function InsertUpdateGeneralReportContent({
       <div className="flex-1 overflow-y-auto flex gap-6 max-h-full">
         <FormProvider {...methods}>
           {/* PREGUNTAS DE INCISOS */}
-          <div className="w-full rounded-2xl border border-neutral-200 flex flex-col min-h-0">
+          <div className="w-2/3 rounded-2xl border border-neutral-200 flex flex-col min-h-0">
             {/* HEADER */}
             <div className="w-full h-fit p-4 shrink-0 border-b border-b-neutral-200">
               <p className="font-light text-lg">Preguntas de auditoría</p>
@@ -359,11 +361,9 @@ export function InsertUpdateGeneralReportContent({
                             </Button>
                           }
                         />
-                        <ComboboxContent
-                          className={"h-30 w-30 overflow-y-auto"}
-                        >
+                        <ComboboxContent>
                           <ComboboxEmpty>No items found.</ComboboxEmpty>
-                          <ComboboxList>
+                          <ComboboxList className={"h-30"}>
                             {(item) => (
                               <ComboboxItem
                                 className={"overflow-x-hidden w-full"}
@@ -592,7 +592,7 @@ export function InsertUpdateGeneralReportContent({
 
               {/* COMENTARIOS */}
               <div className="flex flex-col gap-2">
-                <p>Comentarios (opcional)</p>
+                <p className="truncate">Comentarios (opcional)</p>
                 <Controller
                   name="comentarios"
                   control={methods.control}
@@ -617,8 +617,8 @@ export function InsertUpdateGeneralReportContent({
               </div>
 
               {/* ARCHIVO */}
-              <div className="flex flex-col gap-2">
-                <p>Adjuntar archivo (opcional)</p>
+              <div className="flex flex-col gap-2 h-full">
+                <p className="truncate">Adjuntar archivo (opcional)</p>
                 <input
                   type="file"
                   className="w-full text-sm h-fit px-4 py-2 bg-transparent outline-none border border-neutral-200 rounded-xl hover:hover:bg-[#d9f2f9] transition-all duration-300 placeholder:text-neutral-500 cursor-pointer"
