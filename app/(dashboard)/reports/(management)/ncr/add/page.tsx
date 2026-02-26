@@ -1,5 +1,5 @@
-import { NcrInsertUpdateReportContent } from "@/content/reports/management/addUpdateReport/unique/ncr/NcrInsertUpdateReportContent";
+import { InsertUpdateNcrReportContent } from "@/content/reports/management/insertUpdateReport/unique/ncr/InsertUpdateNcrReportContent";
 
 export default function NcrInsertPage() {
-  return <NcrInsertUpdateReportContent isUpdate={false} id="" />;
+  return <InsertUpdateNcrReportContent isUpdate={false} id="" />;
 }

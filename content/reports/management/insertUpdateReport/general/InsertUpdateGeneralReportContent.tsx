@@ -41,7 +41,7 @@ import { getDate, getWeekNumber } from "@/utils/date";
 /* LIBS */
 import { motion } from "framer-motion";
 
-export function SharedInsertUpdateReportContent({
+export function InsertUpdateGeneralReportContent({
   isUpdate,
   id,
 }: {

@@ -1,5 +1,5 @@
-import { SharedInsertUpdateReportContent } from "@/content/reports/management/addUpdateReport/general/GeneralInsertUpdateReportContent";
+import { InsertUpdateGeneralReportContent } from "@/content/reports/management/insertUpdateReport/general/InsertUpdateGeneralReportContent";
 
 export default function BaldwinReserveStackingInsertPage() {
-  return <SharedInsertUpdateReportContent isUpdate={false} id={""} />;
+  return <InsertUpdateGeneralReportContent isUpdate={false} id={""} />;
 }

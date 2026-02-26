@@ -1,4 +1,4 @@
-export function RacAddUpdateReportContent({
+export function InsertUpdateRacReportContent({
   isUpdate,
   id,
 }: {

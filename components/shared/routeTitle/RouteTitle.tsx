@@ -30,6 +30,8 @@ export function RouteTitle() {
       ? segments.find((sub) => sub === `update`)
       : null;
 
+  console.log(updateSegment)
+
   return (
     <header className="w-full py-6 px-4 border-b border-b-neutral-200">
       <div className="flex items-center gap-4">

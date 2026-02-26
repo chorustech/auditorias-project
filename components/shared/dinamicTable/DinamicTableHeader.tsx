@@ -9,11 +9,13 @@ export function DinamicTableHeader({
   filterAction,
   addAction,
   excelAction,
+  backContent
 }: {
   backAction: () => void;
   filterAction: () => void;
   addAction: () => void;
   excelAction: () => void;
+  backContent: React.ReactNode
 }) {
   return (
     <motion.div
@@ -35,7 +37,7 @@ export function DinamicTableHeader({
           twClassName="w-fit h-fit p-4 rounded-2xl"
           disabled={false}
         >
-          <ArrowLeft className="size-5" />
+          {backContent}
         </BouncingButton>
 
         {/* BOTÓN FILTRAR */}

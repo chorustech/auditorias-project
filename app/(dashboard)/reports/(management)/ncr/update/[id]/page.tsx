@@ -1,4 +1,4 @@
-import { NcrInsertUpdateReportContent } from "@/content/reports/management/addUpdateReport/unique/ncr/NcrInsertUpdateReportContent";
+import { InsertUpdateNcrReportContent } from "@/content/reports/management/insertUpdateReport/unique/ncr/InsertUpdateNcrReportContent";
 
 export default async function NcrUpdatePage({
   params,
@@ -6,5 +6,5 @@ export default async function NcrUpdatePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  <NcrInsertUpdateReportContent isUpdate id={id} />;
+  <InsertUpdateNcrReportContent isUpdate id={id} />;
 }

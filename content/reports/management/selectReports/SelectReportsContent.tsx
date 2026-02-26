@@ -6,12 +6,18 @@ import { DinamicTable } from "@/components/shared/dinamicTable/DinamicTable";
 import { DinamicTh } from "@/components/shared/dinamicTable/dinamicRow/DinamicTh";
 import { DinamicRow } from "@/components/shared/dinamicTable/dinamicRow/DinamicRow";
 import { GeneralRowContent } from "@/content/reports/management/selectReports/rowContent/GeneralRowContent";
+import { EolaRowContent } from "./rowContent/EolaRowContent";
+import { NcrRowContent } from "./rowContent/NcrRowContent";
+import { RacRowContent } from "./rowContent/RacRowContent";
 
 /* DATA */
 import { reportsColumns } from "@/content/reports/data/columns/reportsColumns";
 
 /* HOOKS */
 import { useState, useEffect } from "react";
+
+/* ICONS */
+import { ArrowLeft } from "lucide-react";
 
 /* NAVIGATION */
 import { usePathname } from "next/navigation";
@@ -22,9 +28,6 @@ import { getReports, ReportData } from "@/temp/serverActionSimulado";
 
 /* UTILS */
 import { isPointerArea } from "@/utils/pointerArea";
-import { EolaRowContent } from "./rowContent/EolaRowContent";
-import { NcrRowContent } from "./rowContent/NcrRowContent";
-import { RacRowContent } from "./rowContent/RacRowContent";
 
 export function SelectReportsContent() {
   const router = useRouter();
@@ -97,6 +100,7 @@ export function SelectReportsContent() {
         filterAction={() => {}}
         addAction={() => router.push(`/reports/${path}/add`)}
         excelAction={() => {}}
+        backContent={<ArrowLeft className="size-5" />}
       />
     </SectionContainer>
   );

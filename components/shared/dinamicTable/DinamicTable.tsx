@@ -12,6 +12,7 @@ export function DinamicTable({
   filterAction,
   addAction,
   excelAction,
+  backContent
 }: {
   theadColumns: React.ReactNode;
   tbodyRows: React.ReactNode;
@@ -22,6 +23,7 @@ export function DinamicTable({
   filterAction: () => void;
   addAction: () => void;
   excelAction: () => void;
+  backContent: React.ReactNode
 }) {
   return (
     <div className="flex flex-col h-full">
@@ -31,6 +33,7 @@ export function DinamicTable({
         filterAction={filterAction}
         addAction={addAction}
         excelAction={excelAction}
+        backContent={backContent}
       />
 
       {/* BODY */}

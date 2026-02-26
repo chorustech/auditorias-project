@@ -1,4 +1,4 @@
-export function NcrInsertUpdateReportContent({
+export function InsertUpdateNcrReportContent({
   isUpdate,
   id,
 }: {

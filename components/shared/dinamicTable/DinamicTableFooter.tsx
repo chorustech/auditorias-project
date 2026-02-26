@@ -29,17 +29,15 @@ export function DinamicTableFooter({
           <Loader className="size-4 animate-spin text-[#00A0D0]" />
         ) : (
           <motion.p
-            className="font-semibold text-[#00A0D0]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, ease: "easeInOut" }}
           >
-            {count}
-            {type}
-            {count >= 1 && "s"}
+            <span className="text-[#00A0D0] font-semibold mr-2">{count}</span>
+            <span>{type}</span>
+            <span>{count >= 1 && "s"}</span>
           </motion.p>
         )}
-        <p>{type}</p>
       </div>
       <div className="flex gap-4">
         <BouncingButton
