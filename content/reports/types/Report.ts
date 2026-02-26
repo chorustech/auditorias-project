@@ -1,4 +1,5 @@
 import { LucideIcon } from "lucide-react";
+import { FieldArray } from "react-hook-form";
 
 export type Links = {
   href: string;
@@ -14,9 +15,7 @@ export type SubLink = {
   state: "" | "construction" | "maintenance";
 };
 
-
 /* 
-
   TODO:
   Cambiar datos a json como metadata
 
@@ -32,12 +31,13 @@ export type SubLink = {
 */
 
 export type ReportFormValues = {
-  linea?: string; // json
-  coord?: string; // json
-  picker?: string; // json
-  ubicacion?: string; // json
-  worktable?: string; // json
+  linea?: string;
+  coord?: string;
+  picker?: string;
+  ubicacion?: string;
+  worktable?: string;
+  nivel?: number;
   respuestas: boolean[];
-
-  comentrarios: string
+  comentarios: string;
+  archivo?: FieldArray;
 };
