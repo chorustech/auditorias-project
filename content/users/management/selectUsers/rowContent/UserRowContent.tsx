@@ -17,13 +17,21 @@ export function UserRowContent({
 
   return (
     <>
-      <DinamicTd data={user.numEmpleado} />
-      <DinamicTd data={user.nombre} />
-      <DinamicTd data={user.email} />
-      <DinamicTd data={user.rol} />
+      <DinamicTd>
+        <p>{user.numEmpleado}</p>
+      </DinamicTd>
+      <DinamicTd>
+        <p>{user.nombre}</p>
+      </DinamicTd>
+      <DinamicTd>
+        <p>{user.email}</p>
+      </DinamicTd>
+      <DinamicTd>
+        <p>{user.rol}</p>
+      </DinamicTd>
 
       <td
-        className={`py-6 whitespace-nowrap w-fit px-3 flex gap-2 justify-center sticky right-0 z-10 ${twBgColor}`}
+        className={`py-6 whitespace-nowrap px-3 flex gap-2 justify-center sticky right-0 z-10 ${twBgColor}`}
       >
         <BouncingButton
           action={() => router.push(`/users/update/${user.id}`)}

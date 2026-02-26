@@ -1,5 +1,6 @@
 import { LucideIcon } from "lucide-react";
 import { FieldArray } from "react-hook-form";
+import { StringDecoder } from "string_decoder";
 
 export type Links = {
   href: string;
@@ -53,5 +54,13 @@ export type EolaFormValues = {
   cantInspeccionada: number;
   cantAceptada: number;
   comentarios: string;
+  archivo?: FieldArray;
+};
+
+export type NcrFormValues = {
+  ncr: string;
+  numParte: string;
+  proveedor: string;
+  defecto: string;
   archivo?: FieldArray;
 };

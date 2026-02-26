@@ -19,15 +19,27 @@ export function EolaRowContent({
     <>
       {report.kind === "eola" && (
         <>
-          <DinamicTd data={report.data.numOrden} />
-          <DinamicTd data={report.data.auditor} />
-          <DinamicTd data={report.data.fecha} />
-          <DinamicTd data={report.data.semana} />
-          <DinamicTd data={report.data.uniNegocio} />
-          <DinamicTd data={report.data.linea} />
+          <DinamicTd>
+            <p>{report.data.numOrden}</p>
+          </DinamicTd>
+          <DinamicTd>
+            <p>{report.data.auditor}</p>
+          </DinamicTd>
+          <DinamicTd>
+            <p>{report.data.fecha}</p>
+          </DinamicTd>
+          <DinamicTd>
+            <p>{report.data.semana}</p>
+          </DinamicTd>
+          <DinamicTd>
+            <p>{report.data.uniNegocio}</p>
+          </DinamicTd>
+          <DinamicTd>
+            <p>{report.data.linea}</p>
+          </DinamicTd>
 
           <td
-            className={`py-6 whitespace-nowrap w-fit px-3 flex gap-2 justify-center sticky left-0 z-10 ${twBgColor}`}
+            className={`py-6 whitespace-nowrap group-hover:bg-[#d9f2f9] transition-all duration-200 px-3 flex gap-2 justify-center sticky left-0 z-10 ${twBgColor}`}
           >
             <BouncingButton
               action={() =>

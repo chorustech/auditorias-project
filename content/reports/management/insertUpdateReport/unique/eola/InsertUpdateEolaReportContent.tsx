@@ -175,7 +175,6 @@ export function InsertUpdateEolaReportContent({
       {/* BODY */}
       <div className="flex-1 overflow-y-auto flex gap-6 max-h-full">
         <FormProvider {...methods}>
-          {/* PREGUNTAS DE INCISOS */}
           <div className="w-2/3 rounded-2xl border border-neutral-200 flex flex-col min-h-0">
             {/* HEADER */}
             <div className="w-full h-fit p-4 shrink-0 border-b border-b-neutral-200">
@@ -589,7 +588,6 @@ export function InsertUpdateEolaReportContent({
             </div>
           </div>
 
-          {/* PREGUNTAS DE INFORMACIÓN */}
           <div className="w-1/3 min-w-1/3 flex flex-col justify-between rounded-2xl border border-neutral-200">
             {/* HEADER */}
             <div className="w-full h-fit p-4 shrink-0 border-b border-b-neutral-200">

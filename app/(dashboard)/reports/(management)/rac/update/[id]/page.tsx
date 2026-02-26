@@ -6,5 +6,5 @@ export default async function RacUpdatePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  <InsertUpdateRacReportContent isUpdate id={id} />;
+  return <InsertUpdateRacReportContent isUpdate id={id} />;
 }

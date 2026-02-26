@@ -30,6 +30,7 @@ export async function insertEolaReport(formData: FormData): Promise<{
       cantInspeccionada: cantInspeccionada,
       cantAceptada: cantAceptada,
       numOrden: numOrden,
+      comentarios: comentarios,
       file: file ? `Nombre: ${file.name}, Tipo: ${file.type}` : null,
     });
 

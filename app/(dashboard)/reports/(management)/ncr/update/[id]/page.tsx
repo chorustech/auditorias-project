@@ -6,5 +6,5 @@ export default async function NcrUpdatePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  <InsertUpdateNcrReportContent isUpdate id={id} />;
+  return <InsertUpdateNcrReportContent isUpdate id={id} />;
 }

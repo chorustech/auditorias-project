@@ -19,14 +19,24 @@ export function NcrRowContent({
     <>
       {report.kind === "ncr" && (
         <>
-          <DinamicTd data={report.data.numNcr} />
-          <DinamicTd data={report.data.fecha} />
-          <DinamicTd data={report.data.semana} />
-          <DinamicTd data={report.data.numParte} />
-          <DinamicTd data={report.data.proveedor} />
+          <DinamicTd>
+            <p>{report.data.numNcr}</p>
+          </DinamicTd>
+          <DinamicTd>
+            <p>{report.data.fecha}</p>
+          </DinamicTd>
+          <DinamicTd>
+            <p>{report.data.semana}</p>
+          </DinamicTd>
+          <DinamicTd>
+            <p>{report.data.numParte}</p>
+          </DinamicTd>
+          <DinamicTd>
+            <p>{report.data.proveedor}</p>
+          </DinamicTd>
 
           <td
-            className={`py-6 whitespace-nowrap w-fit px-3 flex gap-2 justify-center sticky left-0 z-10 ${twBgColor}`}
+            className={`py-6 whitespace-nowrap group-hover:bg-[#d9f2f9] transition-all duration-200 px-3 flex gap-2 justify-center sticky left-0 z-10 ${twBgColor}`}
           >
             <BouncingButton
               action={() =>

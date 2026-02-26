@@ -15,18 +15,52 @@ export function RacRowContent({
 }) {
   const router = useRouter();
 
+  const getTwEstadoTextColor = (estado: string) => {
+    if (estado === "CERRADO") {
+      return "text-green-500";
+    } else {
+      return "text-red-500";
+    }
+  };
+
+  const getTwPonderanciaTextColor = (ponderancia: string) => {
+    if (ponderancia === "LOW") {
+      return "text-green-500";
+    } else if (ponderancia === "MEDIUM") {
+      return "text-yellow-500";
+    } else {
+      return "text-red-500";
+    }
+  };
+
   return (
     <>
       {report.kind === "rac" ? (
         <>
-          <DinamicTd data={report.data.numRac.toString()} />
-          <DinamicTd data={report.data.fecha} />
-          <DinamicTd data={report.data.estado} />
-          <DinamicTd data={report.data.ponderancia} />
-          <DinamicTd data={report.data.area} />
+          <DinamicTd>
+            <p>{report.data.numRac.toString()}</p>
+          </DinamicTd>
+          <DinamicTd>
+            <p>{report.data.fecha}</p>
+          </DinamicTd>
+          <DinamicTd>
+            <p className={`font-bold ${getTwEstadoTextColor(report.data.estado)}`}>
+              {report.data.estado}
+            </p>
+          </DinamicTd>
+          <DinamicTd>
+            <p
+              className={`font-bold ${getTwPonderanciaTextColor(report.data.ponderancia)}`}
+            >
+              {report.data.ponderancia}
+            </p>
+          </DinamicTd>
+          <DinamicTd>
+            <p>{report.data.area}</p>
+          </DinamicTd>
 
           <td
-            className={`py-6 whitespace-nowrap w-fit px-3 flex gap-2 justify-center sticky left-0 z-10 ${twBgColor}`}
+            className={`py-6 whitespace-nowrap group-hover:bg-[#d9f2f9] transition-all duration-200 px-3 flex gap-2 justify-center sticky left-0 z-10 ${twBgColor}`}
           >
             <BouncingButton
               action={() =>

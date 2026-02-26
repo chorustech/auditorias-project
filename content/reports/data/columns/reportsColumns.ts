@@ -124,6 +124,6 @@ export const reportsColumns: ColumnsDictionary = {
     "Línea",
     "",
   ],
-  "ncr": ["nro. NCR", "Fecha", "Semana", "nro. Parte", "prov", ""],
+  "ncr": ["nro. NCR", "Fecha", "Semana", "nro. Parte", "Proveedor", ""],
   "rac": ["nro. RAC", "Fecha", "Estado", "Ponderancia", "Área", ""],
 };

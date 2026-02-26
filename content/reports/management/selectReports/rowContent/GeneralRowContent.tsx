@@ -24,14 +24,36 @@ export function GeneralRowContent({
     <>
       {report.kind === "general" && (
         <>
-          <DinamicTd data={report.data.auditor} />
-          <DinamicTd data={report.data.fecha} />
-          <DinamicTd data={report.data.semana} />
+          <DinamicTd>
+            <p>{report.data.auditor}</p>
+          </DinamicTd>
+          <DinamicTd>
+            <p>{report.data.fecha}</p>
+          </DinamicTd>
+          <DinamicTd>
+            <p>{report.data.semana}</p>
+          </DinamicTd>
 
-          {report.data.linea && <DinamicTd data={report.data.linea} />}
-          {report.data.coord && <DinamicTd data={report.data.coord} />}
-          {report.data.picker && <DinamicTd data={report.data.picker} />}
-          {report.data.ubicacion && <DinamicTd data={report.data.ubicacion} />}
+          {report.data.linea && (
+            <DinamicTd>
+              <p>{report.data.linea}</p>
+            </DinamicTd>
+          )}
+          {report.data.coord && (
+            <DinamicTd>
+              <p>{report.data.coord}</p>
+            </DinamicTd>
+          )}
+          {report.data.picker && (
+            <DinamicTd>
+              <p>{report.data.picker}</p>
+            </DinamicTd>
+          )}
+          {report.data.ubicacion && (
+            <DinamicTd>
+              <p>{report.data.ubicacion}</p>
+            </DinamicTd>
+          )}
 
           {report.data.respuestas.map((respuesta, index) => (
             <td key={index} className="px-3 py-6 text-left whitespace-nowrap">
@@ -51,7 +73,7 @@ export function GeneralRowContent({
           ))}
 
           <td
-            className={`py-6 whitespace-nowrap w-fit px-3 flex gap-2 justify-center sticky right-0 z-10 ${twBgColor}`}
+            className={`py-6 whitespace-nowrap group-hover:bg-[#d9f2f9] transition-all duration-200 px-3 flex gap-2 justify-center sticky right-0 z-10 ${twBgColor}`}
           >
             <BouncingButton
               action={() =>
