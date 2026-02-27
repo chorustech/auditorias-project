@@ -3,20 +3,20 @@ import { ReporteAuditoria, ReporteAuditoriaPrimitivo } from "../../domain";
 import { db } from "@/db";
 import { ReporteAuditoriaTable } from "@/db/schemas/reporte-auditoria";
 import { eq } from "drizzle-orm";
+import { Metadata } from "../../domain/entities";
 
-export class ReporteAuditoriaNeon implements ReporteAuditoriaRepositorio {
+export class ReporteAuditoriaNeon<M extends Metadata> implements ReporteAuditoriaRepositorio<M> {
   constructor(private readonly _db = db) {}
 
-  async getAll(area: number): Promise<ReporteAuditoriaPrimitivo[]> {
+  async getAll(area: number): Promise<ReporteAuditoriaPrimitivo<Metadata>[]> {
     const reportes = await this._db
       .select()
       .from(ReporteAuditoriaTable)
       .where(eq(ReporteAuditoriaTable.area_id, area));
-
     return reportes;
   }
-
-  async save(reporte: ReporteAuditoria): Promise<void> {
+  
+  async save(reporte: ReporteAuditoria<M>): Promise<void> {
     // TODO: Implement
   }
 }
