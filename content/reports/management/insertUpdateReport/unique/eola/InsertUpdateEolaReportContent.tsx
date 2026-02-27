@@ -47,7 +47,7 @@ import { insertEolaReport } from "@/temp/reports/insertEolaReport";
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
 
 /* TYPES */
-import { EolaFormValues } from "@/content/reports/types/Report";
+import { EolaFormValues } from "@/content/reports/types/reports/eolaFormValues";
 
 /* UTILS */
 import { getDate, getWeekNumber } from "@/utils/date";

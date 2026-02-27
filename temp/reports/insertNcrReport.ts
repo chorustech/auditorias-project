@@ -6,6 +6,7 @@ export async function insertNcrReport(formData: FormData): Promise<{
 }> {
   // Simular delay del backend
   await new Promise((resolve) => setTimeout(resolve, 3000));
+  
   try {
     const ncr = formData.get("ncr");
     const numParte = formData.get("numParte");

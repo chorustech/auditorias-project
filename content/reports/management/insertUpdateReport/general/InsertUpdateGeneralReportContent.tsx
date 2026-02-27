@@ -47,7 +47,7 @@ import { insertReport } from "@/temp/reports/insertReport";
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
 
 /* TYPES */
-import { ReportFormValues } from "@/content/reports/types/Report";
+import { ReportFormValues } from "@/content/reports/types/reports/reportFormValues";
 
 /* UTILS */
 import { getDate, getWeekNumber } from "@/utils/date";

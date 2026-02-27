@@ -6,6 +6,7 @@ export async function insertEolaReport(formData: FormData): Promise<{
 }> {
   // Simular delay del backend
   await new Promise((resolve) => setTimeout(resolve, 3000));
+  
   try {
     const unidadNegocio = formData.get("uniNegocio");
     const linea = formData.get("linea");

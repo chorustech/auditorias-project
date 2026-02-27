@@ -47,3 +47,24 @@ export const unidadesNegocio: string[] = [
 ];
 
 export const tipoEolaReport: string[] = ["EOLA", "Picking"];
+
+export const responsables: string[] = [
+  "Cornalina Dreemurr",
+  "Gravity Dreemurr",
+  "Nau Dreemurr",
+  "Fran Dreemurr",
+];
+
+export const descripcionesProd: string[] = ["Tipo A", "Tipo B", "Tipo C"];
+
+export const ponderancias: string[] = ["LOW", "MEDIUM", "HIGH"];
+
+export const areas: string[] = [
+  "Electronics",
+  "Finishing",
+  "Baldwin State",
+  "Baldwin Reserve",
+  "Pizza Tray",
+  "Display Area",
+  "Otra área",
+];

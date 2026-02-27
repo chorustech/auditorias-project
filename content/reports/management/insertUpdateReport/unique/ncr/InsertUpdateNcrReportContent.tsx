@@ -2,23 +2,6 @@
 
 /* COMPONENTS */
 import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxItem,
-  ComboboxList,
-  ComboboxTrigger,
-  ComboboxValue,
-} from "@/components/ui/combobox";
-import { Button } from "@/components/ui/button";
-
-/* DATA */
-import {
-  lineas,
-  unidadesNegocio,
-  tipoEolaReport,
-} from "@/content/reports/data/comboboxItems/comboboxItems";
 
 /* HOOKS */
 import { useForm, Controller, FormProvider } from "react-hook-form";
@@ -27,7 +10,6 @@ import { useState } from "react";
 /* ICONS */
 import {
   ArrowLeft,
-  ChevronDown,
   CircleCheckBig,
   CircleOff,
   Loader,
@@ -47,7 +29,7 @@ import { insertNcrReport } from "@/temp/reports/insertNcrReport";
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
 
 /* TYPES */
-import { NcrFormValues } from "@/content/reports/types/Report";
+import { NcrFormValues } from "@/content/reports/types/reports/ncrFormValues";
 
 /* UTILS */
 import { getDate, getWeekNumber } from "@/utils/date";

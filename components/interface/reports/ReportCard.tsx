@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Construction, PencilRuler } from "lucide-react";
-import { SubLink } from "@/content/reports/types/Report";
+import { SubLink } from "@/content/reports/types/links/links";
 
 export function ReportCard({ info }: { info: SubLink }) {
   return (

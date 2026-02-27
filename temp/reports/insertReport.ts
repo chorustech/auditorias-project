@@ -6,6 +6,7 @@ export async function insertReport(formData: FormData): Promise<{
 }> {
   // Simular delay del backend
   await new Promise((resolve) => setTimeout(resolve, 3000));
+  
   try {
     const respuestasRaw = formData.get("respuestas") as string;
     const respuestas: boolean[] = JSON.parse(respuestasRaw);
