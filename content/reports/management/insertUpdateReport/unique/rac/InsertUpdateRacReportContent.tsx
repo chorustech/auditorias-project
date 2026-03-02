@@ -219,7 +219,7 @@ export function InsertUpdateRacReportContent({
                           </Button>
                         }
                       />
-                      <ComboboxContent >
+                      <ComboboxContent>
                         <ComboboxEmpty>No items found.</ComboboxEmpty>
                         <ComboboxList className={"h-fit max-h-30"}>
                           {(item) => (
@@ -418,7 +418,7 @@ export function InsertUpdateRacReportContent({
                         />
                         <ComboboxContent>
                           <ComboboxEmpty>No items found.</ComboboxEmpty>
-                          <ComboboxList  className={"h-fit max-h-30"}>
+                          <ComboboxList className={"h-fit max-h-30"}>
                             {(item) => (
                               <ComboboxItem
                                 className={"overflow-x-hidden w-full"}
@@ -509,7 +509,7 @@ export function InsertUpdateRacReportContent({
                         />
                         <ComboboxContent>
                           <ComboboxEmpty>No items found.</ComboboxEmpty>
-                          <ComboboxList  className={"h-fit max-h-30"}>
+                          <ComboboxList className={"h-fit max-h-30"}>
                             {(item) => (
                               <ComboboxItem
                                 className={"overflow-x-hidden w-full"}
