@@ -1,9 +1,5 @@
-import { SectionContainer } from "@/components/shared/sectionContainer/SectionContainer";
+import { SelectUsersContent } from "@/content/users/management/selectUsers/SelectUsersContent";
 
 export default function UsersPage() {
-  return (
-    <SectionContainer>
-      <p>Esta es la página de Usuarios</p>
-    </SectionContainer>
-  );
+  return <SelectUsersContent />;
 }

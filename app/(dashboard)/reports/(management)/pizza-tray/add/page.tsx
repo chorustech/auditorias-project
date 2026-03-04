@@ -1,5 +1,5 @@
-import { SharedAddUpdateReportContent } from "@/content/reports/management/addReport/shared/SharedAddUpdateReportContent";
+import { InsertUpdateGeneralReportContent } from "@/content/reports/management/insertUpdateReport/general/InsertUpdateGeneralReportContent";
 
-export default function PizzaTrayAddPage() {
-  return <SharedAddUpdateReportContent isUpdate={false} id={""} />;
+export default function PizzaTrayInsertPage() {
+  return <InsertUpdateGeneralReportContent isUpdate={false} id={""} />;
 }

@@ -1,5 +1,5 @@
-import { DinamicTableContent } from "@/content/reports/management/DinamicTableContent";
+import { SelectReportsContent } from "@/content/reports/management/selectReports/SelectReportsContent";
 
 export default function BaldwinReserveSupplyPage() {
-  return <DinamicTableContent />;
+  return <SelectReportsContent />;
 }

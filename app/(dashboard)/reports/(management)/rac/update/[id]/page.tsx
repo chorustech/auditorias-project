@@ -1,4 +1,4 @@
-import { RacAddUpdateReportContent } from "@/content/reports/management/addReport/unique/rac/RacAddUpdateReportContent";
+import { InsertUpdateRacReportContent } from "@/content/reports/management/insertUpdateReport/unique/rac/InsertUpdateRacReportContent";
 
 export default async function RacUpdatePage({
   params,
@@ -6,5 +6,5 @@ export default async function RacUpdatePage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  <RacAddUpdateReportContent isUpdate id={id} />;
+  return <InsertUpdateRacReportContent isUpdate id={id} />;
 }

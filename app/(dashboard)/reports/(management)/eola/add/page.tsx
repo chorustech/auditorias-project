@@ -1,5 +1,5 @@
-import { EolaAddUpdateReportContent } from "@/content/reports/management/addReport/unique/eola/EolaAddUpdateReportContent";
+import { InsertUpdateEolaReportContent } from "@/content/reports/management/insertUpdateReport/unique/eola/InsertUpdateEolaReportContent";
 
-export default function EolaAddPage() {
-  return <EolaAddUpdateReportContent isUpdate={false} id="" />;
+export default function EolaInsertPage() {
+  return <InsertUpdateEolaReportContent isUpdate={false} id="" />;
 }

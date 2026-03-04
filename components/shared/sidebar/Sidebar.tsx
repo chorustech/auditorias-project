@@ -21,7 +21,7 @@ export function Sidebar() {
   return (
     <>
       <aside
-        className={`flex flex-col z-50 transition-all bg-white duration-300 justify-between h-dvh border-r border-r-neutral-200 absolute lg:static ${expanded ? "w-64 left-0" : "lg:w-18 w-64 -left-64"}`}
+        className={`flex flex-col z-60 transition-all bg-white duration-300 justify-between h-dvh border-r border-r-neutral-200 absolute lg:static ${expanded ? "w-64 left-0" : "lg:w-18 w-64 -left-64"}`}
       >
         <div className="w-full h-fit flex flex-col p-4">
           <div
@@ -95,8 +95,8 @@ export function Sidebar() {
       </aside>
       <div
         onClick={toggleSidebar}
-        className={`absolute w-[calc(100%-16rem)] top-0 left-64 bg-black/50 h-screen transition-all duration-300 z-50 lg:hidden lg:pointer-events-none ${
-          expanded ? "opacity-100" : "opacity-0"
+        className={`absolute w-full top-0 left-0 bg-black/50 h-screen transition-all duration-300 z-50 lg:hidden lg:pointer-events-none ${
+          expanded ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       ></div>
     </>

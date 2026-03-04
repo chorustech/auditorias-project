@@ -1,5 +1,5 @@
-import { RacAddUpdateReportContent } from "@/content/reports/management/addReport/unique/rac/RacAddUpdateReportContent";
+import { InsertUpdateRacReportContent } from "@/content/reports/management/insertUpdateReport/unique/rac/InsertUpdateRacReportContent";
 
-export default function RacAddPage() {
-  return <RacAddUpdateReportContent isUpdate={false} id="" />;
+export default function RacInsertPage() {
+  return <InsertUpdateRacReportContent isUpdate={false} id="" />;
 }

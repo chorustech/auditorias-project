@@ -1,24 +1,33 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { ArrowLeft, SlidersHorizontal, Plus, Sheet } from "lucide-react";
+import { ArrowLeft, SlidersHorizontal, Plus, Download } from "lucide-react";
 import { BouncingButton } from "../bouncingButton/BouncingButton";
-import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
 
-export function DinamicTableHeader() {
-  const router = useRouter();
-
-  const pathname = usePathname();
-
-  const rawPath = pathname.split("/").at(-1);
-  const path = rawPath ?? null;
-
+export function DinamicTableHeader({
+  backAction,
+  filterAction,
+  addAction,
+  excelAction,
+  backContent
+}: {
+  backAction: () => void;
+  filterAction: () => void;
+  addAction: () => void;
+  excelAction: () => void;
+  backContent: React.ReactNode
+}) {
   return (
-    <div className="flex flex-col items-center p-6 justify-between gap-4 lg:flex-row md:flex-row">
+    <motion.div
+      className="flex flex-col items-center p-6 justify-between gap-4 lg:flex-row md:flex-row"
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: "easeInOut" }}
+    >
       <div className="flex justify-center w-full gap-4 lg:justify-normal md:justify-normal">
         {/* BOTÓN IR HACIA ATRÁS */}
         <BouncingButton
-          action={() => router.push("/reports")}
+          action={backAction}
           backgroundColorHover="#ffffff"
           backgroundColor="#00A0D0"
           textColor="#ffffff"
@@ -26,13 +35,14 @@ export function DinamicTableHeader() {
           border="2px solid #ffffff"
           borderHover="2px solid #00A0D0"
           twClassName="w-fit h-fit p-4 rounded-2xl"
+          disabled={false}
         >
-          <ArrowLeft className="size-5" />
+          {backContent}
         </BouncingButton>
 
         {/* BOTÓN FILTRAR */}
         <BouncingButton
-          action={() => {}}
+          action={filterAction}
           backgroundColorHover="#ffffff"
           backgroundColor="#00A0D0"
           textColor="#ffffff"
@@ -40,6 +50,7 @@ export function DinamicTableHeader() {
           border="2px solid #ffffff"
           borderHover="2px solid #00A0D0"
           twClassName="w-fit h-fit p-4 rounded-2xl"
+          disabled={false}
         >
           <SlidersHorizontal className="size-5" />
         </BouncingButton>
@@ -48,7 +59,7 @@ export function DinamicTableHeader() {
       <div className="flex justify-between w-full gap-4 lg:justify-end md:justify-end">
         {/* BOTÓN AGREGAR */}
         <BouncingButton
-          action={() => router.push(`/reports/${path}/add`)}
+          action={addAction}
           backgroundColorHover="#ffffff"
           backgroundColor="#00A0D0"
           textColor="#ffffff"
@@ -56,13 +67,14 @@ export function DinamicTableHeader() {
           border="2px solid #ffffff"
           borderHover="2px solid #00A0D0"
           twClassName="w-fit h-fit p-4 rounded-2xl"
+          disabled={false}
         >
           <Plus className="size-5" />
         </BouncingButton>
 
         {/* BOTÓN EXPORTAR EXCEL */}
         <BouncingButton
-          action={() => {}}
+          action={excelAction}
           backgroundColorHover="#ffffff"
           backgroundColor="#1D6F42"
           textColor="#ffffff"
@@ -70,10 +82,11 @@ export function DinamicTableHeader() {
           border="2px solid #ffffff"
           borderHover="2px solid #1D6F42"
           twClassName="w-fit h-fit p-4 rounded-2xl"
+          disabled={false}
         >
-          <Sheet className="size-5" />
+          <Download className="size-5" />
         </BouncingButton>
       </div>
-    </div>
+    </motion.div>
   );
 }
