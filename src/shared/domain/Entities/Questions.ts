@@ -1,15 +1,23 @@
-export interface Encuesta {
-  nombre: string;
-  preguntas: Pregunta[];
+export const POINTER_AREAS = [
+  "baldwin-state",
+] as const;
+
+
+export type PointerArea = (typeof POINTER_AREAS)[number]
+
+export const isPointerArea = (value: string) => {
+  return POINTER_AREAS.includes(value as PointerArea)
 }
 
-export interface Respuesta {
-  id_pregunta: number;
-  respuesta: boolean;
-}
-
-export interface Pregunta {
-  id_pregunta: number;
-  categoria: "coordinador" | "matrices" | "herramientas" | "operador";
-  texto: string;
-}
+export type Questions = {
+  pointer: PointerArea
+  sections: {
+    name: string;
+    questions: {
+      sentence: string;
+      subquestions?: {
+        sentence: string
+      }
+    }[]
+  }[]
+}[]

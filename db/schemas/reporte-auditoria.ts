@@ -8,7 +8,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { AreaTable } from "./area";
 import { UsuarioTable } from "./usuario";
-import { Respuesta } from "@/src/shared/domain/Entities/Questions";
+import { Metadata } from "@/src/reporte-auditoria/domain/entities";
 
 export const ReporteAuditoriaTable = pgTable("reporte_auditoria", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -20,9 +20,8 @@ export const ReporteAuditoriaTable = pgTable("reporte_auditoria", {
     .notNull(),
   timestamp: date({ mode: "date" }).defaultNow().notNull(),
   semana: integer().notNull(),
-  linea_o_ubicacion: varchar().notNull(),
-  coordinador_o_picker: varchar().notNull(),
-  respuestas: json().$type<Respuesta[]>().notNull(),
+  respuestas: boolean().array().notNull(),
   comentarios: varchar(),
   es_negativo: boolean().notNull(),
+  metadata:  json().$type<Metadata>().notNull()
 });
