@@ -1,9 +1,10 @@
+import { Metadata } from "../domain/entities";
 import { SearchArea } from "../domain/repositorios/areas";
 import { ReporteAuditoriaRepositorio } from "../domain/repository";
 
-export class obtenerReportes {
+export class obtenerReportes<M extends Metadata> {
   constructor(
-    private readonly reportesRepo: ReporteAuditoriaRepositorio,
+    private readonly reportesRepo: ReporteAuditoriaRepositorio<M>,
     private readonly searchArea: SearchArea,
   ) {}
 

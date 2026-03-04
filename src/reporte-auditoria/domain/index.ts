@@ -12,6 +12,12 @@ export interface ReporteAuditoriaPrimitivo<M extends Metadata> {
   metadata: M
 }
 
+export interface ReporteAuditoriaConDetalles<M extends Metadata> extends ReporteAuditoriaPrimitivo<M> {
+  auditor: string;
+  tipo_auditoria: string;
+}
+
+
 export class ReporteAuditoria<M extends Metadata> {
   id: number;
   area_id: number;
@@ -72,5 +78,19 @@ export class ReporteAuditoria<M extends Metadata> {
   static esNegativo(respuestas: boolean[]) {
     const positivas = respuestas.filter(r => r).length;
     return positivas >= respuestas.length / 2;
+  }
+
+  toPrimitive(): ReporteAuditoriaPrimitivo<M> {
+    return {
+      id: this.id,
+      area_id: this.area_id,
+      auditor_id: this.auditor_id,
+      timestamp: this.timestamp,
+      semana: this.semana,
+      respuestas: this.respuestas,
+      comentarios: this.comentarios,
+      es_negativo: this.es_negativo,
+      metadata: this.metadata,
+    };
   }
 }
