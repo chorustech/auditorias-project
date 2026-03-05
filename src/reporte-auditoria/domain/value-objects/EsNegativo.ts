@@ -1,5 +1,3 @@
-import { Respuesta } from "@/src/shared/domain/Entities/Questions";
-
 export class VO_EsNegativo {
   private _value: boolean;
 
@@ -7,10 +5,10 @@ export class VO_EsNegativo {
     this._value = value;
   }
 
-  static create(respuestas: Respuesta[]): VO_EsNegativo {
+  static create(respuestas: boolean[]): VO_EsNegativo {
     let counter = 0;
     respuestas.forEach((r) => {
-      if (r.respuesta == true) {
+      if (r == true) {
         counter += 1;
       }
     });

@@ -1,31 +1,33 @@
-import { Respuesta } from "@/src/shared/domain/Entities/Questions";
-import { VO_EsNegativo } from "./value-objects/EsNegativo";
-import { VO_Comentarios } from "./value-objects/Comentarios";
+import { Metadata } from "./entities";
 
-export interface ReporteAuditoriaPrimitivo {
+export interface ReporteAuditoriaPrimitivo<M extends Metadata> {
   id: number;
   area_id: number;
   auditor_id: number;
   timestamp: Date;
   semana: number;
-  linea_o_ubicacion: string;
-  coordinador_o_picker: string;
-  respuestas: Respuesta[];
+  respuestas: boolean[];
   comentarios: string | null;
   es_negativo: boolean;
+  metadata: M
 }
 
-export class ReporteAuditoria {
+export interface ReporteAuditoriaConDetalles<M extends Metadata> extends ReporteAuditoriaPrimitivo<M> {
+  auditor: string;
+  tipo_auditoria: string;
+}
+
+
+export class ReporteAuditoria<M extends Metadata> {
   id: number;
   area_id: number;
   auditor_id: number;
   timestamp: Date;
   semana: number;
-  linea_o_ubicacion: string;
-  coordinador_o_picker: string;
-  respuestas: Respuesta[];
-  comentarios: VO_Comentarios | null;
-  es_negativo: VO_EsNegativo;
+  respuestas: boolean[];
+  comentarios: string | null;
+  es_negativo: boolean;
+  metadata: M
 
   private constructor(
     id: number,
@@ -33,45 +35,62 @@ export class ReporteAuditoria {
     auditor_id: number,
     timestamp: Date,
     semana: number,
-    linea_o_ubicacion: string,
-    coordinador_o_picker: string,
-    respuestas: Respuesta[],
-    es_negativo: VO_EsNegativo,
-    comentarios?: VO_Comentarios,
+    respuestas: boolean[],
+    esNegativo: boolean,
+    metadata: M,
+    comentarios: string | null,
   ) {
     this.id = id;
     this.area_id = area_id;
     this.auditor_id = auditor_id;
     this.timestamp = timestamp;
     this.semana = semana;
-    this.linea_o_ubicacion = linea_o_ubicacion;
-    this.coordinador_o_picker = coordinador_o_picker;
     this.respuestas = respuestas;
     this.comentarios = comentarios ?? null;
-    this.es_negativo = es_negativo;
+    this.es_negativo = esNegativo;
+    this.metadata = metadata
   }
 
-  static create(
+  static create<M extends Metadata>(
     area_id: number,
     auditor_id: number,
     semana: number,
-    linea_o_ubicacion: string,
-    coordinador_o_picker: string,
-    respuestas: Respuesta[],
-    es_negativo: VO_EsNegativo,
-    comentarios?: VO_Comentarios,
+    respuestas: boolean[],
+    metadata: M,
+    comentarios: string | null,
   ) {
-    return new ReporteAuditoria(
+
+    const esNegativo = ReporteAuditoria.esNegativo(respuestas)
+
+    return new ReporteAuditoria<M>(
       0,
       area_id,
       auditor_id,
       new Date(),
       semana,
-      linea_o_ubicacion,
-      coordinador_o_picker,
       respuestas,
-      es_negativo,
+      esNegativo,
+      metadata,
       comentarios,
     );
+  }
+
+  static esNegativo(respuestas: boolean[]) {
+    const positivas = respuestas.filter(r => r).length;
+    return positivas >= respuestas.length / 2;
+  }
+
+  toPrimitive(): ReporteAuditoriaPrimitivo<M> {
+    return {
+      id: this.id,
+      area_id: this.area_id,
+      auditor_id: this.auditor_id,
+      timestamp: this.timestamp,
+      semana: this.semana,
+      respuestas: this.respuestas,
+      comentarios: this.comentarios,
+      es_negativo: this.es_negativo,
+      metadata: this.metadata,
+    };
   }
 }

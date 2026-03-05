@@ -10,9 +10,11 @@ import { DinamicTd } from "@/components/shared/dinamicTable/dinamicRow/DinamicTd
 export function GeneralRowContent({
   report,
   twBgColor,
+  onDelete,
 }: {
   report: ReportType;
   twBgColor: string;
+  onDelete: (id: number) => void;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -91,11 +93,7 @@ export function GeneralRowContent({
               <SquarePen className="size-5" />
             </BouncingButton>
             <BouncingButton
-              action={() => /* openEditDeleteModal(
-                              dato.usuario.id,
-                              dato,
-                              "ELIMINAR",
-                            ) */ {}}
+              action={() => onDelete(report.data.id)}
               backgroundColorHover="#ffffff"
               backgroundColor="#ef4444"
               textColor="#ffffff"
