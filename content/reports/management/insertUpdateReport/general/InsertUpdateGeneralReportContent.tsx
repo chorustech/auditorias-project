@@ -41,7 +41,7 @@ import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 
 /* SERVER ACTION */
-import { insertReport } from "@/temp/reports/insertReport";
+// import { insertReport } from "@/temp/reports/insertReport";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
@@ -51,6 +51,7 @@ import { ReportFormValues } from "@/content/reports/types/reports/reportFormValu
 
 /* UTILS */
 import { getDate, getWeekNumber } from "@/utils/date";
+import { useEffect } from "react";
 
 /* LIBS */
 import { motion } from "framer-motion";
@@ -84,92 +85,104 @@ export function InsertUpdateGeneralReportContent({
     },
   });
 
+  useEffect(() => {
+    if (isUpdate) {
+      const fetchReportData = async () => {
+        try {
+          const response = await fetch(`/api/reportes/${id}`);
+          if (!response.ok) {
+            throw new Error("No se pudo obtener la información del reporte");
+          }
+          const data = await response.json();
+          
+          // Mapear los datos de la API a los campos del formulario
+          const formData = {
+            ...data.metadata,
+            coord: data.metadata.coordinador, // Renombrar para que coincida con el campo del formulario
+            respuestas: data.respuestas,
+            comentarios: data.comentarios,
+          };
+
+          methods.reset(formData);
+        } catch (error) {
+          console.error(error);
+        }
+      };
+      fetchReportData();
+    }
+  }, [isUpdate, id, methods]);
+
+
   const onSubmit = async (data: ReportFormValues) => {
     try {
       setSaving(true);
 
-      const formData = new FormData();
+      // El DTO para la API es ligeramente diferente para crear que para actualizar
+      const reportData = {
+        data: {
+          auditor_id: 1, // TEMPORAL: Reemplazar con el ID del usuario autenticado
+          semana: getWeekNumber(),
+          respuestas: data.respuestas,
+          comentarios: data.comentarios,
+        },
+        metadata: {
+          linea: data.linea,
+          coordinador: data.coord,
+          picker: data.picker,
+          ubicacion: data.ubicacion,
+          worktable: data.worktable,
+          nivel: data.nivel,
+        },
+      };
 
-      // Línea
-      if (
-        path === "baldwin-state" ||
-        path === "baldwin-reserve-stacking" ||
-        path === "baldwin-reserve-packing" ||
-        path === "baldwin-reserve-general"
-      ) {
-        if (data.linea !== undefined) {
-          formData.append("linea", data.linea);
-        }
-      }
+      const url = isUpdate ? `/api/reportes/${id}` : '/api/reportes';
+      const method = isUpdate ? 'PUT' : 'POST';
 
-      // Coordinador
-      if (path === "baldwin-state") {
-        if (data.coord !== undefined) {
-          formData.append("coord", data.coord);
-        }
-      }
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(isUpdate ? reportData : { ...reportData, slug: path }),
+      });
 
-      // Picker
-      if (path === "baldwin-reserve-supply") {
-        if (data.picker !== undefined) {
-          formData.append("picker", data.picker);
-        }
-      }
+      const result = await response.json();
 
-      if (path === "pizza-tray") {
-        // Ubicación
-        if (data.ubicacion !== undefined) {
-          formData.append("ubicacion", data.ubicacion);
-        }
-
-        // Nivel
-        if (data.nivel !== undefined) {
-          formData.append("nivel", data.nivel.toString());
-        }
-      }
-
-      // Worktable
-      if (path === "display-area") {
-        if (data.worktable !== undefined) {
-          formData.append("worktable", data.worktable);
-        }
-      }
-
-      formData.append("comentarios", data.comentarios);
-      formData.append("respuestas", JSON.stringify(data.respuestas));
-
-      if (data.archivo instanceof FileList && data.archivo.length > 0) {
-        formData.append("archivo", data.archivo.item(0)!);
-      }
-
-      const response = await insertReport(formData);
-
-      if (response.ok) {
+      if (result.ok) {
         setAnnouncement(
           true,
           "bg-green-500",
           <div className="flex gap-2 items-center">
             <CircleCheckBig className="size-4 text-white" />
-            <p className="text-white">{response.message}</p>
+            <p className="text-white">{result.message}</p>
           </div>,
         );
-        console.log(data);
-
-        //methods.reset();
+        if (!isUpdate) {
+          methods.reset();
+        }
       } else {
         setAnnouncement(
           true,
           "bg-red-500",
           <div className="flex gap-2 items-center">
             <CircleOff className="size-4 text-white" />
-            <p className="text-white">{response.message}</p>
+            <p className="text-white">{result.message}</p>
           </div>,
         );
       }
-
-      setSaving(false);
     } catch (error) {
-      console.log("Error", error);
+      console.error("Error al guardar el reporte:", error);
+      const errorMessage = error instanceof Error ? error.message : "Ocurrió un error inesperado";
+      setAnnouncement(
+        true,
+        "bg-red-500",
+        <div className="flex gap-2 items-center">
+          <CircleOff className="size-4 text-white" />
+          <p className="text-white">{errorMessage}</p>
+        </div>,
+      );
+    } finally {
+      setSaving(false);
     }
   };
 
