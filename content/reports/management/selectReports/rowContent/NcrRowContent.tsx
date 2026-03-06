@@ -1,10 +1,12 @@
 "use client";
 
-import { ReportType } from "@/temp/reports/getReports";
+import { ReportType } from "@/temp/Reports/Infrastructure/Types/selectReportsResponse";
 import { useRouter } from "next/navigation";
 import { SquarePen, Trash2 } from "lucide-react";
 import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";
 import { DinamicTd } from "@/components/shared/dinamicTable/dinamicRow/DinamicTd";
+import { useModal } from "@/stores/modal/modalStore";
+import { DeleteReportContent } from "@/content/reports/management/deleteReport/DeleteReportContent";
 
 export function NcrRowContent({
   report,
@@ -14,30 +16,32 @@ export function NcrRowContent({
   twBgColor: string;
 }) {
   const router = useRouter();
+  const { setModal } = useModal();
 
   return (
     <>
       {report.kind === "ncr" && (
         <>
-          <DinamicTd>
+          <DinamicTd twClassName="text-nowrap">
             <p>{report.data.numNcr}</p>
           </DinamicTd>
-          <DinamicTd>
+          <DinamicTd twClassName="text-nowrap">
             <p>{report.data.fecha}</p>
           </DinamicTd>
-          <DinamicTd>
+          <DinamicTd twClassName="text-nowrap">
             <p>{report.data.semana}</p>
           </DinamicTd>
-          <DinamicTd>
+          <DinamicTd twClassName="text-nowrap">
             <p>{report.data.numParte}</p>
           </DinamicTd>
-          <DinamicTd>
+          <DinamicTd twClassName="text-nowrap">
             <p>{report.data.proveedor}</p>
           </DinamicTd>
 
           <td
-            className={`py-6 whitespace-nowrap group-hover:bg-[#d9f2f9] transition-all duration-200 px-3 flex gap-2 justify-center sticky left-0 z-10 ${twBgColor}`}
+            className={`py-6 whitespace-nowrap group-hover:bg-green-100 transition-all duration-200 px-3 sticky right-0 z-10 ${twBgColor}`}
           >
+            <div></div>
             <BouncingButton
               action={() =>
                 router.push(`/reports/ncr/update/${report.data.numNcr}`)
@@ -54,11 +58,13 @@ export function NcrRowContent({
               <SquarePen className="size-5" />
             </BouncingButton>
             <BouncingButton
-              action={() => /* openEditDeleteModal(
-                                              dato.usuario.id,
-                                              dato,
-                                              "ELIMINAR",
-                                            ) */ {}}
+              action={() => {
+                setModal(
+                  true,
+                  "Eliminar",
+                  <DeleteReportContent report_id={report.data.id ?? 0} />,
+                );
+              }}
               backgroundColorHover="#ffffff"
               backgroundColor="#ef4444"
               textColor="#ffffff"

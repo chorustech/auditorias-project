@@ -6,9 +6,9 @@ import { DinamicTable } from "@/components/shared/dinamicTable/DinamicTable";
 import { DinamicTh } from "@/components/shared/dinamicTable/dinamicRow/DinamicTh";
 import { DinamicRow } from "@/components/shared/dinamicTable/dinamicRow/DinamicRow";
 import { GeneralRowContent } from "@/content/reports/management/selectReports/rowContent/GeneralRowContent";
-import { EolaRowContent } from "./rowContent/EolaRowContent";
-import { NcrRowContent } from "./rowContent/NcrRowContent";
-import { RacRowContent } from "./rowContent/RacRowContent";
+import { EolaRowContent } from "@/content/reports/management/selectReports/rowContent/EolaRowContent";
+import { NcrRowContent } from "@/content/reports/management/selectReports/rowContent/NcrRowContent";
+import { RacRowContent } from "@/content/reports/management/selectReports/rowContent/RacRowContent";
 
 /* DATA */
 import { reportsColumns } from "@/content/reports/data/columns/reportsColumns";
@@ -23,52 +23,25 @@ import { ArrowLeft } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 
+/* SERVER ACTION */
+import { selectReports } from "@/temp/Reports/Infrastructure/reportsController";
+
+/* STORES */
+import { useAnnouncement } from "@/stores/announcement/announcementStore";
+
+/* TYPES */
+import { ReportType } from "@/temp/Reports/Infrastructure/Types/selectReportsResponse";
+
 /* UTILS */
 import { isPointerArea } from "@/utils/pointerArea";
-import { useAnnouncement } from "@/stores/announcement/announcementStore";
-import { ReporteAuditoriaConDetalles } from "@/src/reporte-auditoria/domain";
-
-export type ReportType =
-  | { kind: "general"; data: any }
-  | { kind: "eola"; data: any }
-  | { kind: "ncr"; data: any }
-  | { kind: "rac"; data: any };
 
 export function SelectReportsContent() {
   const router = useRouter();
   const { setAnnouncement } = useAnnouncement();
-  const [reports, setReports] = useState<{ data: ReportType[]; count: number }>(
-    { data: [], count: 0 },
-  );
-  
-  const handleDelete = async (id: number) => {
-    if (!window.confirm("¿Estás seguro de que deseas eliminar este reporte?")) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/reportes/${id}`, {
-        method: 'DELETE',
-      });
-
-      const result = await response.json();
-
-      if (result.ok) {
-        setAnnouncement(true, "bg-green-500", <span>{result.message}</span>);
-        // Eliminar el reporte del estado para actualizar la UI instantáneamente
-        setReports(prev => ({
-          ...prev,
-          data: prev.data.filter(report => report.data.id !== id),
-          count: prev.count - 1,
-        }));
-      } else {
-        setAnnouncement(true, "bg-red-500", <span>{result.message}</span>);
-      }
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Error inesperado";
-      setAnnouncement(true, "bg-red-500", <span>{message}</span>);
-    }
-  };
+  const [reports, setReports] = useState<{
+    data: ReportType[];
+    count: number;
+  }>({ data: [], count: 0 });
 
   const [loading, setLoading] = useState(true);
   const type = "reporte";
@@ -77,9 +50,6 @@ export function SelectReportsContent() {
 
   const rawPath = pathname.split("/").at(-1);
   const path = rawPath ?? null;
-
-  console.log("Detectado pathname:", pathname);
-  console.log("Detectado path:", path);
 
   const getTwBgColor = ({ index }: { index: number }) => {
     return index % 2 ? "bg-neutral-100" : "bg-white";
@@ -91,57 +61,24 @@ export function SelectReportsContent() {
       if (!isPointerArea(path)) return;
 
       try {
-        const res = await fetch(`/api/reportes/${path}`);
-
-        console.log(
-          "Respuesta de la API - Status:",
-          res.status,
-          res.statusText,
-        );
-
-        const rawText = await res.text();
-        console.log("Respuesta de la API - Texto crudo:", rawText);
-
-        if (!res.ok) {
-          throw new Error(`Error: ${res.statusText} - ${rawText}`);
-        }
-
-        const data: ReporteAuditoriaConDetalles<any>[] = JSON.parse(rawText);
-
-        if (!Array.isArray(data)) {
-          console.error("Error: La respuesta de la API no es un array.", data);
-          throw new Error("La respuesta de la API no es un array");
-        }
-
-        const transformedData = data.map(
-          (report) => {
-            const uniqueKinds = ["eola", "ncr", "rac"];
-            const kind = uniqueKinds.includes(report.tipo_auditoria)
-              ? report.tipo_auditoria
-              : "general";
-
-            return {
-              kind: kind,
-              data: {
-                id: report.id,
-                respuestas: report.respuestas,
-                auditor: report.auditor,
-                semana: report.semana,
-                fecha: new Date(report.timestamp).toLocaleDateString(),
-                coord: report.metadata.coordinador,
-                ...report.metadata,
-              },
-            };
+        const response = await selectReports({
+          pointer: path,
+          query: {
+            page: 0,
+            perPage: 10,
+            order: "asc",
+            orderBy: "id",
+            filters: [],
           },
-        );
-
-        console.log("Datos transformados para renderizar:", transformedData);
-        setReports({
-          data: transformedData as ReportType[],
-          count: data.length,
         });
+
+        if (response.ok) {
+          setReports({ data: response.data, count: response.count });
+        } else {
+          setAnnouncement(true, false, response.message);
+        }
       } catch (error) {
-        console.error("No se pudieron obtener los reportes:", error);
+        console.log("Hubo un error al obtener los reportes: ", error);
       } finally {
         setLoading(false);
       }
@@ -164,7 +101,6 @@ export function SelectReportsContent() {
               <GeneralRowContent
                 report={report}
                 twBgColor={`${getTwBgColor({ index: index })}`}
-                onDelete={handleDelete}
               />
             ) : report.kind === "eola" ? (
               <EolaRowContent

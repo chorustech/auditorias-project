@@ -20,7 +20,7 @@ import { House } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 /* SERVER ACTION */
-import { getUsers, UserData } from "@/temp/users/getUsers";
+import { getUsers, UserData } from "@/temp/users1/getUsers";
 
 export function SelectUsersContent() {
   const router = useRouter();

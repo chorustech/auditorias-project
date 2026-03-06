@@ -41,7 +41,7 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 
 /* SERVER ACTION */
-import { insertEolaReport } from "@/temp/reports/insertEolaReport";
+import { insertEolaReport } from "@/temp/Reports/Infrastructure/reportsController";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
@@ -107,26 +107,12 @@ export function InsertUpdateEolaReportContent({
       const response = await insertEolaReport(formData);
 
       if (response.ok) {
-        setAnnouncement(
-          true,
-          "bg-green-500",
-          <div className="flex gap-2 items-center">
-            <CircleCheckBig className="size-4 text-white" />
-            <p className="text-white">{response.message}</p>
-          </div>,
-        );
+        setAnnouncement(true, true, response.message);
         console.log(data);
 
         //methods.reset();
       } else {
-        setAnnouncement(
-          true,
-          "bg-red-500",
-          <div className="flex gap-2 items-center">
-            <CircleOff className="size-4 text-white" />
-            <p className="text-white">{response.message}</p>
-          </div>,
-        );
+        setAnnouncement(true, false, response.message);
       }
 
       setSaving(false);

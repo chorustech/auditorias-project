@@ -1,23 +1,24 @@
 "use client";
 
-import { ReportType } from "@/temp/reports/getReports";
+import { ReportType } from "@/temp/Reports/Infrastructure/Types/selectReportsResponse";
 import { useRouter } from "next/navigation";
 import { Check, SquarePen, Trash2, X } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";
 import { DinamicTd } from "@/components/shared/dinamicTable/dinamicRow/DinamicTd";
+import { useModal } from "@/stores/modal/modalStore";
+import { DeleteReportContent } from "@/content/reports/management/deleteReport/DeleteReportContent";
 
 export function GeneralRowContent({
   report,
   twBgColor,
-  onDelete,
 }: {
   report: ReportType;
   twBgColor: string;
-  onDelete: (id: number) => void;
 }) {
   const router = useRouter();
   const pathname = usePathname();
+  const { setModal } = useModal();
 
   const rawPath = pathname.split("/").at(-1);
   const path = rawPath ?? null;
@@ -26,33 +27,33 @@ export function GeneralRowContent({
     <>
       {report.kind === "general" && (
         <>
-          <DinamicTd>
+          <DinamicTd twClassName="text-nowrap">
             <p>{report.data.auditor}</p>
           </DinamicTd>
-          <DinamicTd>
+          <DinamicTd twClassName="text-nowrap">
             <p>{report.data.fecha}</p>
           </DinamicTd>
-          <DinamicTd>
+          <DinamicTd twClassName="text-nowrap">
             <p>{report.data.semana}</p>
           </DinamicTd>
 
           {report.data.linea && (
-            <DinamicTd>
+            <DinamicTd twClassName="text-nowrap">
               <p>{report.data.linea}</p>
             </DinamicTd>
           )}
           {report.data.coord && (
-            <DinamicTd>
+            <DinamicTd twClassName="text-nowrap">
               <p>{report.data.coord}</p>
             </DinamicTd>
           )}
           {report.data.picker && (
-            <DinamicTd>
+            <DinamicTd twClassName="text-nowrap">
               <p>{report.data.picker}</p>
             </DinamicTd>
           )}
           {report.data.ubicacion && (
-            <DinamicTd>
+            <DinamicTd twClassName="text-nowrap">
               <p>{report.data.ubicacion}</p>
             </DinamicTd>
           )}
@@ -75,36 +76,44 @@ export function GeneralRowContent({
           ))}
 
           <td
-            className={`py-6 whitespace-nowrap group-hover:bg-[#d9f2f9] transition-all duration-200 px-3 flex gap-2 justify-center sticky right-0 z-10 ${twBgColor}`}
+            className={`py-6 whitespace-nowrap group-hover:bg-green-100 transition-all duration-200 px-3 sticky right-0 z-10 ${twBgColor}`}
           >
-            <BouncingButton
-              action={() =>
-                router.push(`/reports/${path}/update/${report.data.id}`)
-              }
-              backgroundColorHover="#ffffff"
-              backgroundColor="#fbbf24"
-              textColor="#ffffff"
-              textColorHover="#fbbf24"
-              border="2px solid #ffffff"
-              borderHover="2px solid #fbbf24"
-              twClassName="p-2 rounded-lg w-fit h-fit"
-              disabled={false}
-            >
-              <SquarePen className="size-5" />
-            </BouncingButton>
-            <BouncingButton
-              action={() => onDelete(report.data.id)}
-              backgroundColorHover="#ffffff"
-              backgroundColor="#ef4444"
-              textColor="#ffffff"
-              textColorHover="#ef4444"
-              border="2px solid #ffffff"
-              borderHover="2px solid #ef4444"
-              twClassName="p-2 rounded-lg w-fit h-fit"
-              disabled={false}
-            >
-              <Trash2 className="size-5" />
-            </BouncingButton>
+            <div className="flex gap-2">
+              <BouncingButton
+                action={() =>
+                  router.push(`/reports/${path}/update/${report.data.id}`)
+                }
+                backgroundColorHover="#ffffff"
+                backgroundColor="#fbbf24"
+                textColor="#ffffff"
+                textColorHover="#fbbf24"
+                border="2px solid #ffffff"
+                borderHover="2px solid #fbbf24"
+                twClassName="p-2 rounded-lg w-fit h-fit"
+                disabled={false}
+              >
+                <SquarePen className="size-5" />
+              </BouncingButton>
+              <BouncingButton
+                action={() => {
+                  setModal(
+                    true,
+                    "Eliminar",
+                    <DeleteReportContent report_id={report.data.id ?? 0} />,
+                  );
+                }}
+                backgroundColorHover="#ffffff"
+                backgroundColor="#ef4444"
+                textColor="#ffffff"
+                textColorHover="#ef4444"
+                border="2px solid #ffffff"
+                borderHover="2px solid #ef4444"
+                twClassName="p-2 rounded-lg w-fit h-fit"
+                disabled={false}
+              >
+                <Trash2 className="size-5" />
+              </BouncingButton>
+            </div>
           </td>
         </>
       )}

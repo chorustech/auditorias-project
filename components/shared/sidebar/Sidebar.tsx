@@ -1,7 +1,7 @@
 "use client";
 
 import { useSidebarStore } from "@/stores/sidebar/SidebarStore";
-import AssaAbloyTitle from "@/svg/AssaAbloyTitle";
+import { AssaAbloyTitle } from "@/components/svg/AssaAbloyTitle";
 import { Menu, LogOut, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";

@@ -1,0 +1,19 @@
+Como no estamos utilizando una API externa para interactuar con los datos y planeamos utilizar el back-end de Next Js, lo mejor es utilizar Server Actions
+
+Las Server Actions son entradas hacía las llamadas a terceros, en este caso Neon DB
+- Son funciones que reciben algo y retornan algo
+- Pueden estar separadas o en el mismo archivo
+- Pueden ser llamadas desde Client Components, permitiendo controlar el flujo de información, mostrar Skeletons de interfaz o Spinners y hacer componentes dinámicos más facilmente
+
+Como estamos utilizando arquitectura hexagonal, puedes poner todas las Server Actions en un archivo en Infraestructure llamado por ejemplo usersController.ts o reportsController.ts
+
+Un ejemplo sería la Server Action selectUsers, recibe un query para hacer paginación y retorna un objeto con información de respuesta y una lista de usuarios
+
+Client component -> 
+Server Action(selectUsers) -> 
+Caso de uso(SelectUsersAsync) -> 
+Crea objetos con clases de dominio, mappers, etc. -> 
+Llama a repo(IUserRepository) -> 
+Neon DB retorna información
+
+De esta forma, cada Server Action llamará a su respectivo caso de uso

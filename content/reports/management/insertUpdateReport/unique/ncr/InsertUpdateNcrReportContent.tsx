@@ -23,7 +23,7 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 
 /* SERVER ACTION */
-import { insertNcrReport } from "@/temp/reports/insertNcrReport";
+import { insertNcrReport } from "@/temp/Reports/Infrastructure/reportsController";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
@@ -72,26 +72,12 @@ export function InsertUpdateNcrReportContent({
       const response = await insertNcrReport(formData);
 
       if (response.ok) {
-        setAnnouncement(
-          true,
-          "bg-green-500",
-          <div className="flex gap-2 items-center">
-            <CircleCheckBig className="size-4 text-white" />
-            <p className="text-white">{response.message}</p>
-          </div>,
-        );
+        setAnnouncement(true, true, response.message);
         console.log(data);
 
         //methods.reset();
       } else {
-        setAnnouncement(
-          true,
-          "bg-red-500",
-          <div className="flex gap-2 items-center">
-            <CircleOff className="size-4 text-white" />
-            <p className="text-white">{response.message}</p>
-          </div>,
-        );
+        setAnnouncement(true, false, response.message);
       }
 
       setSaving(false);

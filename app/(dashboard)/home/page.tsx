@@ -3,7 +3,7 @@ import { SectionContainer } from "@/components/shared/sectionContainer/SectionCo
 export default function HomePage() {
   return (
     <SectionContainer>
-      <p>Esta es la página de Inicio</p>
+      <p className="m-4">Esta es la página de Inicio</p>
     </SectionContainer>
   );
 }
