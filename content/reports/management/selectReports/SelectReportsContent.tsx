@@ -34,26 +34,23 @@ import { ReportType } from "@/temp/Reports/Infrastructure/Types/selectReportsRes
 
 /* UTILS */
 import { isPointerArea } from "@/utils/pointerArea";
+import { getTwBgColorTable } from '@/utils/getTwBgColorTable'
 
 export function SelectReportsContent() {
   const router = useRouter();
   const { setAnnouncement } = useAnnouncement();
+
   const [reports, setReports] = useState<{
     data: ReportType[];
     count: number;
   }>({ data: [], count: 0 });
-
   const [loading, setLoading] = useState(true);
-  const type = "reporte";
+  
 
   const pathname = usePathname();
 
   const rawPath = pathname.split("/").at(-1);
   const path = rawPath ?? null;
-
-  const getTwBgColor = ({ index }: { index: number }) => {
-    return index % 2 ? "bg-neutral-100" : "bg-white";
-  };
 
   useEffect(() => {
     const fetchReports = async () => {
@@ -100,26 +97,26 @@ export function SelectReportsContent() {
           ),
         )}
         tbodyRows={reports.data.map((report: ReportType, index: number) => (
-          <DinamicRow key={index} twBgColor={getTwBgColor({ index: index })}>
+          <DinamicRow key={index} twBgColor={getTwBgColorTable({ index: index })}>
             {report.kind === "general" ? (
               <GeneralRowContent
                 report={report}
-                twBgColor={`${getTwBgColor({ index: index })}`}
+                twBgColor={`${getTwBgColorTable({ index: index })}`}
               />
             ) : report.kind === "eola" ? (
               <EolaRowContent
                 report={report}
-                twBgColor={`${getTwBgColor({ index: index })}`}
+                twBgColor={`${getTwBgColorTable({ index: index })}`}
               />
             ) : report.kind === "ncr" ? (
               <NcrRowContent
                 report={report}
-                twBgColor={`${getTwBgColor({ index: index })}`}
+                twBgColor={`${getTwBgColorTable({ index: index })}`}
               />
             ) : report.kind === "rac" ? (
               <RacRowContent
                 report={report}
-                twBgColor={`${getTwBgColor({ index: index })}`}
+                twBgColor={`${getTwBgColorTable({ index: index })}`}
               />
             ) : (
               <></>
@@ -128,7 +125,7 @@ export function SelectReportsContent() {
         ))}
         loading={loading}
         count={reports.count}
-        type={type}
+        type={"reporte"}
         backAction={() => router.push("/reports")}
         filterAction={() => {}}
         addAction={() => router.push(`/reports/${path}/add`)}
