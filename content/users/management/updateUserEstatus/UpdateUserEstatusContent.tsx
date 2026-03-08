@@ -8,17 +8,20 @@ import { useForm, FormProvider } from "react-hook-form";
 import { useState } from "react";
 
 /* ICONS */
-import { Loader, Trash2 } from "lucide-react";
+import { Loader, Power, PowerOff, Trash2 } from "lucide-react";
 
 /* SERVER ACTIONS */
-import { deleteReport } from "@/temp/Reports/Infrastructure/reportsController";
+import { updateUserStatus } from "@/temp/Users/Infrastructure/usersController";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
 import { useModal } from "@/stores/modal/modalStore";
 
-export function DeleteReportContent({ report_id }: { report_id: number }) {
-  const [deleting, setDeleting] = useState(false);
+/* TYPES */
+import { UserType } from "@/temp/Users/Infrastructure/Types/userData";
+
+export function UpdateUserEstatusContent({ user }: { user: UserType }) {
+  const [changingState, setChangingState] = useState(false);
   const { setAnnouncement } = useAnnouncement();
   const { modal, setModal } = useModal();
 
@@ -26,9 +29,9 @@ export function DeleteReportContent({ report_id }: { report_id: number }) {
 
   const onSubmit = async () => {
     try {
-      setDeleting(true);
+      setChangingState(true);
 
-      const response = await deleteReport(report_id);
+      const response = await updateUserStatus(user.id, user.estado);
 
       if (response.ok) {
         setAnnouncement({
@@ -49,9 +52,9 @@ export function DeleteReportContent({ report_id }: { report_id: number }) {
         });
       }
 
-      setDeleting(false);
+      setChangingState(false);
     } catch (error) {
-      console.log("Error", error);
+      console.log("Error: ", error);
     }
   };
 
@@ -60,9 +63,18 @@ export function DeleteReportContent({ report_id }: { report_id: number }) {
       <div className="w-full">
         <p>
           Al dar clic en{" "}
-          <span className="text-red-500 font-semibold">Eliminar</span>, el
-          reporte con ID <span className="font-semibold">{report_id}</span> será
-          eliminado
+          <span
+            className={`font-semibold ${user.estado === "ACTIVO" ? "text-red-500" : "text-green-500"}`}
+          >
+            {user.estado === "ACTIVO" ? "Inactivar" : "Activar"}
+          </span>
+          , el estatus del usuario{" "}
+          <span className="font-semibold">{user.nombre}</span> será cambiado a{" "}
+          <span
+            className={`font-semibold ${user.estado === "ACTIVO" ? "text-red-500" : "text-green-500"}`}
+          >
+            {user.estado === "ACTIVO" ? "INACTIVO" : "ACTIVO"}
+          </span>
         </p>
       </div>
       <div className="">
@@ -72,7 +84,7 @@ export function DeleteReportContent({ report_id }: { report_id: number }) {
             <div className="flex gap-4">
               <BouncingButton
                 action={
-                  deleting
+                  changingState
                     ? () => {}
                     : () => {
                         setModal({
@@ -89,22 +101,24 @@ export function DeleteReportContent({ report_id }: { report_id: number }) {
                 border="2px solid #00A0D0"
                 borderHover="2px solid #00A0D0"
                 twClassName="w-full h-fit px-4 py-2 rounded-2xl"
-                disabled={deleting ? true : false}
+                disabled={changingState ? true : false}
               >
                 <span>Cancelar</span>
               </BouncingButton>
               <BouncingButton
-                action={deleting ? () => {} : methods.handleSubmit(onSubmit)}
-                backgroundColorHover="#ef4444"
-                backgroundColor="#ef4444"
+                action={
+                  changingState ? () => {} : methods.handleSubmit(onSubmit)
+                }
+                backgroundColorHover={`${user.estado === "ACTIVO" ? "#ef4444" : "#22c55e"}`}
+                backgroundColor={`${user.estado === "ACTIVO" ? "#ef4444" : "#22c55e"}`}
                 textColor="#ffffff"
                 textColorHover="#ffffff"
-                border="2px solid #ef4444"
-                borderHover="2px solid #ef4444"
+                border={`2px solid ${user.estado === "ACTIVO" ? "#ef4444" : "#22c55e"}`}
+                borderHover={`2px solid ${user.estado === "ACTIVO" ? "#ef4444" : "#22c55e"}`}
                 twClassName="w-full h-fit px-4 py-2 rounded-2xl"
-                disabled={deleting ? true : false}
+                disabled={changingState ? true : false}
               >
-                {deleting ? (
+                {changingState ? (
                   <>
                     <span className="text-transparent">E</span>
                     <Loader className="size-4 animate-spin" />
@@ -112,8 +126,14 @@ export function DeleteReportContent({ report_id }: { report_id: number }) {
                   </>
                 ) : (
                   <>
-                    <Trash2 className="size-4" />
-                    <span>Eliminar</span>
+                    {user.estado === "ACTIVO" ? (
+                      <PowerOff className="size-4" />
+                    ) : (
+                      <Power className="size-4" />
+                    )}
+                    <span>
+                      {user.estado === "ACTIVO" ? "Inactivar" : "Activar"}
+                    </span>
                   </>
                 )}
               </BouncingButton>

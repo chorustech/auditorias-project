@@ -78,11 +78,11 @@ export function Sidebar() {
             <span>PD</span>
           </div>
           <div
-            className={`flex items-center transition-all duration-300 gap-6 absolute ${expanded ? "right-4 opacity-100" : "lg:-right-64 right-4 lg:opacity-0 opacity-100 pointer-events-none"}`}
+            className={`flex items-center max-w-40 transition-all duration-300 gap-2 absolute ${expanded ? "right-4 opacity-100" : "lg:-right-64 right-4 lg:opacity-0 opacity-100 pointer-events-none"}`}
           >
-            <div className="flex flex-col">
-              <span className="font-semibold">Pirita Dreemurr</span>
-              <span className="text-xs text-neutral-400">pirita@gmail.com</span>
+            <div className="flex flex-col truncate">
+              <span className="font-semibold truncate">Pirita Dreemurr</span>
+              <span className="text-xs text-neutral-400 truncate">pirita@assaabloy.com</span>
             </div>
             <Link
               href={"/"}

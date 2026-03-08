@@ -23,7 +23,7 @@ import { useRouter } from "next/navigation";
 import { UserData } from "@/temp/Users/Infrastructure/Types/userData";
 
 /* SERVER ACTION */
-import { getUsers } from "@/temp/Users/Infrastructure/usersController";
+import { selectUsers } from "@/temp/Users/Infrastructure/usersController";
 
 export function SelectUsersContent() {
   const router = useRouter();
@@ -37,7 +37,7 @@ export function SelectUsersContent() {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const data = await getUsers();
+      const data = await selectUsers();
 
       setUsers(data);
       setLoading(false);

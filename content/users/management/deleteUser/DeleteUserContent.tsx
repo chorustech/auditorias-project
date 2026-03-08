@@ -11,13 +11,16 @@ import { useState } from "react";
 import { Loader, Trash2 } from "lucide-react";
 
 /* SERVER ACTIONS */
-import { deleteReport } from "@/temp/Reports/Infrastructure/reportsController";
+import { deleteUser } from "@/temp/Users/Infrastructure/usersController";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
 import { useModal } from "@/stores/modal/modalStore";
 
-export function DeleteReportContent({ report_id }: { report_id: number }) {
+/* TYPES */
+import { UserType } from "@/temp/Users/Infrastructure/Types/userData";
+
+export function DeleteUserContent({ user }: { user: UserType }) {
   const [deleting, setDeleting] = useState(false);
   const { setAnnouncement } = useAnnouncement();
   const { modal, setModal } = useModal();
@@ -28,7 +31,7 @@ export function DeleteReportContent({ report_id }: { report_id: number }) {
     try {
       setDeleting(true);
 
-      const response = await deleteReport(report_id);
+      const response = await deleteUser(user.id);
 
       if (response.ok) {
         setAnnouncement({
@@ -51,7 +54,7 @@ export function DeleteReportContent({ report_id }: { report_id: number }) {
 
       setDeleting(false);
     } catch (error) {
-      console.log("Error", error);
+      console.log("Error: ", error);
     }
   };
 
@@ -61,8 +64,9 @@ export function DeleteReportContent({ report_id }: { report_id: number }) {
         <p>
           Al dar clic en{" "}
           <span className="text-red-500 font-semibold">Eliminar</span>, el
-          reporte con ID <span className="font-semibold">{report_id}</span> será
-          eliminado
+          usuario <span className="font-semibold">{user.nombre}</span> con nro.
+          Empleado <span className="font-semibold">{user.numEmpleado}</span>{" "}
+          será eliminado
         </p>
       </div>
       <div className="">

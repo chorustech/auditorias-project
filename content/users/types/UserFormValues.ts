@@ -1,9 +1,4 @@
-export type UserData = {
-  data: UserType[];
-  count: number;
-};
-
-export type UserType = {
+export type UserFormValues = {
   id: number;
   numEmpleado: string;
   nombre: string;

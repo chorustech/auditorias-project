@@ -1,9 +1,10 @@
 import { SectionContainer } from "@/components/shared/sectionContainer/SectionContainer";
+import { HomeContent } from "@/content/home/HomeContent";
 
 export default function HomePage() {
   return (
     <SectionContainer>
-      <p className="m-4">Esta es la página de Inicio</p>
+      <HomeContent />
     </SectionContainer>
   );
 }
