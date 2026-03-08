@@ -41,7 +41,7 @@ export function RacRowContent({
       {report.kind === "rac" ? (
         <>
           <DinamicTd twClassName="text-nowrap">
-            <p>{report.data.numRac.toString()}</p>
+            <p>{report.data.id?.toString()}</p>
           </DinamicTd>
           <DinamicTd twClassName="text-nowrap">
             <p>{report.data.fecha}</p>
@@ -70,7 +70,7 @@ export function RacRowContent({
             <div className="flex gap-2">
               <BouncingButton
                 action={() =>
-                  router.push(`/reports/rac/update/${report.data.numRac}`)
+                  router.push(`/reports/rac/update/${report.data.id}`)
                 }
                 backgroundColorHover="#ffffff"
                 backgroundColor="#fbbf24"

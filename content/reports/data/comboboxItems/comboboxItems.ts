@@ -68,3 +68,18 @@ export const areas: string[] = [
   "Display Area",
   "Otra área",
 ];
+
+export const estados: string[] = ["ABIERTO", "CERRADO", "EN PROCESO"];
+
+export const porcentajesFalla: string[] = [
+  "10",
+  "20",
+  "30",
+  "40",
+  "50",
+  "60",
+  "70",
+  "80",
+  "90",
+  "100",
+];

@@ -13,7 +13,8 @@ export type ReportType =
 
 export type GeneralReport = {
   id: number;
-  auditor: string;
+  auditor_id: number;
+  auditor_nombre: string;
   fecha: string;
   semana: string;
   linea?: string;
@@ -23,33 +24,52 @@ export type GeneralReport = {
   worktable?: string;
   nivel?: number;
   respuestas: boolean[];
-  comentarios?: string
+  comentarios?: string;
 };
 
 export type EolaReport = {
   id?: number;
   numOrden: string;
-  auditor: string;
+  usuario_id: number;
+  usuario_nombre: string;
   fecha: string;
   semana: string;
   uniNegocio: string;
   linea: string;
+  tipo: string;
+  sku: string;
+  upc: string;
+  sizeOrden: number;
+  cantInspeccionada: number;
+  cantAceptada: number;
+  comentarios: string;
 };
 
 export type NcrReport = {
   id?: number;
+  usuario_id: number;
+  usuario_nombre: string;
   numNcr: string;
   fecha: string;
   semana: string;
   numParte: string;
   proveedor: string;
+  defecto: string;
 };
 
 export type RacReport = {
   id?: number;
-  numRac: number;
+  usuario_id: number;
+  usuario_nombre: string;
   fecha: string;
   estado: string;
   ponderancia: string;
   area: string;
+  responsable: string;
+  numParte: string;
+  descProd: string;
+  sizeLote: number;
+  codigoFecha: string;
+  porcFalla: string;
+  descProb: string;
 };

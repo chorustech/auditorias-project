@@ -29,7 +29,8 @@ export async function selectReports({
               kind: "general",
               data: {
                 id: 1,
-                auditor: "Pirita Dreemurr",
+                auditor_id: 1,
+                auditor_nombre: "Pirita Dreemurr",
                 fecha: "01-01-2025",
                 semana: "01",
                 linea: "01",
@@ -68,8 +69,9 @@ export async function selectReports({
             {
               kind: "general",
               data: {
-                id: 1,
-                auditor: "Cornalina Dreemurr",
+                id: 2,
+                auditor_id: 2,
+                auditor_nombre: "Cornalina Dreemurr",
                 fecha: "01-01-2025",
                 semana: "01",
                 picker: "01",
@@ -98,8 +100,9 @@ export async function selectReports({
             {
               kind: "general",
               data: {
-                id: 1,
-                auditor: "Nau Dreemurr",
+                id: 3,
+                auditor_id: 3,
+                auditor_nombre: "Nau Dreemurr",
                 fecha: "01-01-2025",
                 semana: "01",
                 linea: "01",
@@ -130,8 +133,9 @@ export async function selectReports({
             {
               kind: "general",
               data: {
-                id: 1,
-                auditor: "Gravity Dreemurr",
+                id: 4,
+                auditor_id: 4,
+                auditor_nombre: "Gravity Dreemurr",
                 fecha: "01-01-2025",
                 semana: "01",
                 linea: "01",
@@ -164,8 +168,9 @@ export async function selectReports({
             {
               kind: "general",
               data: {
-                id: 1,
-                auditor: "Fran Dreemurr",
+                id: 5,
+                auditor_id: 5,
+                auditor_nombre: "Fran Dreemurr",
                 fecha: "01-01-2025",
                 semana: "01",
                 linea: "01",
@@ -185,8 +190,9 @@ export async function selectReports({
             {
               kind: "general",
               data: {
-                id: 1,
-                auditor: "Nirvana Dreemurr",
+                id: 6,
+                auditor_id: 6,
+                auditor_nombre: "Nirvana Dreemurr",
                 fecha: "01-01-2025",
                 semana: "01",
                 linea: "01",
@@ -207,8 +213,9 @@ export async function selectReports({
             {
               kind: "general",
               data: {
-                id: 1,
-                auditor: "Tentalet Dreemurr",
+                id: 7,
+                auditor_id: 7,
+                auditor_nombre: "Tentalet Dreemurr",
                 fecha: "01-01-2025",
                 semana: "01",
                 linea: "01",
@@ -229,13 +236,21 @@ export async function selectReports({
             {
               kind: "eola",
               data: {
-                id: 1,
+                id: 8,
                 numOrden: "123456",
-                auditor: "Hexidoth",
+                usuario_id: 8,
+                usuario_nombre: "Hexadoth",
                 fecha: "01-01-2025",
                 semana: "01",
                 linea: "01",
                 uniNegocio: "Electronics",
+                cantAceptada: 1000,
+                cantInspeccionada: 1000,
+                comentarios: "",
+                sizeOrden: 1000,
+                sku: "888",
+                tipo: "EOLA",
+                upc: "9999",
               },
             },
           ],
@@ -250,12 +265,15 @@ export async function selectReports({
             {
               kind: "ncr",
               data: {
-                id: 1,
+                id: 9,
+                usuario_id: 9,
+                usuario_nombre: "Pentadoth",
                 numNcr: "123456",
                 fecha: "01-01-2025",
                 semana: "01",
                 numParte: "123456",
-                proveedor: "Pentadoth",
+                proveedor: "Alguna empresa",
+                defecto: "Esta pieza no viene bien!",
               },
             },
           ],
@@ -270,38 +288,24 @@ export async function selectReports({
             {
               kind: "rac",
               data: {
-                id: 1,
-                numRac: 1,
+                id: 10,
+                usuario_id: 10,
+                usuario_nombre: "Tetradoth",
                 fecha: "01-01-2025",
                 estado: "ABIERTO",
                 ponderancia: "LOW",
                 area: "Electronics",
-              },
-            },
-            {
-              kind: "rac",
-              data: {
-                id: 2,
-                numRac: 2,
-                fecha: "01-01-2025",
-                estado: "ABIERTO",
-                ponderancia: "MEDIUM",
-                area: "Finishing",
-              },
-            },
-            {
-              kind: "rac",
-              data: {
-                id: 3,
-                numRac: 3,
-                fecha: "01-01-2025",
-                estado: "ABIERTO",
-                ponderancia: "HIGH",
-                area: "Laca",
+                codigoFecha: "01",
+                descProb: "Algo salió muy mal!",
+                descProd: "Pro",
+                numParte: "Tipo A",
+                porcFalla: "50",
+                responsable: "Cornalina",
+                sizeLote: 500,
               },
             },
           ],
-          count: 3,
+          count: 1,
           ok: true,
           message: "Reportes obtenidos correctamente",
         };
@@ -354,6 +358,7 @@ export async function insertReport(formData: FormData): Promise<{
     const respuestasRaw = formData.get("respuestas") as string;
     const respuestas: boolean[] = JSON.parse(respuestasRaw);
 
+    const auditor_id = formData.get("auditor_id");
     const linea = formData.get("linea");
     const coordinador = formData.get("coord");
     const picker = formData.get("picker");
@@ -365,6 +370,7 @@ export async function insertReport(formData: FormData): Promise<{
     const file = formData.get("archivo") as File | null;
 
     console.log({
+      auditor_id: auditor_id,
       respuestas: respuestas,
       linea: linea,
       coordinador: coordinador,
@@ -396,6 +402,8 @@ export async function insertNcrReport(formData: FormData): Promise<{
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
   try {
+    const id = formData.get("id");
+    const usuario_id = formData.get("usuario_id");
     const ncr = formData.get("ncr");
     const numParte = formData.get("numParte");
     const proveedor = formData.get("proveedor");
@@ -404,6 +412,8 @@ export async function insertNcrReport(formData: FormData): Promise<{
     const file = formData.get("archivo") as File | null;
 
     console.log({
+      id: id,
+      usuario_id: usuario_id,
       ncr: ncr,
       numParte: numParte,
       proveedor: proveedor,
@@ -431,19 +441,26 @@ export async function insertRacReport(formData: FormData): Promise<{
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
   try {
+    const id = formData.get("id");
+    const usuario_id = formData.get("usuario_id");
+    const estado = formData.get("estado");
+    const ponderancia = formData.get("ponderancia");
+    const area = formData.get("area");
+
     const responsable = formData.get("responsable");
     const numParte = formData.get("numParte");
     const descProd = formData.get("descProd");
     const sizeLote = formData.get("sizeLote");
-    const ponderancia = formData.get("ponderancia");
     const codigoFecha = formData.get("codigoFecha");
-    const area = formData.get("area");
     const porcFalla = formData.get("porcFalla");
     const descProb = formData.get("descProb");
 
     const file = formData.get("archivo") as File | null;
 
     console.log({
+      id: id,
+      usuario_id: usuario_id,
+      estado: estado,
       responsable: responsable,
       numParte: numParte,
       descProd: descProd,
@@ -476,6 +493,8 @@ export async function insertEolaReport(formData: FormData): Promise<{
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
   try {
+    const id = formData.get("id");
+    const usuario_id = formData.get("usuario_id");
     const unidadNegocio = formData.get("uniNegocio");
     const linea = formData.get("linea");
     const tipo = formData.get("tipo");
@@ -490,6 +509,8 @@ export async function insertEolaReport(formData: FormData): Promise<{
     const file = formData.get("archivo") as File | null;
 
     console.log({
+      id: id,
+      usuario_id: usuario_id,
       unidadNegocio: unidadNegocio,
       linea: linea,
       tipo: tipo,
@@ -533,7 +554,8 @@ export async function selectGeneralReportById({
           message: "Reporte obtenido correctamente",
           report: {
             id: 1,
-            auditor: "Pirita Dreemurr",
+            auditor_id: 1,
+            auditor_nombre: "Pirita Dreemurr",
             fecha: "01-01-2025",
             semana: "01",
             linea: "01",
@@ -566,8 +588,9 @@ export async function selectGeneralReportById({
           ok: true,
           message: "Reporte obtenido correctamente",
           report: {
-            id: 1,
-            auditor: "Cornalina Dreemurr",
+            id: 2,
+            auditor_id: 2,
+            auditor_nombre: "Cornalina Dreemurr",
             fecha: "01-01-2025",
             semana: "01",
             picker: "01",
@@ -581,8 +604,9 @@ export async function selectGeneralReportById({
           ok: true,
           message: "Reporte obtenido correctamente",
           report: {
-            id: 1,
-            auditor: "Nau Dreemurr",
+            id: 3,
+            auditor_id: 3,
+            auditor_nombre: "Nau Dreemurr",
             fecha: "01-01-2025",
             semana: "01",
             linea: "01",
@@ -607,8 +631,9 @@ export async function selectGeneralReportById({
           ok: true,
           message: "Reporte obtenido correctamente",
           report: {
-            id: 1,
-            auditor: "Gravity Dreemurr",
+            id: 4,
+            auditor_id: 4,
+            auditor_nombre: "Gravity Dreemurr",
             fecha: "01-01-2025",
             semana: "01",
             linea: "01",
@@ -635,8 +660,9 @@ export async function selectGeneralReportById({
           ok: true,
           message: "Reporte obtenido correctamente",
           report: {
-            id: 1,
-            auditor: "Fran Dreemurr",
+            id: 5,
+            auditor_id: 5,
+            auditor_nombre: "Fran Dreemurr",
             fecha: "01-01-2025",
             semana: "01",
             linea: "01",
@@ -650,8 +676,9 @@ export async function selectGeneralReportById({
           ok: true,
           message: "Reporte obtenido correctamente",
           report: {
-            id: 1,
-            auditor: "Nirvana Dreemurr",
+            id: 6,
+            auditor_id: 6,
+            auditor_nombre: "Nirvana Dreemurr",
             fecha: "01-01-2025",
             semana: "01",
             linea: "01",
@@ -666,8 +693,9 @@ export async function selectGeneralReportById({
           ok: true,
           message: "Reporte obtenido correctamente",
           report: {
-            id: 1,
-            auditor: "Tentalet Dreemurr",
+            id: 7,
+            auditor_id: 7,
+            auditor_nombre: "Tentalet Dreemurr",
             fecha: "01-01-2025",
             semana: "01",
             linea: "01",
@@ -683,7 +711,8 @@ export async function selectGeneralReportById({
           message: "Ocurrió un error al buscar el reporte",
           report: {
             id: 0,
-            auditor: "",
+            auditor_id: 0,
+            auditor_nombre: "",
             fecha: "",
             respuestas: [],
             semana: "",
@@ -696,7 +725,8 @@ export async function selectGeneralReportById({
       message: "Ocurrió un error al buscar el reporte",
       report: {
         id: 0,
-        auditor: "",
+        auditor_id: 0,
+        auditor_nombre: "",
         fecha: "",
         respuestas: [],
         semana: "",
@@ -716,13 +746,21 @@ export async function selectEolaReportById(
       ok: true,
       message: "Reporte obtenido correctamente",
       report: {
-        id: 1,
+        id: 8,
         numOrden: "123456",
-        auditor: "Hexidoth",
+        usuario_id: 8,
+        usuario_nombre: "Hexadoth",
         fecha: "01-01-2025",
         semana: "01",
         linea: "01",
         uniNegocio: "Electronics",
+        cantAceptada: 1000,
+        cantInspeccionada: 1000,
+        comentarios: "",
+        sizeOrden: 1000,
+        sku: "888",
+        tipo: "EOLA",
+        upc: "9999",
       },
     };
   } catch {
@@ -732,11 +770,19 @@ export async function selectEolaReportById(
       report: {
         id: 0,
         numOrden: "",
-        auditor: "",
+        usuario_id: 0,
+        usuario_nombre: "",
         fecha: "",
         semana: "",
         linea: "",
         uniNegocio: "",
+        cantAceptada: 0,
+        cantInspeccionada: 0,
+        comentarios: "",
+        sizeOrden: 0,
+        sku: "",
+        tipo: "",
+        upc: "",
       },
     };
   }
@@ -753,12 +799,15 @@ export async function selectNcrReportById(
       ok: true,
       message: "Reporte obtenido correctamente",
       report: {
-        id: 1,
+        id: 9,
+        usuario_id: 9,
+        usuario_nombre: "Pentadoth",
         numNcr: "123456",
         fecha: "01-01-2025",
         semana: "01",
         numParte: "123456",
-        proveedor: "Pentadoth",
+        proveedor: "Alguna empresa",
+        defecto: "Esta pieza no viene bien!",
       },
     };
   } catch {
@@ -767,11 +816,14 @@ export async function selectNcrReportById(
       message: "Ocurrió un error al buscar el reporte",
       report: {
         id: 0,
+        usuario_id: 0,
+        usuario_nombre: "",
         numNcr: "",
         fecha: "",
         semana: "",
         numParte: "",
         proveedor: "",
+        defecto: "",
       },
     };
   }
@@ -788,12 +840,20 @@ export async function selectRacReportById(
       ok: true,
       message: "Reporte obtenido correctamente",
       report: {
-        id: 1,
-        numRac: 1,
+        id: 10,
+        usuario_id: 10,
+        usuario_nombre: "Tetradoth",
         fecha: "01-01-2025",
         estado: "ABIERTO",
         ponderancia: "LOW",
         area: "Electronics",
+        codigoFecha: "01",
+        descProb: "Algo salió muy mal!",
+        descProd: "Pro",
+        numParte: "Tipo A",
+        porcFalla: "50",
+        responsable: "Cornalina",
+        sizeLote: 500,
       },
     };
   } catch {
@@ -802,11 +862,19 @@ export async function selectRacReportById(
       message: "Ocurrió un error al buscar el reporte",
       report: {
         id: 0,
-        numRac: 0,
+        usuario_id: 0,
+        usuario_nombre: "",
         fecha: "",
         estado: "",
         ponderancia: "",
         area: "",
+        codigoFecha: "",
+        descProb: "",
+        descProd: "",
+        numParte: "",
+        porcFalla: "",
+        responsable: "",
+        sizeLote: 0,
       },
     };
   }

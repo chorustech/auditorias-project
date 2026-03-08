@@ -1,17 +1,13 @@
 "use client";
 
 /* COMPONENTS */
-import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxItem,
-  ComboboxList,
-  ComboboxTrigger,
-  ComboboxValue,
-} from "@/components/ui/combobox";
-import { Button } from "@/components/ui/button";
+import { DinamicInsertUpdateUI } from "@/components/shared/dinamicInsertUpdateUI/DinamicInsertUpdateUI";
+import { BoxSkeleton } from "@/components/shared/boxSkeleton/BoxSkeleton";
+import { DinamicCombobox } from "@/components/shared/form/dinamicInput/DinamicCombobox";
+import { DinamicInputText } from "@/components/shared/form/dinamicInput/DinamicInputText";
+import { DinamicInputNumber } from "@/components/shared/form/dinamicInput/DinamicInputNumber";
+import { DinamicInputTextArea } from "@/components/shared/form/dinamicInput/DinamicInputTextArea";
+import { DinamicBouncingButton } from "@/components/shared/form/dinamicBouncingButton/DinamicBouncingButton";
 
 /* DATA */
 import {
@@ -21,18 +17,11 @@ import {
 } from "@/content/reports/data/comboboxItems/comboboxItems";
 
 /* HOOKS */
-import { useForm, Controller, FormProvider } from "react-hook-form";
-import { useState } from "react";
+import { useForm, FormProvider } from "react-hook-form";
+import { useEffect, useState } from "react";
 
 /* ICONS */
-import {
-  ArrowLeft,
-  ChevronDown,
-  CircleCheckBig,
-  CircleOff,
-  Loader,
-  Save,
-} from "lucide-react";
+import { Save } from "lucide-react";
 
 /* LIBS */
 import { motion } from "framer-motion";
@@ -41,7 +30,10 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 
 /* SERVER ACTION */
-import { insertEolaReport } from "@/temp/Reports/Infrastructure/reportsController";
+import {
+  insertEolaReport,
+  selectEolaReportById,
+} from "@/temp/Reports/Infrastructure/reportsController";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
@@ -62,21 +54,77 @@ export function InsertUpdateEolaReportContent({
   const router = useRouter();
   const { setAnnouncement } = useAnnouncement();
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const methods = useForm<EolaFormValues>({
-    defaultValues: {
-      uniNegocio: "",
-      linea: "",
-      tipo: "",
-      sku: "",
-      upc: "",
-      sizeOrden: 0,
-      cantInspeccionada: 0,
-      cantAceptada: 0,
-      numOrden: "",
-      comentarios: "",
-    },
-  });
+  const methods = useForm<EolaFormValues>({ defaultValues: { tipo: "" } });
+  const isEola = methods.watch("tipo", "");
+
+  const usuario_temp = {
+    id: 1,
+    nombre: "Pirita Dreemurr",
+    email: "pirita@assaabloy.com",
+    rol: "administrador",
+  };
+
+  useEffect(() => {
+    try {
+      const endLoading = () => {
+        setLoading(false);
+      };
+
+      if (isUpdate) {
+        const fetchReport = async () => {
+          const response = await selectEolaReportById(Number(id));
+
+          if (response.ok) {
+            methods.reset({
+              id: response.report.id,
+              numOrden: response.report.numOrden,
+              usuario_id: usuario_temp.id,
+              cantAceptada: response.report.cantAceptada,
+              cantInspeccionada: response.report.cantInspeccionada,
+              comentarios: response.report.comentarios,
+              linea: response.report.linea,
+              sizeOrden: response.report.sizeOrden,
+              sku: response.report.sku,
+              tipo: response.report.tipo,
+              uniNegocio: response.report.uniNegocio,
+              upc: response.report.upc,
+            });
+            endLoading();
+          } else {
+            setAnnouncement({
+              isActivated: true,
+              isOk: false,
+              message: response.message,
+            });
+
+            router.push(`/reports/`);
+          }
+        };
+
+        fetchReport();
+      } else {
+        methods.reset({
+          id: 0,
+          numOrden: "",
+          usuario_id: usuario_temp.id,
+          cantAceptada: 1,
+          cantInspeccionada: 1,
+          comentarios: "",
+          linea: "",
+          sizeOrden: 1,
+          sku: "",
+          tipo: "EOLA",
+          uniNegocio: "",
+          upc: "",
+        });
+        endLoading();
+      }
+    } catch (error) {
+      console.log("Error", error);
+    }
+  }, [id, isUpdate, methods, router, setAnnouncement]);
 
   const onSubmit = async (data: EolaFormValues) => {
     try {
@@ -84,6 +132,8 @@ export function InsertUpdateEolaReportContent({
 
       const formData = new FormData();
 
+      formData.append("id", data.id.toString());
+      formData.append("usuario_id", data.usuario_id.toString());
       formData.append("uniNegocio", data.uniNegocio);
       formData.append("linea", data.linea);
       formData.append("tipo", data.tipo);
@@ -112,9 +162,8 @@ export function InsertUpdateEolaReportContent({
           isOk: true,
           message: response.message,
         });
-        console.log(data);
 
-        //methods.reset();
+        if (!isUpdate) methods.reset();
       } else {
         setAnnouncement({
           isActivated: true,
@@ -130,553 +179,251 @@ export function InsertUpdateEolaReportContent({
   };
 
   return (
-    <motion.div
-      className="w-full h-full p-6 max-h-full flex flex-col gap-6"
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: "easeInOut" }}
-    >
-      {/* HEADER */}
-      <div className="w-full flex items-center justify-between h-fit">
-        {/* BOTÓN IR HACIA ATRÁS */}
-        <BouncingButton
-          action={() => router.push("/reports/eola")}
-          backgroundColorHover="#ffffff"
-          backgroundColor="#00A0D0"
-          textColor="#ffffff"
-          textColorHover="#00A0D0"
-          border="2px solid #ffffff"
-          borderHover="2px solid #00A0D0"
-          twClassName="w-fit h-fit p-4 rounded-2xl"
-          disabled={false}
-        >
-          <ArrowLeft className="size-5" />
-        </BouncingButton>
-
-        <div className="flex gap-4">
-          <p>
-            Auditor: <span className="text-[#00A0D0]">Pirita Dreemurr</span>
-          </p>
-          <p>
-            Fecha: <span className="text-[#00A0D0]">{getDate()}</span>
-          </p>
-          <p>
-            Semana: <span className="text-[#00A0D0]">{getWeekNumber()}</span>
-          </p>
-        </div>
-      </div>
-
-      {/* BODY */}
-      <div className="flex-1 overflow-y-auto flex gap-6 max-h-full">
-        <FormProvider {...methods}>
-          <div className="w-2/3 rounded-2xl border border-neutral-200 flex flex-col min-h-0">
-            {/* HEADER */}
-            <div className="w-full h-fit p-4 shrink-0 border-b border-b-neutral-200">
-              <p className="font-light text-lg">Preguntas de auditoría</p>
-            </div>
-
-            {/* BODY */}
-            <div className="overflow-y-auto flex-1 min-h-0 p-4 flex flex-col gap-4">
-              <div className="w-full h-fit grid grid-cols-2 gap-4">
+    <FormProvider {...methods}>
+      <DinamicInsertUpdateUI
+        backAction={() => router.push("/reports/eola")}
+        headerRightContent={
+          <div className="flex gap-4">
+            <p>
+              Auditor: <span className="text-[#00A0D0]">Pirita Dreemurr</span>
+            </p>
+            <p>
+              Fecha: <span className="text-[#00A0D0]">{getDate()}</span>
+            </p>
+            <p>
+              Semana: <span className="text-[#00A0D0]">{getWeekNumber()}</span>
+            </p>
+          </div>
+        }
+        leftTitle="Reporte EOLA"
+        rightTitle="Guardar"
+        leftContent={
+          loading ? (
+            <BoxSkeleton />
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+            >
+              <div className="grid lg:grid-cols-2 gap-4 w-full h-fit grid-cols-1">
                 {/* TIPO */}
-                <div className="flex flex-col gap-2 w-full">
-                  <p>Tipo</p>
-                  <Controller
-                    control={methods.control}
-                    name="tipo"
-                    rules={{
-                      required: "El tipo es necesario",
-                    }}
-                    render={({ field }) => (
-                      <Combobox
-                        items={tipoEolaReport}
-                        value={field.value}
-                        onValueChange={(value) =>
-                          field.onChange(
-                            tipoEolaReport.find((l) => l === value),
-                          )
-                        }
-                      >
-                        <ComboboxTrigger
-                          render={
-                            <Button className="w-full hover:hover:bg-[#d9f2f9] cursor-pointer justify-center font-normal flex items-center bg-white text-black border border-neutral-200 rounded-xl">
-                              <div className="w-full flex justify-start overflow-x-hidden">
-                                <p className="truncate">
-                                  <ComboboxValue />
-                                </p>
-
-                                {field.value === "" && (
-                                  <p className="truncate text-neutral-500">
-                                    Seleccione el tipo de reporte
-                                  </p>
-                                )}
-                              </div>
-
-                              <ChevronDown className="size-4" />
-                            </Button>
-                          }
-                        />
-                        <ComboboxContent className={"w-30 overflow-y-auto"}>
-                          <ComboboxEmpty>No items found.</ComboboxEmpty>
-                          <ComboboxList>
-                            {(item) => (
-                              <ComboboxItem
-                                className={"overflow-x-hidden w-full"}
-                                key={item}
-                                value={item}
-                              >
-                                <div className="w-full">
-                                  <p className="truncate">{item}</p>
-                                </div>
-                              </ComboboxItem>
-                            )}
-                          </ComboboxList>
-                        </ComboboxContent>
-                      </Combobox>
-                    )}
-                  />
-                  {methods.formState.errors.tipo && (
-                    <p className="text-red-500">
-                      {methods.formState.errors.tipo.message}
-                    </p>
-                  )}
-                </div>
+                <DinamicCombobox<EolaFormValues>
+                  name="tipo"
+                  label="Tipo"
+                  items={tipoEolaReport}
+                  placeholder="Seleccionar un tipo"
+                  rules={{
+                    required: "El tipo es necesario",
+                  }}
+                />
 
                 {/* NÚMERO DE ORDEN EOLA */}
-                <div className="flex flex-col gap-2 w-full">
-                  <p>Número de orden EOLA</p>
-                  <Controller
+                {isEola === "EOLA" && (
+                  <DinamicInputText<EolaFormValues>
                     name="numOrden"
-                    control={methods.control}
+                    label="nro. EOLA"
+                    placeholder="Ingrese el número de orden"
                     rules={{
-                      required: "El número de orden EOLA es necesario",
+                      required: "El número de orden es necesario",
+                      minLength: {
+                        value: 2,
+                        message:
+                          "El número de orden debe tener al menos 2 caracteres",
+                      },
+                      maxLength: {
+                        value: 50,
+                        message:
+                          "El número de orden no puede tener más de 50 caracteres",
+                      },
                     }}
-                    render={({ field: { onChange, onBlur, value } }) => (
-                      <input
-                        onBlur={onBlur}
-                        onChange={onChange}
-                        value={value}
-                        type="text"
-                        id="numOrden"
-                        minLength={2}
-                        maxLength={50}
-                        placeholder="Ingrese el número de orden"
-                        className="w-full text-sm h-fit px-4 py-2 bg-transparent outline-none border border-neutral-200 rounded-xl hover:hover:bg-[#d9f2f9] transition-all duration-300 placeholder:text-neutral-500"
-                      />
-                    )}
                   />
-                  {methods.formState.errors.numOrden && (
-                    <p className="text-red-500">
-                      {methods.formState.errors.numOrden?.message}
-                    </p>
-                  )}
-                </div>
+                )}
               </div>
 
-              <div className="w-full h-fit grid grid-cols-2 gap-4">
+              <div className="grid lg:grid-cols-2 gap-4 w-full h-fit grid-cols-1">
                 {/* LINEAS */}
-                <div className="flex flex-col gap-2 w-full">
-                  <p>Línea</p>
-                  <Controller
-                    control={methods.control}
-                    name="linea"
-                    rules={{
-                      required: "La línea es necesaria",
-                    }}
-                    render={({ field }) => (
-                      <Combobox
-                        items={lineas}
-                        value={field.value}
-                        onValueChange={(value) =>
-                          field.onChange(lineas.find((l) => l === value))
-                        }
-                      >
-                        <ComboboxTrigger
-                          render={
-                            <Button className="w-full hover:hover:bg-[#d9f2f9] cursor-pointer justify-center font-normal flex items-center bg-white text-black border border-neutral-200 rounded-xl">
-                              <div className="w-full flex justify-start overflow-x-hidden">
-                                <p className="truncate">
-                                  <ComboboxValue />
-                                </p>
-
-                                {field.value === "" && (
-                                  <p className="truncate text-neutral-500">
-                                    Seleccione una línea
-                                  </p>
-                                )}
-                              </div>
-
-                              <ChevronDown className="size-4" />
-                            </Button>
-                          }
-                        />
-                        <ComboboxContent>
-                          <ComboboxEmpty>No items found.</ComboboxEmpty>
-                          <ComboboxList className={"h-30"}>
-                            {(item) => (
-                              <ComboboxItem
-                                className={"overflow-x-hidden w-full"}
-                                key={item}
-                                value={item}
-                              >
-                                <div className="w-full">
-                                  <p className="truncate">{item}</p>
-                                </div>
-                              </ComboboxItem>
-                            )}
-                          </ComboboxList>
-                        </ComboboxContent>
-                      </Combobox>
-                    )}
-                  />
-                  {methods.formState.errors.linea && (
-                    <p className="text-red-500">
-                      {methods.formState.errors.linea.message}
-                    </p>
-                  )}
-                </div>
+                <DinamicCombobox<EolaFormValues>
+                  name="linea"
+                  label="Línea"
+                  items={lineas}
+                  placeholder="Seleccionar línea"
+                  rules={{
+                    required: "La línea es necesaria",
+                  }}
+                />
 
                 {/* UNIDADES DE NEGOCIO */}
-                <div className="flex flex-col gap-2 w-full">
-                  <p>Unidad de negocio</p>
-                  <Controller
-                    control={methods.control}
-                    name="uniNegocio"
-                    rules={{
-                      required: "La unidad de negocio es necesaria",
-                    }}
-                    render={({ field }) => (
-                      <Combobox
-                        items={unidadesNegocio}
-                        value={field.value}
-                        onValueChange={(value) =>
-                          field.onChange(
-                            unidadesNegocio.find((l) => l === value),
-                          )
-                        }
-                      >
-                        <ComboboxTrigger
-                          render={
-                            <Button className="w-full hover:hover:bg-[#d9f2f9] cursor-pointer justify-center font-normal flex items-center bg-white text-black border border-neutral-200 rounded-xl">
-                              <div className="w-full flex justify-start overflow-x-hidden">
-                                <p className="truncate">
-                                  <ComboboxValue />
-                                </p>
-
-                                {field.value === "" && (
-                                  <p className="truncate text-neutral-500">
-                                    Seleccione una unidad de negocio
-                                  </p>
-                                )}
-                              </div>
-
-                              <ChevronDown className="size-4" />
-                            </Button>
-                          }
-                        />
-                        <ComboboxContent>
-                          <ComboboxEmpty>No items found.</ComboboxEmpty>
-                          <ComboboxList className={"h-30"}>
-                            {(item) => (
-                              <ComboboxItem
-                                className={"overflow-x-hidden w-full"}
-                                key={item}
-                                value={item}
-                              >
-                                <div className="w-full">
-                                  <p className="truncate">{item}</p>
-                                </div>
-                              </ComboboxItem>
-                            )}
-                          </ComboboxList>
-                        </ComboboxContent>
-                      </Combobox>
-                    )}
-                  />
-                  {methods.formState.errors.uniNegocio && (
-                    <p className="text-red-500">
-                      {methods.formState.errors.uniNegocio.message}
-                    </p>
-                  )}
-                </div>
+                <DinamicCombobox<EolaFormValues>
+                  name="uniNegocio"
+                  label="Unidad de negocio"
+                  items={lineas}
+                  placeholder="Seleccionar unidad de negocio"
+                  rules={{
+                    required: "La unidad de negocio es necesaria",
+                  }}
+                />
               </div>
 
-              <div className="flex gap-4 w-full h-fit">
+              <div className="grid lg:grid-cols-2 gap-4 w-full h-fit grid-cols-1">
                 {/* SKU */}
-                <div className="flex flex-col gap-2 w-full">
-                  <p>SKU</p>
-                  <Controller
-                    name="sku"
-                    control={methods.control}
-                    rules={{
-                      required: "El SKU es necesario",
-                    }}
-                    render={({ field: { onChange, onBlur, value } }) => (
-                      <input
-                        onBlur={onBlur}
-                        onChange={onChange}
-                        value={value}
-                        type="text"
-                        id="sku"
-                        minLength={2}
-                        maxLength={50}
-                        placeholder="Ingrese el SKU"
-                        className="w-full text-sm h-fit px-4 py-2 bg-transparent outline-none border border-neutral-200 rounded-xl hover:hover:bg-[#d9f2f9] transition-all duration-300 placeholder:text-neutral-500"
-                      />
-                    )}
-                  />
-                  {methods.formState.errors.sku && (
-                    <p className="text-red-500">
-                      {methods.formState.errors.sku?.message}
-                    </p>
-                  )}
-                </div>
+                <DinamicInputText<EolaFormValues>
+                  name="sku"
+                  label="SKU"
+                  placeholder="Ingrese el SKU de orden"
+                  rules={{
+                    required: "El SKU es necesario",
+                    minLength: {
+                      value: 2,
+                      message: "El SKU debe tener al menos 2 caracteres",
+                    },
+                    maxLength: {
+                      value: 50,
+                      message: "El SKU no puede tener más de 50 caracteres",
+                    },
+                  }}
+                />
 
                 {/* UPC */}
-                <div className="flex flex-col gap-2 w-full">
-                  <p>UPC</p>
-                  <Controller
-                    name="upc"
-                    control={methods.control}
-                    rules={{
-                      required: "El UPC es necesario",
-                    }}
-                    render={({ field: { onChange, onBlur, value } }) => (
-                      <input
-                        onBlur={onBlur}
-                        onChange={onChange}
-                        value={value}
-                        type="text"
-                        id="upc"
-                        minLength={2}
-                        maxLength={50}
-                        placeholder="Ingrese el UPC"
-                        className="w-full text-sm h-fit px-4 py-2 bg-transparent outline-none border border-neutral-200 rounded-xl hover:hover:bg-[#d9f2f9] transition-all duration-300 placeholder:text-neutral-500"
-                      />
-                    )}
-                  />
-                  {methods.formState.errors.upc && (
-                    <p className="text-red-500">
-                      {methods.formState.errors.upc?.message}
-                    </p>
-                  )}
-                </div>
+                <DinamicInputText<EolaFormValues>
+                  name="upc"
+                  label="UPC"
+                  placeholder="Ingrese el UPC de orden"
+                  rules={{
+                    required: "El UPC es necesario",
+                    minLength: {
+                      value: 2,
+                      message: "El UPC debe tener al menos 2 caracteres",
+                    },
+                    maxLength: {
+                      value: 50,
+                      message: "El UPC no puede tener más de 50 caracteres",
+                    },
+                  }}
+                />
               </div>
 
-              <div className="grid grid-cols-2 gap-4 w-full h-fit">
+              <div className="grid lg:grid-cols-2 gap-4 w-full h-fit grid-cols-1">
                 {/* TAMAÑO DE LA ORDEN */}
-                <div className="flex flex-col gap-2 w-full">
-                  <p>Tamaño</p>
-                  <Controller
-                    name="sizeOrden"
-                    control={methods.control}
-                    rules={{ required: "El tamaño de la orden es necesario" }}
-                    render={({ field: { onChange, onBlur, value } }) => (
-                      <input
-                        onBlur={onBlur}
-                        onChange={(e) => {
-                          const val = e.target.value.replace(/[^0-9]/g, ""); // Elimina cualquier carácter no numérico
-                          onChange(val); // Actualiza el estado con solo números
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === "e" || e.key === "-" || e.key === "+") {
-                            e.preventDefault(); // Bloquea la entrada de estos caracteres
-                          }
-                        }}
-                        value={value}
-                        type="text" // Cambia a "text" para evitar comportamientos extraños con números
-                        inputMode="numeric" // Ayuda en móviles
-                        pattern="[0-9]*" // Solo números
-                        id="sizeOrden"
-                        placeholder="1000"
-                        min={1}
-                        max={99}
-                        className="w-full text-sm h-fit px-4 py-2 bg-transparent outline-none border border-neutral-200 rounded-xl hover:hover:bg-[#d9f2f9] transition-all duration-300 placeholder:text-neutral-500"
-                      />
-                    )}
-                  />
-                  {methods.formState.errors.sizeOrden && (
-                    <p className="text-red-500">
-                      {methods.formState.errors.sizeOrden.message}
-                    </p>
-                  )}
-                </div>
+                <DinamicInputNumber<EolaFormValues>
+                  name="sizeOrden"
+                  label="Tamaño"
+                  placeholder="Ingrese el tamaño de orden"
+                  min={1}
+                  max={99}
+                  rules={{
+                    required: "El tamaño de orden es necesario",
+                  }}
+                />
 
                 {/* CANTIDAD INSPECCIONADA */}
-                <div className="flex flex-col gap-2 w-full">
-                  <p>Cant. inspeccionada</p>
-                  <Controller
-                    name="cantInspeccionada"
-                    control={methods.control}
+                <DinamicInputNumber<EolaFormValues>
+                  name="cantInspeccionada"
+                  label="Cant. Inspeccionada"
+                  placeholder="Ingrese la cantidad inspeccionada"
+                  min={1}
+                  max={99}
+                  rules={{
+                    required: "La cantidad inspeccionada es necesaria",
+                  }}
+                />
+              </div>
+
+              {/* CANTIDAD ACEPTADA */}
+              <DinamicInputNumber<EolaFormValues>
+                name="cantAceptada"
+                label="Cant. Aceptada"
+                placeholder="Ingrese la cantidad aceptada"
+                min={1}
+                max={99}
+                rules={{
+                  required: "La cantidad aceptada es necesaria",
+                }}
+              />
+            </motion.div>
+          )
+        }
+        rightContent={
+          loading ? (
+            <BoxSkeleton />
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+              className="h-full"
+            >
+              <div className="flex flex-col justify-between h-full">
+                <div>
+                  {/* COMENTARIOS */}
+                  <DinamicInputTextArea<EolaFormValues>
+                    name="comentarios"
+                    label="Comentarios"
+                    placeholder="Ingrese comentarios extra"
                     rules={{
-                      required: "La cantidad inspeccionada es necesaria",
+                      minLength: {
+                        value: 2,
+                        message:
+                          "La descripción debe tener al menos 2 caracteres",
+                      },
+                      maxLength: {
+                        value: 750,
+                        message:
+                          "La descripción no puede tener más de 750 caracteres",
+                      },
                     }}
-                    render={({ field: { onChange, onBlur, value } }) => (
-                      <input
-                        onBlur={onBlur}
-                        onChange={(e) => {
-                          const val = e.target.value.replace(/[^0-9]/g, ""); // Elimina cualquier carácter no numérico
-                          onChange(val); // Actualiza el estado con solo números
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === "e" || e.key === "-" || e.key === "+") {
-                            e.preventDefault(); // Bloquea la entrada de estos caracteres
-                          }
-                        }}
-                        value={value}
-                        type="text" // Cambia a "text" para evitar comportamientos extraños con números
-                        inputMode="numeric" // Ayuda en móviles
-                        pattern="[0-9]*" // Solo números
-                        id="cantInspeccionada"
-                        placeholder="1000"
-                        min={1}
-                        max={99}
-                        className="w-full text-sm h-fit px-4 py-2 bg-transparent outline-none border border-neutral-200 rounded-xl hover:hover:bg-[#d9f2f9] transition-all duration-300 placeholder:text-neutral-500"
-                      />
-                    )}
                   />
-                  {methods.formState.errors.cantInspeccionada && (
-                    <p className="text-red-500">
-                      {methods.formState.errors.cantInspeccionada.message}
-                    </p>
-                  )}
+
+                  {/* ARCHIVO */}
+                  <div className="flex flex-col gap-2">
+                    <p className="truncate">Adjuntar archivo (opcional)</p>
+                    <input
+                      type="file"
+                      className="w-full text-sm h-fit px-4 py-2 bg-transparent outline-none border border-neutral-200 rounded-xl hover:hover:bg-sky-100 transition-all duration-300 placeholder:text-neutral-500 cursor-pointer"
+                      {...methods.register("archivo", {
+                        /* required: "Archivo requerido", */
+                        validate: (value) => {
+                          if (value instanceof FileList) {
+                            const file = value.item(0);
+
+                            if (file) {
+                              if (file.size > 5_000_000)
+                                return "El archivo debe pesar menos de 5MB";
+                            }
+                            //return "Archivo requerido";
+                          }
+
+                          return true;
+                        },
+                      })}
+                    />
+                    {methods.formState.errors.archivo && (
+                      <p className="ml-1 text-red-500">
+                        {methods.formState.errors.archivo?.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* BOTÓN GUARDAR */}
+                <div className="w-full sticky bottom-0 py-4 bg-white">
+                  <DinamicBouncingButton
+                    action={
+                      saving || loading
+                        ? () => {}
+                        : methods.handleSubmit(onSubmit)
+                    }
+                    disabled={saving || loading ? true : false}
+                    spin={saving || loading ? true : false}
+                    text="Guardar"
+                    Icon={Save}
+                  />
                 </div>
               </div>
-              {/* CANTIDAD ACEPTADA */}
-              <div className="flex flex-col gap-2 w-full">
-                <p>Cant. aceptada</p>
-                <Controller
-                  name="cantAceptada"
-                  control={methods.control}
-                  rules={{ required: "La cantidad aceptada es necesaria" }}
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <input
-                      onBlur={onBlur}
-                      onChange={(e) => {
-                        const val = e.target.value.replace(/[^0-9]/g, ""); // Elimina cualquier carácter no numérico
-                        onChange(val); // Actualiza el estado con solo números
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === "e" || e.key === "-" || e.key === "+") {
-                          e.preventDefault(); // Bloquea la entrada de estos caracteres
-                        }
-                      }}
-                      value={value}
-                      type="text" // Cambia a "text" para evitar comportamientos extraños con números
-                      inputMode="numeric" // Ayuda en móviles
-                      pattern="[0-9]*" // Solo números
-                      id="cantAceptada"
-                      placeholder="1000"
-                      min={1}
-                      max={99}
-                      className="w-full text-sm h-fit px-4 py-2 bg-transparent outline-none border border-neutral-200 rounded-xl hover:hover:bg-[#d9f2f9] transition-all duration-300 placeholder:text-neutral-500"
-                    />
-                  )}
-                />
-                {methods.formState.errors.cantAceptada && (
-                  <p className="text-red-500">
-                    {methods.formState.errors.cantAceptada.message}
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="w-1/3 min-w-1/3 flex flex-col justify-between rounded-2xl border border-neutral-200">
-            {/* HEADER */}
-            <div className="w-full h-fit p-4 shrink-0 border-b border-b-neutral-200">
-              <p className="font-light text-lg">Guardar</p>
-            </div>
-
-            {/* BODY */}
-            <div className="flex-1 overflow-y-auto overflow-x-hidden flex flex-col gap-4 px-4 pt-4 relative">
-              {/* COMENTARIOS */}
-              <div className="flex flex-col gap-2">
-                <p className="truncate">Comentarios (opcional)</p>
-                <Controller
-                  name="comentarios"
-                  control={methods.control}
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <textarea
-                      onBlur={onBlur}
-                      onChange={onChange}
-                      value={value}
-                      id="comentarios"
-                      minLength={30}
-                      maxLength={750}
-                      placeholder="Ingrese comentarios extra"
-                      className="w-full text-sm resize-none h-40 px-4 py-2 bg-transparent outline-none border border-neutral-200 rounded-xl hover:hover:bg-[#d9f2f9] transition-all duration-300 placeholder:text-neutral-500"
-                    />
-                  )}
-                />
-                {methods.formState.errors.comentarios && (
-                  <p className="ml-1 text-red-500">
-                    {methods.formState.errors.comentarios?.message}
-                  </p>
-                )}
-              </div>
-
-              {/* ARCHIVO */}
-              <div className="flex flex-col gap-2 h-full">
-                <p className="truncate">Adjuntar archivo (opcional)</p>
-                <input
-                  type="file"
-                  className="w-full text-sm h-fit px-4 py-2 bg-transparent outline-none border border-neutral-200 rounded-xl hover:hover:bg-[#d9f2f9] transition-all duration-300 placeholder:text-neutral-500 cursor-pointer"
-                  {...methods.register("archivo", {
-                    /* required: "Archivo requerido", */
-                    validate: (value) => {
-                      if (value instanceof FileList) {
-                        const file = value.item(0);
-
-                        if (file) {
-                          if (file.size > 5_000_000)
-                            return "El archivo debe pesar menos de 5MB";
-                        }
-                        //return "Archivo requerido";
-                      }
-
-                      return true;
-                    },
-                  })}
-                />
-                {methods.formState.errors.archivo && (
-                  <p className="ml-1 text-red-500">
-                    {methods.formState.errors.archivo?.message}
-                  </p>
-                )}
-              </div>
-
-              {/* BOTÓN GUARDAR */}
-              <div className="w-full sticky bottom-0 py-4 bg-white">
-                <BouncingButton
-                  action={saving ? () => {} : methods.handleSubmit(onSubmit)}
-                  backgroundColorHover="#ffffff"
-                  backgroundColor="#00A0D0"
-                  textColor="#ffffff"
-                  textColorHover="#00A0D0"
-                  border="2px solid #ffffff"
-                  borderHover="2px solid #00A0D0"
-                  twClassName="w-full h-fit px-4 py-2 rounded-2xl"
-                  disabled={saving ? true : false}
-                >
-                  {saving ? (
-                    <>
-                      <span className="text-transparent">E</span>
-                      <Loader className="size-4 animate-spin" />
-                      <span className="text-transparent">E</span>
-                    </>
-                  ) : (
-                    <>
-                      <Save className="size-4" />
-                      <span>Guardar</span>
-                    </>
-                  )}
-                </BouncingButton>
-              </div>
-            </div>
-          </div>
-        </FormProvider>
-      </div>
-    </motion.div>
+            </motion.div>
+          )
+        }
+      />
+    </FormProvider>
   );
 }

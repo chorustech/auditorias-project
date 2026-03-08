@@ -29,7 +29,10 @@ import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 
 /* SERVER ACTION */
-import { selectGeneralReportById } from "@/temp/Reports/Infrastructure/reportsController";
+import {
+  insertReport,
+  selectGeneralReportById,
+} from "@/temp/Reports/Infrastructure/reportsController";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
@@ -60,18 +63,14 @@ export function InsertUpdateGeneralReportContent({
   const rawPath = pathname.split("/").at(isUpdate ? -3 : -2);
   const path = rawPath ?? null;
 
-  const methods = useForm<ReportFormValues>({
-    defaultValues: {
-      linea: "",
-      coord: "",
-      picker: "",
-      ubicacion: "",
-      worktable: "",
-      nivel: 1,
-      comentarios: "",
-      respuestas: [],
-    },
-  });
+  const methods = useForm<ReportFormValues>();
+
+  const auditor_temp = {
+    id: 1,
+    nombre: "Pirita Dreemurr",
+    email: "pirita@assaabloy.com",
+    rol: "administrador",
+  };
 
   useEffect(() => {
     try {
@@ -80,7 +79,7 @@ export function InsertUpdateGeneralReportContent({
       };
 
       if (isUpdate) {
-        const fetchUser = async () => {
+        const fetchReport = async () => {
           if (!path) return;
           if (!isPointerArea(path)) return;
 
@@ -99,6 +98,7 @@ export function InsertUpdateGeneralReportContent({
               nivel: response.report.nivel,
               comentarios: response.report.comentarios,
               respuestas: response.report.respuestas,
+              auditor_id: response.report.auditor_id,
             });
             endLoading();
           } else {
@@ -112,7 +112,7 @@ export function InsertUpdateGeneralReportContent({
           }
         };
 
-        fetchUser();
+        fetchReport();
       } else {
         methods.reset({
           linea: "",
@@ -123,6 +123,7 @@ export function InsertUpdateGeneralReportContent({
           nivel: 1,
           comentarios: "",
           respuestas: [],
+          auditor_id: 0,
         });
         endLoading();
       }
@@ -131,95 +132,74 @@ export function InsertUpdateGeneralReportContent({
     }
   }, [id, isUpdate, methods, router, setAnnouncement]);
 
-  useEffect(() => {
-    if (isUpdate) {
-      const fetchReportData = async () => {
-        try {
-          const response = await fetch(`/api/reportes/${id}`);
-          if (!response.ok) {
-            throw new Error("No se pudo obtener la información del reporte");
-          }
-          const data = await response.json();
-
-          // Mapear los datos de la API a los campos del formulario
-          const formData = {
-            ...data.metadata,
-            coord: data.metadata.coordinador, // Renombrar para que coincida con el campo del formulario
-            respuestas: data.respuestas,
-            comentarios: data.comentarios,
-          };
-
-          methods.reset(formData);
-        } catch (error) {
-          console.error(error);
-        }
-      };
-      fetchReportData();
-    }
-  }, [isUpdate, id, methods]);
-
   const onSubmit = async (data: ReportFormValues) => {
     try {
       setSaving(true);
 
-      // El DTO para la API es ligeramente diferente para crear que para actualizar
-      const reportData = {
-        data: {
-          auditor_id: 1, // TEMPORAL: Reemplazar con el ID del usuario autenticado
-          semana: getWeekNumber(),
-          respuestas: data.respuestas,
-          comentarios: data.comentarios,
-        },
-        metadata: {
-          linea: data.linea,
-          coordinador: data.coord,
-          picker: data.picker,
-          ubicacion: data.ubicacion,
-          worktable: data.worktable,
-          nivel: data.nivel,
-        },
-      };
+      const formData = new FormData();
 
-      const url = isUpdate ? `/api/reportes/${id}` : "/api/reportes";
-      const method = isUpdate ? "PUT" : "POST";
+      // LÍNEA
+      if (
+        path === "baldwin-state" ||
+        path === "baldwin-reserve-stacking" ||
+        path === "baldwin-reserve-packing" ||
+        path === "baldwin-reserve-general"
+      ) {
+        if (data.linea !== undefined) formData.append("linea", data.linea);
+      }
 
-      const response = await fetch(url, {
-        method: method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(
-          isUpdate ? reportData : { ...reportData, slug: path },
-        ),
-      });
+      // COORD
+      if (path === "baldwin-state") {
+        if (data.coord !== undefined) formData.append("coord", data.coord);
+      }
 
-      const result = await response.json();
+      // PICKER
+      if (path === "baldwin-reserve-supply") {
+        if (data.picker !== undefined) formData.append("picker", data.picker);
+      }
 
-      if (result.ok) {
+      if (path === "pizza-tray") {
+        // UBICACIÓN
+        if (data.ubicacion !== undefined)
+          formData.append("ubicacion", data.ubicacion);
+
+        // NIVEL
+        if (data.nivel !== undefined)
+          formData.append("nivel", data.nivel.toString());
+      }
+
+      // WORKTABLE
+      if (path === "display-area") {
+        if (data.worktable !== undefined)
+          formData.append("worktable", data.worktable);
+      }
+
+      formData.append("comentarios", data.comentarios);
+      formData.append("auditor_id", data.auditor_id.toString());
+      formData.append("respuestas", JSON.stringify(data.respuestas));
+
+      if (data.archivo instanceof FileList && data.archivo.length > 0) {
+        formData.append("archivo", data.archivo.item(0)!);
+      }
+
+      const response = await insertReport(formData);
+
+      if (response.ok) {
         setAnnouncement({
           isActivated: true,
           isOk: true,
-          message: result.message,
+          message: response.message,
         });
-        if (!isUpdate) {
-          methods.reset();
-        }
+        if (!isUpdate) methods.reset();
       } else {
         setAnnouncement({
           isActivated: true,
           isOk: false,
-          message: result.message,
+          message: response.message,
         });
       }
     } catch (error) {
       console.error("Error al guardar el reporte:", error);
-      const errorMessage =
-        error instanceof Error ? error.message : "Ocurrió un error inesperado";
-      setAnnouncement({
-        isActivated: true,
-        isOk: false,
-        message: errorMessage,
-      });
     } finally {
       setSaving(false);
     }
@@ -267,7 +247,7 @@ export function InsertUpdateGeneralReportContent({
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: "easeInOut" }}
-              className="h-[calc(100%-1rem)]"
+              className="h-full"
             >
               <div className="flex flex-col justify-between h-full">
                 <div>
@@ -404,7 +384,7 @@ export function InsertUpdateGeneralReportContent({
                     <p className="truncate">Adjuntar archivo (opcional)</p>
                     <input
                       type="file"
-                      className="w-full text-sm h-fit px-4 py-2 bg-transparent outline-none border border-neutral-200 rounded-xl hover:hover:bg-[#d9f2f9] transition-all duration-300 placeholder:text-neutral-500 cursor-pointer"
+                      className="w-full text-sm h-fit px-4 py-2 bg-transparent outline-none border border-neutral-200 rounded-xl hover:hover:bg-sky-100 transition-all duration-300 placeholder:text-neutral-500 cursor-pointer"
                       {...methods.register("archivo", {
                         /* required: "Archivo requerido", */
                         validate: (value) => {
@@ -429,6 +409,7 @@ export function InsertUpdateGeneralReportContent({
                     )}
                   </div>
                 </div>
+
                 {/* BOTÓN GUARDAR */}
                 <div className="w-full sticky bottom-0 py-4 bg-white">
                   <DinamicBouncingButton

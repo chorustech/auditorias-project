@@ -117,7 +117,7 @@ export const reportsColumns: ColumnsDictionary = {
   ],
   "eola": [
     "nro. Orden",
-    "Auditor",
+    "Usuario",
     "Fecha",
     "Semana",
     "Ud. Negocio",

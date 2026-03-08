@@ -1,6 +1,8 @@
 import { FieldArray } from "react-hook-form";
 
 export type EolaFormValues = {
+  id: number;
+  usuario_id: number;
   uniNegocio: string;
   linea: string;
   tipo: string;

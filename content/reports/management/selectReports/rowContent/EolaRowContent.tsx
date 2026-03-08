@@ -26,7 +26,7 @@ export function EolaRowContent({
             <p>{report.data.numOrden}</p>
           </DinamicTd>
           <DinamicTd twClassName="text-nowrap">
-            <p>{report.data.auditor}</p>
+            <p>{report.data.usuario_nombre}</p>
           </DinamicTd>
           <DinamicTd twClassName="text-nowrap">
             <p>{report.data.fecha}</p>

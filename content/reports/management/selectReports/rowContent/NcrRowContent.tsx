@@ -41,41 +41,44 @@ export function NcrRowContent({
           <td
             className={`py-6 whitespace-nowrap group-hover:bg-sky-100 transition-all duration-200 px-3 sticky right-0 z-10 ${twBgColor}`}
           >
-            <div></div>
-            <BouncingButton
-              action={() =>
-                router.push(`/reports/ncr/update/${report.data.numNcr}`)
-              }
-              backgroundColorHover="#ffffff"
-              backgroundColor="#fbbf24"
-              textColor="#ffffff"
-              textColorHover="#fbbf24"
-              border="2px solid #ffffff"
-              borderHover="2px solid #fbbf24"
-              twClassName="p-2 rounded-lg w-fit h-fit"
-              disabled={false}
-            >
-              <SquarePen className="size-5" />
-            </BouncingButton>
-            <BouncingButton
-              action={() => {
-                setModal({
-                  isActivated: true,
-                  title: "Eliminar",
-                  body: <DeleteReportContent report_id={report.data.id ?? 0} />,
-                });
-              }}
-              backgroundColorHover="#ffffff"
-              backgroundColor="#ef4444"
-              textColor="#ffffff"
-              textColorHover="#ef4444"
-              border="2px solid #ffffff"
-              borderHover="2px solid #ef4444"
-              twClassName="p-2 rounded-lg w-fit h-fit"
-              disabled={false}
-            >
-              <Trash2 className="size-5" />
-            </BouncingButton>
+            <div className="flex gap-2">
+              <BouncingButton
+                action={() =>
+                  router.push(`/reports/ncr/update/${report.data.numNcr}`)
+                }
+                backgroundColorHover="#ffffff"
+                backgroundColor="#fbbf24"
+                textColor="#ffffff"
+                textColorHover="#fbbf24"
+                border="2px solid #ffffff"
+                borderHover="2px solid #fbbf24"
+                twClassName="p-2 rounded-lg w-fit h-fit"
+                disabled={false}
+              >
+                <SquarePen className="size-5" />
+              </BouncingButton>
+              <BouncingButton
+                action={() => {
+                  setModal({
+                    isActivated: true,
+                    title: "Eliminar",
+                    body: (
+                      <DeleteReportContent report_id={report.data.id ?? 0} />
+                    ),
+                  });
+                }}
+                backgroundColorHover="#ffffff"
+                backgroundColor="#ef4444"
+                textColor="#ffffff"
+                textColorHover="#ef4444"
+                border="2px solid #ffffff"
+                borderHover="2px solid #ef4444"
+                twClassName="p-2 rounded-lg w-fit h-fit"
+                disabled={false}
+              >
+                <Trash2 className="size-5" />
+              </BouncingButton>
+            </div>
           </td>
         </>
       )}
