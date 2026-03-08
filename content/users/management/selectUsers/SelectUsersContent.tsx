@@ -19,8 +19,11 @@ import { House } from "lucide-react";
 /* NAVIGATION */
 import { useRouter } from "next/navigation";
 
+/* TYPES */
+import { UserData } from "@/temp/Users/Infrastructure/Types/userData";
+
 /* SERVER ACTION */
-import { getUsers, UserData } from "@/temp/users1/getUsers";
+import { getUsers } from "@/temp/Users/Infrastructure/usersController";
 
 export function SelectUsersContent() {
   const router = useRouter();
@@ -64,7 +67,7 @@ export function SelectUsersContent() {
         filterAction={() => {}}
         addAction={() => router.push("/users/add")}
         excelAction={() => {}}
-        backContent={<House className="size-5"/>}
+        backContent={<House className="size-5" />}
       />
     </SectionContainer>
   );

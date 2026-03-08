@@ -39,7 +39,7 @@ export function NcrRowContent({
           </DinamicTd>
 
           <td
-            className={`py-6 whitespace-nowrap group-hover:bg-green-100 transition-all duration-200 px-3 sticky right-0 z-10 ${twBgColor}`}
+            className={`py-6 whitespace-nowrap group-hover:bg-sky-100 transition-all duration-200 px-3 sticky right-0 z-10 ${twBgColor}`}
           >
             <div></div>
             <BouncingButton

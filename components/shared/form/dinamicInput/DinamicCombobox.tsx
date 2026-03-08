@@ -48,7 +48,7 @@ export function DinamicCombobox<T extends FieldValues>({
           >
             <ComboboxInput
               placeholder={placeholder}
-              className={`outline-none w-full py-4 border font-bold border-neutral-200 rounded-xl transition-all duration-300 ${
+              className={`outline-none w-full py-4 border border-neutral-200 rounded-xl transition-all duration-300 ${
                 getTextColor ? getTextColor(field.value) : ""
               }`}
             />
@@ -56,7 +56,7 @@ export function DinamicCombobox<T extends FieldValues>({
             <ComboboxContent className="bg-white border border-neutral-200">
               <ComboboxEmpty>No se encontraron resultados</ComboboxEmpty>
 
-              <ComboboxList>
+              <ComboboxList className={"max-h-30"}>
                 {(item) => (
                   <ComboboxItem
                     key={item}

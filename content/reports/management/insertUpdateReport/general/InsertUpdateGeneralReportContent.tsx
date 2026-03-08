@@ -1,17 +1,14 @@
 "use client";
 
 /* COMPONENTS */
-import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxItem,
-  ComboboxList,
-  ComboboxTrigger,
-  ComboboxValue,
-} from "@/components/ui/combobox";
-import { Button } from "@/components/ui/button";
+import { GeneralQuestions } from "@/content/reports/management/insertUpdateReport/general/generalQuestions/GeneralQuestions";
+import { DinamicCombobox } from "@/components/shared/form/dinamicInput/DinamicCombobox";
+import { DinamicInputText } from "@/components/shared/form/dinamicInput/DinamicInputText";
+import { DinamicInputNumber } from "@/components/shared/form/dinamicInput/DinamicInputNumber";
+import { DinamicInputTextArea } from "@/components/shared/form/dinamicInput/DinamicInputTextArea";
+import { DinamicBouncingButton } from "@/components/shared/form/dinamicBouncingButton/DinamicBouncingButton";
+import { DinamicInsertUpdateUI } from "@/components/shared/dinamicInsertUpdateUI/DinamicInsertUpdateUI";
+import { BoxSkeleton } from "@/components/shared/boxSkeleton/BoxSkeleton";
 
 /* DATA */
 import {
@@ -21,27 +18,18 @@ import {
 import { reportsQuestions } from "@/content/reports/data/questions/reportsQuestions";
 
 /* HOOKS */
-import { useForm, Controller, FormProvider } from "react-hook-form";
-import { useState } from "react";
+import { useForm, FormProvider } from "react-hook-form";
+import { useState, useEffect } from "react";
 
 /* ICONS */
-import {
-  ArrowLeft,
-  Check,
-  ChevronDown,
-  CircleCheckBig,
-  CircleOff,
-  Loader,
-  Save,
-  X,
-} from "lucide-react";
+import { Save } from "lucide-react";
 
 /* NAVIGATION */
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 
 /* SERVER ACTION */
-// import { insertReport } from "@/temp/reports/insertReport";
+import { selectGeneralReportById } from "@/temp/Reports/Infrastructure/reportsController";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
@@ -51,13 +39,10 @@ import { ReportFormValues } from "@/content/reports/types/reports/reportFormValu
 
 /* UTILS */
 import { getDate, getWeekNumber } from "@/utils/date";
-import { useEffect } from "react";
+import { isPointerArea } from "@/utils/pointerArea";
 
 /* LIBS */
 import { motion } from "framer-motion";
-import { DinamicInsertUpdateUI } from "@/components/shared/dinamicInsertUpdateUI/DinamicInsertUpdateUI";
-import { selectGeneralReportById } from "@/temp/Reports/Infrastructure/reportsController";
-import { isPointerArea } from "@/utils/pointerArea";
 
 export function InsertUpdateGeneralReportContent({
   isUpdate,
@@ -71,7 +56,6 @@ export function InsertUpdateGeneralReportContent({
   const { setAnnouncement } = useAnnouncement();
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
-  let count = 0;
 
   const rawPath = pathname.split("/").at(isUpdate ? -3 : -2);
   const path = rawPath ?? null;
@@ -260,444 +244,208 @@ export function InsertUpdateGeneralReportContent({
         }
         leftTitle="Preguntas de auditoría"
         rightTitle="Guardar"
-        leftContent={reportsQuestions[path ?? ""].sections.map(
-          (section, index) => (
-            <div key={index} className="mb-4">
-              <p className="font-light text-lg text-[#00A0D0] mb-2">
-                {section.name}
-              </p>
-              <div className="flex flex-col">
-                {section.questions.map((question, index) => {
-                  count++;
-
-                  return (
-                    <div
-                      key={index}
-                      className={`p-4 rounded-2xl ${index % 2 === 0 ? "" : "bg-neutral-100"}`}
-                    >
-                      <div className="flex gap-2 justify-between">
-                        <div className="flex gap-2">
-                          <div className="rounded-full border border-[#00A0D0] w-7 h-7 flex items-center justify-center min-h-7 min-w-7">
-                            <p className="text-xs text-[#00A0D0]">{count}</p>
-                          </div>
-                          <p>{question.sentence}</p>
-                        </div>
-
-                        <Controller
-                          control={methods.control}
-                          name={`respuestas.${count - 1}`}
-                          defaultValue={false}
-                          render={({ field }) => (
-                            <div className="flex gap-2">
-                              <BouncingButton
-                                action={() => field.onChange(true)}
-                                backgroundColorHover="#22c55e"
-                                backgroundColor={`${field.value === true ? "#22c55e" : "#ffffff"}`}
-                                textColor={`${field.value === true ? "#ffffff" : "#22c55e"}`}
-                                textColorHover="#ffffff"
-                                border="2px solid #22c55e"
-                                borderHover="2px solid #22c55e"
-                                twClassName="w-fit h-fit px-4 py-2 rounded-2xl"
-                                disabled={false}
-                              >
-                                <Check className="size-4" />
-                                <p>Pasa</p>
-                              </BouncingButton>
-                              <BouncingButton
-                                action={() => field.onChange(false)}
-                                backgroundColorHover="#ef4444"
-                                backgroundColor={`${field.value !== true ? "#ef4444" : "#ffffff"}`}
-                                textColor={`${field.value !== true ? "#ffffff" : "#ef4444"}`}
-                                textColorHover="#ffffff"
-                                border="2px solid #ef4444"
-                                borderHover="2px solid #ef4444"
-                                twClassName="w-fit h-fit px-4 py-2 rounded-2xl"
-                                disabled={false}
-                              >
-                                <X className="size-4" />
-                                <p>Falla</p>
-                              </BouncingButton>
-                            </div>
-                          )}
-                        />
-                      </div>
-
-                      {question.subquestions && (
-                        <div className="ml-12 mt-2 gap-2 flex flex-col">
-                          {question.subquestions.map((subQuestion, index) => (
-                            <div key={index} className="flex gap-2">
-                              <div className="rounded-full border border-[#00A0D0] w-7 h-7 flex items-center justify-center min-h-7 min-w-7">
-                                <p className="text-xs text-[#00A0D0]">
-                                  {count}.{index + 1}
-                                </p>
-                              </div>
-                              <p className="text-neutral-500">
-                                {subQuestion.sentence}
-                              </p>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          ),
-        )}
+        leftContent={
+          loading ? (
+            <BoxSkeleton />
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+            >
+              <GeneralQuestions
+                sections={reportsQuestions[path ?? ""].sections}
+              />
+            </motion.div>
+          )
+        }
         rightContent={
-          <>
-            {/* LINEAS */}
-            {(path === "baldwin-state" ||
-              path === "baldwin-reserve-stacking" ||
-              path === "baldwin-reserve-packing" ||
-              path === "baldwin-reserve-general") && (
-              <div className="flex flex-col gap-2">
-                <p>Línea</p>
-                <Controller
-                  control={methods.control}
-                  name="linea"
-                  rules={{
-                    required: "La línea es necesaria",
-                  }}
-                  render={({ field }) => (
-                    <Combobox
+          loading ? (
+            <BoxSkeleton />
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+              className="h-[calc(100%-1rem)]"
+            >
+              <div className="flex flex-col justify-between h-full">
+                <div>
+                  {/* LINEAS */}
+                  {(path === "baldwin-state" ||
+                    path === "baldwin-reserve-stacking" ||
+                    path === "baldwin-reserve-packing" ||
+                    path === "baldwin-reserve-general") && (
+                    <DinamicCombobox<ReportFormValues>
+                      name="linea"
+                      label="Línea"
                       items={lineas}
-                      value={field.value}
-                      onValueChange={(value) =>
-                        field.onChange(lineas.find((l) => l === value))
-                      }
-                    >
-                      <ComboboxTrigger
-                        render={
-                          <Button className="w-full hover:hover:bg-[#d9f2f9] cursor-pointer justify-center font-normal flex items-center bg-white text-black border border-neutral-200 rounded-xl">
-                            <div className="w-full flex justify-start overflow-x-hidden">
-                              <p className="truncate">
-                                <ComboboxValue />
-                              </p>
-
-                              {field.value === "" && (
-                                <p className="truncate text-neutral-500">
-                                  Seleccione una línea
-                                </p>
-                              )}
-                            </div>
-
-                            <ChevronDown className="size-4" />
-                          </Button>
-                        }
-                      />
-                      <ComboboxContent>
-                        <ComboboxEmpty>No items found.</ComboboxEmpty>
-                        <ComboboxList className={"h-30"}>
-                          {(item) => (
-                            <ComboboxItem
-                              className={"overflow-x-hidden w-full"}
-                              key={item}
-                              value={item}
-                            >
-                              <div className="w-full">
-                                <p className="truncate">{item}</p>
-                              </div>
-                            </ComboboxItem>
-                          )}
-                        </ComboboxList>
-                      </ComboboxContent>
-                    </Combobox>
+                      placeholder="Seleccionar línea"
+                      rules={{
+                        required: "La línea es necesaria",
+                      }}
+                    />
                   )}
-                />
-                {methods.formState.errors.linea && (
-                  <p className="text-red-500">
-                    {methods.formState.errors.linea.message}
-                  </p>
-                )}
-              </div>
-            )}
 
-            {/* COORDINADOR */}
-            {path === "baldwin-state" && (
-              <div className="flex flex-col gap-2">
-                <p>Coordinador</p>
-                <Controller
-                  name="coord"
-                  control={methods.control}
-                  rules={{
-                    required: "El nombre del coordinador es necesario",
-                  }}
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <input
-                      onBlur={onBlur}
-                      onChange={onChange}
-                      value={value}
-                      type="text"
-                      id="coord"
-                      minLength={2}
-                      maxLength={50}
+                  {/* COORDINADOR */}
+                  {path === "baldwin-state" && (
+                    <DinamicInputText<ReportFormValues>
+                      name="coord"
+                      label="Coordinador"
                       placeholder="Ingrese el nombre del coordinador"
-                      className="w-full text-sm h-fit px-4 py-2 bg-transparent outline-none border border-neutral-200 rounded-xl hover:hover:bg-[#d9f2f9] transition-all duration-300 placeholder:text-neutral-500"
+                      rules={{
+                        required: "El nombre del coordinador es necesario",
+                        minLength: {
+                          value: 2,
+                          message:
+                            "El nombre del coordinador debe tener al menos 2 caracteres",
+                        },
+                        maxLength: {
+                          value: 50,
+                          message:
+                            "El nombre del coordinador no puede tener más de 50 caracteres",
+                        },
+                      }}
                     />
                   )}
-                />
-                {methods.formState.errors.coord && (
-                  <p className="text-red-500">
-                    {methods.formState.errors.coord?.message}
-                  </p>
-                )}
-              </div>
-            )}
 
-            {/* PICKER */}
-            {path === "baldwin-reserve-supply" && (
-              <div className="flex flex-col gap-2">
-                <p>Picker</p>
-                <Controller
-                  name="picker"
-                  control={methods.control}
-                  rules={{
-                    required: "El nombre del picker es necesario",
-                  }}
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <input
-                      onBlur={onBlur}
-                      onChange={onChange}
-                      value={value}
-                      type="text"
-                      id="picker"
-                      minLength={2}
-                      maxLength={50}
+                  {/* PICKER */}
+                  {path === "baldwin-reserve-supply" && (
+                    <DinamicInputText<ReportFormValues>
+                      name="picker"
+                      label="Picker"
                       placeholder="Ingrese el nombre del picker"
-                      className="w-full text-sm h-fit px-4 py-2 bg-transparent outline-none border border-neutral-200 rounded-xl hover:hover:bg-[#d9f2f9] transition-all duration-300 placeholder:text-neutral-500"
+                      rules={{
+                        required: "El nombre del picker es necesario",
+                        minLength: {
+                          value: 2,
+                          message:
+                            "El nombre del picker debe tener al menos 2 caracteres",
+                        },
+                        maxLength: {
+                          value: 50,
+                          message:
+                            "El nombre del picker no puede tener más de 50 caracteres",
+                        },
+                      }}
                     />
                   )}
-                />
-                {methods.formState.errors.picker && (
-                  <p className="text-red-500">
-                    {methods.formState.errors.picker?.message}
-                  </p>
-                )}
-              </div>
-            )}
 
-            {/* UBICACIÓN */}
-            {path === "pizza-tray" && (
-              <div className="flex flex-col gap-2">
-                <p>Ubicación</p>
-                <Controller
-                  name="ubicacion"
-                  control={methods.control}
-                  rules={{
-                    required: "La ubicación es necesaria",
-                  }}
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <input
-                      onBlur={onBlur}
-                      onChange={onChange}
-                      value={value}
-                      type="text"
-                      id="ubicacion"
-                      minLength={2}
-                      maxLength={50}
+                  {/* UBICACIÓN */}
+                  {path === "pizza-tray" && (
+                    <DinamicInputText<ReportFormValues>
+                      name="ubicacion"
+                      label="Ubicación"
                       placeholder="Ingrese el nombre de ubicación"
-                      className="w-full text-sm h-fit px-4 py-2 bg-transparent outline-none border border-neutral-200 rounded-xl hover:hover:bg-[#d9f2f9] transition-all duration-300 placeholder:text-neutral-500"
+                      rules={{
+                        required: "El nombre de ubicación es necesario",
+                        minLength: {
+                          value: 2,
+                          message:
+                            "El nombre de ubicación debe tener al menos 2 caracteres",
+                        },
+                        maxLength: {
+                          value: 50,
+                          message:
+                            "El nombre de ubicación no puede tener más de 50 caracteres",
+                        },
+                      }}
                     />
                   )}
-                />
-                {methods.formState.errors.ubicacion && (
-                  <p className="text-red-500">
-                    {methods.formState.errors.ubicacion?.message}
-                  </p>
-                )}
-              </div>
-            )}
 
-            {/* WORKTABLES */}
-            {path === "display-area" && (
-              <div className="flex flex-col gap-2">
-                <p>Worktable</p>
-                <Controller
-                  control={methods.control}
-                  name="worktable"
-                  rules={{
-                    required: "El worktable es necesario",
-                  }}
-                  render={({ field }) => (
-                    <Combobox
+                  {/* WORKTABLES */}
+                  {path === "display-area" && (
+                    <DinamicCombobox<ReportFormValues>
+                      name="worktable"
+                      label="Worktable"
                       items={worktables}
-                      value={field.value}
-                      onValueChange={(value) =>
-                        field.onChange(worktables.find((w) => w === value))
-                      }
-                    >
-                      <ComboboxTrigger
-                        render={
-                          <Button className="w-full hover:hover:bg-[#d9f2f9] cursor-pointer justify-center font-normal flex items-center bg-white text-black border border-neutral-200 rounded-xl">
-                            <div className="w-full flex justify-start overflow-x-hidden">
-                              <p className="truncate">
-                                <ComboboxValue />
-                              </p>
-
-                              {field.value === "" && (
-                                <p className="truncate text-neutral-500">
-                                  Seleccione una worktable
-                                </p>
-                              )}
-                            </div>
-
-                            <ChevronDown className="size-4" />
-                          </Button>
-                        }
-                      />
-                      <ComboboxContent className={"h-30 w-30 overflow-y-auto"}>
-                        <ComboboxEmpty>No items found.</ComboboxEmpty>
-                        <ComboboxList>
-                          {(item) => (
-                            <ComboboxItem
-                              className={"overflow-x-hidden w-full"}
-                              key={item}
-                              value={item}
-                            >
-                              <div className="w-full">
-                                <p className="truncate">{item}</p>
-                              </div>
-                            </ComboboxItem>
-                          )}
-                        </ComboboxList>
-                      </ComboboxContent>
-                    </Combobox>
+                      placeholder="Seleccionar worktable"
+                      rules={{
+                        required: "La worktable es necesaria",
+                      }}
+                    />
                   )}
-                />
-                {methods.formState.errors.worktable && (
-                  <p className="text-red-500">
-                    {methods.formState.errors.worktable.message}
-                  </p>
-                )}
-              </div>
-            )}
 
-            {/* NIVEL */}
-            {path === "pizza-tray" && (
-              <div className="flex flex-col gap-2">
-                <p>Nivel</p>
-                <Controller
-                  name="nivel"
-                  control={methods.control}
-                  rules={{ required: "El nivel es necesario" }}
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <input
-                      onBlur={onBlur}
-                      onChange={(e) => {
-                        const val = e.target.value.replace(/[^0-9]/g, ""); // Elimina cualquier carácter no numérico
-                        onChange(val); // Actualiza el estado con solo números
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === "e" || e.key === "-" || e.key === "+") {
-                          e.preventDefault(); // Bloquea la entrada de estos caracteres
-                        }
-                      }}
-                      value={value}
-                      type="text" // Cambia a "text" para evitar comportamientos extraños con números
-                      inputMode="numeric" // Ayuda en móviles
-                      pattern="[0-9]*" // Solo números
-                      id="nivel"
-                      placeholder="1"
+                  {/* NIVEL */}
+                  {path === "pizza-tray" && (
+                    <DinamicInputNumber<ReportFormValues>
+                      name="nivel"
+                      label="Nivel"
+                      placeholder="Ingrese el nivel"
                       min={1}
                       max={99}
-                      className="w-full text-sm h-fit px-4 py-2 bg-transparent outline-none border border-neutral-200 rounded-xl hover:hover:bg-[#d9f2f9] transition-all duration-300 placeholder:text-neutral-500"
+                      rules={{
+                        required: "El nivel es necesario",
+                      }}
                     />
                   )}
-                />
-                {methods.formState.errors.nivel && (
-                  <p className="text-red-500">
-                    {methods.formState.errors.nivel.message}
-                  </p>
-                )}
-              </div>
-            )}
 
-            {/* COMENTARIOS */}
-            <div className="flex flex-col gap-2">
-              <p className="truncate">Comentarios (opcional)</p>
-              <Controller
-                name="comentarios"
-                control={methods.control}
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <textarea
-                    onBlur={onBlur}
-                    onChange={onChange}
-                    value={value}
-                    id="comentarios"
-                    minLength={30}
-                    maxLength={750}
+                  {/* COMENTARIOS */}
+                  <DinamicInputTextArea<ReportFormValues>
+                    name="comentarios"
+                    label="Comentarios"
                     placeholder="Ingrese comentarios extra"
-                    className="w-full text-sm resize-none h-40 px-4 py-2 bg-transparent outline-none border border-neutral-200 rounded-xl hover:hover:bg-[#d9f2f9] transition-all duration-300 placeholder:text-neutral-500"
+                    rules={{
+                      minLength: {
+                        value: 2,
+                        message:
+                          "La descripción debe tener al menos 2 caracteres",
+                      },
+                      maxLength: {
+                        value: 750,
+                        message:
+                          "La descripción no puede tener más de 750 caracteres",
+                      },
+                    }}
                   />
-                )}
-              />
-              {methods.formState.errors.comentarios && (
-                <p className="ml-1 text-red-500">
-                  {methods.formState.errors.comentarios?.message}
-                </p>
-              )}
-            </div>
 
-            {/* ARCHIVO */}
-            <div className="flex flex-col gap-2 h-full">
-              <p className="truncate">Adjuntar archivo (opcional)</p>
-              <input
-                type="file"
-                className="w-full text-sm h-fit px-4 py-2 bg-transparent outline-none border border-neutral-200 rounded-xl hover:hover:bg-[#d9f2f9] transition-all duration-300 placeholder:text-neutral-500 cursor-pointer"
-                {...methods.register("archivo", {
-                  /* required: "Archivo requerido", */
-                  validate: (value) => {
-                    if (value instanceof FileList) {
-                      const file = value.item(0);
+                  {/* ARCHIVO */}
+                  <div className="flex flex-col gap-2">
+                    <p className="truncate">Adjuntar archivo (opcional)</p>
+                    <input
+                      type="file"
+                      className="w-full text-sm h-fit px-4 py-2 bg-transparent outline-none border border-neutral-200 rounded-xl hover:hover:bg-[#d9f2f9] transition-all duration-300 placeholder:text-neutral-500 cursor-pointer"
+                      {...methods.register("archivo", {
+                        /* required: "Archivo requerido", */
+                        validate: (value) => {
+                          if (value instanceof FileList) {
+                            const file = value.item(0);
 
-                      if (file) {
-                        if (file.size > 5_000_000)
-                          return "El archivo debe pesar menos de 5MB";
-                      }
-                      //return "Archivo requerido";
+                            if (file) {
+                              if (file.size > 5_000_000)
+                                return "El archivo debe pesar menos de 5MB";
+                            }
+                            //return "Archivo requerido";
+                          }
+
+                          return true;
+                        },
+                      })}
+                    />
+                    {methods.formState.errors.archivo && (
+                      <p className="ml-1 text-red-500">
+                        {methods.formState.errors.archivo?.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                {/* BOTÓN GUARDAR */}
+                <div className="w-full sticky bottom-0 py-4 bg-white">
+                  <DinamicBouncingButton
+                    action={
+                      saving || loading
+                        ? () => {}
+                        : methods.handleSubmit(onSubmit)
                     }
-
-                    return true;
-                  },
-                })}
-              />
-              {methods.formState.errors.archivo && (
-                <p className="ml-1 text-red-500">
-                  {methods.formState.errors.archivo?.message}
-                </p>
-              )}
-            </div>
-
-            {/* BOTÓN GUARDAR */}
-            <div className="w-full sticky bottom-0 py-4 bg-white">
-              <BouncingButton
-                action={saving ? () => {} : methods.handleSubmit(onSubmit)}
-                backgroundColorHover="#ffffff"
-                backgroundColor="#00A0D0"
-                textColor="#ffffff"
-                textColorHover="#00A0D0"
-                border="2px solid #ffffff"
-                borderHover="2px solid #00A0D0"
-                twClassName="w-full h-fit px-4 py-2 rounded-2xl"
-                disabled={saving ? true : false}
-              >
-                {saving ? (
-                  <>
-                    <span className="text-transparent">E</span>
-                    <Loader className="size-4 animate-spin" />
-                    <span className="text-transparent">E</span>
-                  </>
-                ) : (
-                  <>
-                    <Save className="size-4" />
-                    <span>Guardar</span>
-                  </>
-                )}
-              </BouncingButton>
-            </div>
-          </>
+                    disabled={saving || loading ? true : false}
+                    spin={saving || loading ? true : false}
+                    text="Guardar"
+                    Icon={Save}
+                  />
+                </div>
+              </div>
+            </motion.div>
+          )
         }
       />
     </FormProvider>

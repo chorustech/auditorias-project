@@ -1,6 +1,6 @@
 "use client";
 
-import { UserType } from "@/temp/users1/getUsers";
+import { UserType } from "@/temp/Users/Infrastructure/Types/userData";
 import { useRouter } from "next/navigation";
 import { SquarePen, Trash2 } from "lucide-react";
 import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";

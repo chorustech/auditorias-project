@@ -19,11 +19,11 @@ export function DinamicInsertUpdateUIHeader({
       <BouncingButton
         action={backAction}
         backgroundColorHover="#ffffff"
-        backgroundColor="#22c55e"
+        backgroundColor="#00A0D0"
         textColor="#ffffff"
-        textColorHover="#22c55e"
+        textColorHover="#00A0D0"
         border="2px solid #ffffff"
-        borderHover="2px solid #22c55e"
+        borderHover="2px solid #00A0D0"
         twClassName="w-fit h-fit p-4 rounded-2xl"
         disabled={false}
       >
