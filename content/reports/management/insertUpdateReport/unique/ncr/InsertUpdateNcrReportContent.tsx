@@ -72,12 +72,20 @@ export function InsertUpdateNcrReportContent({
       const response = await insertNcrReport(formData);
 
       if (response.ok) {
-        setAnnouncement(true, true, response.message);
+        setAnnouncement({
+          isActivated: true,
+          isOk: true,
+          message: response.message,
+        });
         console.log(data);
 
         //methods.reset();
       } else {
-        setAnnouncement(true, false, response.message);
+        setAnnouncement({
+          isActivated: true,
+          isOk: false,
+          message: response.message,
+        });
       }
 
       setSaving(false);

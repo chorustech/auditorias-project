@@ -62,11 +62,13 @@ export function EolaRowContent({
               </BouncingButton>
               <BouncingButton
                 action={() => {
-                  setModal(
-                    true,
-                    "Eliminar",
-                    <DeleteReportContent report_id={report.data.id ?? 0} />,
-                  );
+                  setModal({
+                    isActivated: true,
+                    title: "Eliminar",
+                    body: (
+                      <DeleteReportContent report_id={report.data.id ?? 0} />
+                    ),
+                  });
                 }}
                 backgroundColorHover="#ffffff"
                 backgroundColor="#ef4444"

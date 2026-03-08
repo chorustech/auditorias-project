@@ -13,23 +13,32 @@ import { useAnnouncement } from "@/stores/announcement/announcementStore";
 import { motion } from "framer-motion";
 
 export function Announcement() {
-  const { isActivated, isOk, message, setAnnouncement } = useAnnouncement();
+  const { announcement, setAnnouncement } = useAnnouncement();
 
   useEffect(() => {
-    if (isActivated) {
+    if (announcement.isActivated) {
       const timer = setTimeout(() => {
-        setAnnouncement(false, isOk ?? false, message ?? "");
+        setAnnouncement({
+          isActivated: false,
+          isOk: announcement.isOk,
+          message: announcement.message,
+        });
       }, 5000);
       return () => clearTimeout(timer);
     }
-  }, [isActivated, isOk, message, setAnnouncement]);
+  }, [
+    setAnnouncement,
+    announcement.isActivated,
+    announcement.isOk,
+    announcement.message,
+  ]);
 
   return (
     <motion.div
-      className={`fixed bottom-0 left-0 z-80 flex items-center justify-center w-full p-4 h-fit rounded-t-2xl ${isOk ? "bg-green-500" : "bg-red-500"}`}
+      className={`fixed bottom-0 left-0 z-80 flex items-center justify-center w-full p-4 h-fit rounded-t-2xl ${announcement.isOk ? "bg-green-500" : "bg-red-500"}`}
       initial={{ y: "100%" }} // Empieza oculto
       animate={{
-        y: isActivated ? 0 : "100%", // Se mueve arriba o desaparece
+        y: announcement.isActivated ? 0 : "100%", // Se mueve arriba o desaparece
         transition: {
           duration: 0.6,
           type: "spring",
@@ -48,12 +57,12 @@ export function Announcement() {
       }}
     >
       <div className="flex gap-2 items-center">
-        {isOk ? (
+        {announcement.isOk ? (
           <CircleCheckBig className="size-4 text-white" />
         ) : (
           <CircleOff className="size-4 text-white" />
         )}
-        <p className="text-white">{message}</p>
+        <p className="text-white">{announcement.message}</p>
       </div>
     </motion.div>
   );

@@ -13,7 +13,7 @@ import { deleteReport } from "@/temp/Reports/Infrastructure/reportsController";
 export function DeleteReportContent({ report_id }: { report_id: number }) {
   const [deleting, setDeleting] = useState(false);
   const { setAnnouncement } = useAnnouncement();
-  const { modalBody, modalTitle, setModal } = useModal();
+  const { modal, setModal } = useModal();
 
   const methods = useForm<{ id: number }>();
 
@@ -24,10 +24,22 @@ export function DeleteReportContent({ report_id }: { report_id: number }) {
       const response = await deleteReport(report_id);
 
       if (response.ok) {
-        setAnnouncement(true, true, response.message);
-        setModal(false, modalTitle ?? "", modalBody);
+        setAnnouncement({
+          isActivated: true,
+          isOk: true,
+          message: response.message,
+        });
+        setModal({
+          isActivated: false,
+          title: modal.title ?? "",
+          body: modal.body,
+        });
       } else {
-        setAnnouncement(true, false, response.message);
+        setAnnouncement({
+          isActivated: true,
+          isOk: false,
+          message: response.message,
+        });
       }
 
       setDeleting(false);
@@ -42,8 +54,8 @@ export function DeleteReportContent({ report_id }: { report_id: number }) {
         <p>
           Al dar clic en{" "}
           <span className="text-red-500 font-semibold">Eliminar</span>, el
-          reporte con ID <span className="font-semibold">{report_id}</span>{" "}
-          será eliminado
+          reporte con ID <span className="font-semibold">{report_id}</span> será
+          eliminado
         </p>
       </div>
       <div className="">
@@ -56,7 +68,11 @@ export function DeleteReportContent({ report_id }: { report_id: number }) {
                   deleting
                     ? () => {}
                     : () => {
-                        setModal(false, modalTitle ?? "", modalBody);
+                        setModal({
+                          isActivated: false,
+                          title: modal.title ?? "",
+                          body: modal.body,
+                        });
                       }
                 }
                 backgroundColorHover="#00A0D0"

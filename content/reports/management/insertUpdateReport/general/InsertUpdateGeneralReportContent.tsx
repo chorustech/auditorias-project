@@ -118,7 +118,11 @@ export function InsertUpdateGeneralReportContent({
             });
             endLoading();
           } else {
-            setAnnouncement(true, false, response.message);
+            setAnnouncement({
+              isActivated: true,
+              isOk: false,
+              message: response.message,
+            });
 
             router.push(`/reports/`);
           }
@@ -208,18 +212,30 @@ export function InsertUpdateGeneralReportContent({
       const result = await response.json();
 
       if (result.ok) {
-        setAnnouncement(true, true, result.message);
+        setAnnouncement({
+          isActivated: true,
+          isOk: true,
+          message: result.message,
+        });
         if (!isUpdate) {
           methods.reset();
         }
       } else {
-        setAnnouncement(true, false, result.message);
+        setAnnouncement({
+          isActivated: true,
+          isOk: false,
+          message: result.message,
+        });
       }
     } catch (error) {
       console.error("Error al guardar el reporte:", error);
       const errorMessage =
         error instanceof Error ? error.message : "Ocurrió un error inesperado";
-      setAnnouncement(true, false, errorMessage);
+      setAnnouncement({
+        isActivated: true,
+        isOk: false,
+        message: errorMessage,
+      });
     } finally {
       setSaving(false);
     }

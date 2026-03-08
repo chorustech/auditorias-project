@@ -17,16 +17,16 @@ export function UserRowContent({
 
   return (
     <>
-      <DinamicTd>
+      <DinamicTd twClassName="text-nowrap">
         <p>{user.numEmpleado}</p>
       </DinamicTd>
-      <DinamicTd>
+      <DinamicTd twClassName="text-nowrap">
         <p>{user.nombre}</p>
       </DinamicTd>
-      <DinamicTd>
+      <DinamicTd twClassName="text-nowrap">
         <p>{user.email}</p>
       </DinamicTd>
-      <DinamicTd>
+      <DinamicTd twClassName="text-nowrap">
         <p>{user.rol}</p>
       </DinamicTd>
 

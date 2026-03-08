@@ -75,7 +75,11 @@ export function SelectReportsContent() {
         if (response.ok) {
           setReports({ data: response.data, count: response.count });
         } else {
-          setAnnouncement(true, false, response.message);
+          setAnnouncement({
+            isActivated: true,
+            isOk: false,
+            message: response.message,
+          });
         }
       } catch (error) {
         console.log("Hubo un error al obtener los reportes: ", error);
