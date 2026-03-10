@@ -1,5 +1,6 @@
 "use server";
 
+import { IQuery } from "@/temp/Shared/Domain/Interfaces/IQuery";
 import { UserData, UserType } from "./Types/userData";
 
 export async function login(formData: FormData): Promise<{
@@ -30,7 +31,11 @@ export async function login(formData: FormData): Promise<{
   }
 }
 
-export async function selectUsers(): Promise<UserData> {
+export async function selectUsers({
+  query,
+}: {
+  query: IQuery<UserType>;
+}): Promise<UserData> {
   // Simular delay del backend
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
@@ -38,7 +43,7 @@ export async function selectUsers(): Promise<UserData> {
     data: [
       {
         id: 1,
-        numEmpleado: "2308",
+        numEmpleado: 2308,
         nombre: "Pirita Dreemurr",
         email: "pirita@assaabloy.com",
         rol: "Admin",
@@ -46,7 +51,7 @@ export async function selectUsers(): Promise<UserData> {
       },
       {
         id: 2,
-        numEmpleado: "512",
+        numEmpleado: 512,
         nombre: "Cornalina Dreemurr",
         email: "cornalina@assaabloy.com",
         rol: "Calidad",
@@ -54,6 +59,8 @@ export async function selectUsers(): Promise<UserData> {
       },
     ],
     count: 2,
+    message: "Usuarios obtenidos correctamente",
+    ok: true,
   };
 }
 
@@ -69,7 +76,7 @@ export async function selectUserById(
       message: "Usuario obtenido correctamente",
       user: {
         id: 2,
-        numEmpleado: "512",
+        numEmpleado: 512,
         nombre: "Cornalina Dreemurr",
         email: "cornalina@assaabloy.com",
         rol: "Calidad",
@@ -82,7 +89,7 @@ export async function selectUserById(
       message: "Ocurrió un error al obtener el usuario",
       user: {
         id: 0,
-        numEmpleado: "",
+        numEmpleado: 0,
         nombre: "",
         email: "",
         rol: "",

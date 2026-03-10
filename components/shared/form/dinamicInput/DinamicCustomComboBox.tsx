@@ -161,7 +161,7 @@ function ComboboxInternal({
         onKeyDown={handleKeyDown}
         className="w-full py-1 pl-4 pr-1 border border-neutral-200 rounded-xl cursor-pointer flex items-center justify-between outline-none focus:ring-2 focus:ring-neutral-300 text-sm transition-all duration-300"
       >
-        <span className={value ? "text-black" : "text-gray-600"}>
+        <span className={`truncate ${value ? "text-black" : "text-gray-600"}`}>
           {value || placeholder || "Seleccionar"}
         </span>
 
@@ -184,7 +184,7 @@ function ComboboxInternal({
                 key={item}
                 onClick={() => selectItem(item)}
                 onMouseEnter={() => setHighlightedIndex(index)}
-                className={`px-4 py-2 flex rounded-lg items-center justify-between cursor-pointer text-sm transition-colors
+                className={`px-4 py-2 flex rounded-lg items-center truncate justify-between cursor-pointer text-sm transition-colors
                   ${isHighlighted ? "bg-neutral-200" : ""}
                   ${isSelected ? "" : ""}
                 `}

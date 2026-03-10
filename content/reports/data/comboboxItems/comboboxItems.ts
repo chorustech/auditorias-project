@@ -84,6 +84,8 @@ export const porcentajesFalla: string[] = [
   "100",
 ];
 
+export const reportsPerPage: string[] = ["10", "25", "50", "100"];
+
 export const reportsOrder: string[] = ["Ascendente", "Descendente"];
 
 export const reportsOrderBy: string[] = ["ID", "Fecha", "nro. Empleado"];

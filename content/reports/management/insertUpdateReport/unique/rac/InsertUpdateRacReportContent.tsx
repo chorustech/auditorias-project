@@ -41,7 +41,7 @@ import {
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
 
 /* TYPES */
-import { RacFormValues } from "@/content/reports/types/reports/racFormValues";
+import { RacFormValues } from "@/content/reports/types/forms/racFormValues";
 
 /* UTILS */
 import { getDate, getWeekNumber } from "@/utils/date";

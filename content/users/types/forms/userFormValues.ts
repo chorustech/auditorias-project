@@ -1,6 +1,6 @@
 export type UserFormValues = {
   id: number;
-  numEmpleado: string;
+  numEmpleado: number;
   nombre: string;
   email: string;
   rol: string;

@@ -36,10 +36,11 @@ import {
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
 
 /* TYPES */
-import { UserFormValues } from "@/content/users/types/UserFormValues";
+import { UserFormValues } from "@/content/users/types/forms/UserFormValues";
 
 /* UTILS */
 import { getDate, getWeekNumber } from "@/utils/date";
+import { DinamicInputNumber } from "@/components/shared/form/dinamicInput/DinamicInputNumber";
 
 export function InsertUpdateUserContent({
   isUpdate,
@@ -92,7 +93,7 @@ export function InsertUpdateUserContent({
           id: 0,
           email: "",
           nombre: "",
-          numEmpleado: "",
+          numEmpleado: 0,
           rol: "",
           estado: "",
         });
@@ -112,7 +113,7 @@ export function InsertUpdateUserContent({
       formData.append("id", data.id.toString());
       formData.append("email", data.email);
       formData.append("nombre", data.nombre);
-      formData.append("numEmpleado", data.numEmpleado);
+      formData.append("numEmpleado", data.numEmpleado.toString());
       formData.append("rol", data.rol);
       formData.append("estado", data.estado);
 
@@ -166,22 +167,14 @@ export function InsertUpdateUserContent({
               transition={{ duration: 0.5, ease: "easeInOut" }}
             >
               {/* NÚMERO DE EMPLEADO */}
-              <DinamicInputText<UserFormValues>
+              <DinamicInputNumber<UserFormValues>
                 name="numEmpleado"
                 label="nro. Empleado"
                 placeholder="Ingrese el número de empleado"
+                min={1}
+                max={99}
                 rules={{
                   required: "El número de empleado es necesario",
-                  minLength: {
-                    value: 2,
-                    message:
-                      "El número de empleado debe tener al menos 2 caracteres",
-                  },
-                  maxLength: {
-                    value: 50,
-                    message:
-                      "El número de empleado no puede tener más de 50 caracteres",
-                  },
                 }}
               />
 

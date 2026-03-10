@@ -6,12 +6,13 @@ import { DinamicTable } from "@/components/shared/dinamicTable/DinamicTable";
 import { DinamicTh } from "@/components/shared/dinamicTable/dinamicRow/DinamicTh";
 import { DinamicRow } from "@/components/shared/dinamicTable/dinamicRow/DinamicRow";
 import { UserRowContent } from "./rowContent/UserRowContent";
+import { FilterUsersContent } from "@/content/users/management/selectUsers/filterUsers/FilterUsersContent";
 
 /* DATA */
-import { usersColumns } from "../../data/columns/usersColumns";
+import { usersColumns } from "@/content/users/data/columns/usersColumns";
 
 /* HOOKS */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 /* ICONS */
 import { House } from "lucide-react";
@@ -20,30 +21,111 @@ import { House } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 /* TYPES */
-import { UserData } from "@/temp/Users/Infrastructure/Types/userData";
+import { UserType } from "@/temp/Users/Infrastructure/Types/userData";
 
 /* SERVER ACTION */
 import { selectUsers } from "@/temp/Users/Infrastructure/usersController";
 
+/* STORES */
+import { useAnnouncement } from "@/stores/announcement/announcementStore";
+import { useUsersFilter } from "@/stores/filter/users/filterUsersStore";
+import { useModal } from "@/stores/modal/modalStore";
+
+/* UTILS */
+import { getTwBgColorTable } from "@/utils/getTwBgColorTable";
+
 export function SelectUsersContent() {
   const router = useRouter();
-  const [users, setUsers] = useState<UserData>({ data: [], count: 0 });
+  const [users, setUsers] = useState<{ data: UserType[]; count: number }>({
+    data: [],
+    count: 0,
+  });
   const [loading, setLoading] = useState(true);
 
-  const getTwBgColor = ({ index }: { index: number }) => {
-    return index % 2 ? "bg-neutral-100" : "bg-white";
+  const { setModal } = useModal();
+  const { setAnnouncement } = useAnnouncement();
+  const { filter, setFilter } = useUsersFilter();
+
+  const updateFilter = (changes: Partial<typeof filter>) => {
+    if (!filter) return;
+
+    setFilter({
+      ...filter,
+      ...changes,
+    });
   };
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      const data = await selectUsers();
+  const nextPage = () => {
+    if (!filter) return;
 
-      setUsers(data);
+    updateFilter({
+      page: filter.page + 1,
+    });
+  };
+
+  const prevPage = () => {
+    if (!filter) return;
+
+    updateFilter({
+      page: Math.max(filter.page - 1, 0),
+    });
+  };
+
+  const hasNextPage =
+    filter && (filter.page + 1) * filter.perPage < users.count;
+
+  const fetchUsers = useCallback(async () => {
+    if (!filter) return;
+
+    console.log(filter);
+
+    try {
+      setLoading(true);
+
+      const response = await selectUsers({
+        query: {
+          page: filter.page,
+          perPage: filter.perPage,
+          order: filter.order,
+          orderBy: filter.orderBy,
+          checkFilters: filter.checkFilters,
+          filters: filter.filters,
+        },
+      });
+
+      if (response.ok) {
+        setUsers({
+          data: response.data,
+          count: response.count,
+        });
+      } else {
+        setAnnouncement({
+          isActivated: true,
+          isOk: false,
+          message: response.message,
+        });
+      }
+    } catch (error) {
+      console.log("Hubo un error al obtener los usuarios:", error);
+    } finally {
       setLoading(false);
-    };
+    }
+  }, [filter, setAnnouncement]);
 
+  useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [fetchUsers]);
+
+  useEffect(() => {
+    setFilter({
+      page: 0,
+      perPage: 10,
+      order: "asc",
+      orderBy: "id",
+      checkFilters: false,
+      filters: [],
+    });
+  }, [setFilter]);
 
   return (
     <SectionContainer>
@@ -52,10 +134,13 @@ export function SelectUsersContent() {
           <DinamicTh key={index} column={column} />
         ))}
         tbodyRows={users.data.map((user, index) => (
-          <DinamicRow key={index} twBgColor={getTwBgColor({ index: index })}>
+          <DinamicRow
+            key={index}
+            twBgColor={getTwBgColorTable({ index: index })}
+          >
             <UserRowContent
               user={user}
-              twBgColor={`${getTwBgColor({ index: index })}`}
+              twBgColor={`${getTwBgColorTable({ index: index })}`}
             />
           </DinamicRow>
         ))}
@@ -63,16 +148,26 @@ export function SelectUsersContent() {
         count={users.count}
         type={"usuario"}
         backAction={() => router.push("/home")}
-        filterAction={() => {}}
+        filterAction={() =>
+          setModal({
+            isActivated: true,
+            title: "Filtrar",
+            body: <FilterUsersContent />,
+          })
+        }
         addAction={() => router.push("/users/add")}
         excelAction={() => {}}
         backContent={<House className="size-5" />}
-        goBack={false}
-        goNext={true}
-        goBackAction={() => {}}
-        goNextAction={() => {}}
-        pageFirstHalf={"1"}
-        pageSecondHalf={"1"}
+        goBack={filter?.page === 0 ? false : true}
+        goNext={!hasNextPage}
+        goBackAction={prevPage}
+        goNextAction={nextPage}
+        pageFirstHalf={(filter?.page ?? 0) + 1}
+        pageSecondHalf={
+          Math.ceil(users.count ?? 0) / (filter?.perPage ?? 1) === 0
+            ? "1"
+            : Math.ceil((users.count ?? 0) / (filter?.perPage ?? 1))
+        }
       />
     </SectionContainer>
   );

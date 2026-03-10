@@ -3,17 +3,18 @@
 /* COMPONENTS */
 import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";
 import { SimpleCombobox } from "@/components/shared/form/dinamicInput/DinamicCustomComboBox";
-import { DinamicInputDate } from "@/components/shared/form/dinamicInput/DinamicInputDate";
 import { DinamicInputNumber } from "@/components/shared/form/dinamicInput/DinamicInputNumber";
 
 /* DATA */
 import {
-  reportsFilterBy,
-  reportsOperator,
-  reportsOrder,
-  reportsOrderBy,
-  reportsPerPage,
-} from "@/content/reports/data/comboboxItems/comboboxItems";
+  usersFilterBy,
+  usersOperator,
+  usersOrder,
+  usersOrderBy,
+  estados,
+  roles,
+  usersPerPage,
+} from "@/content/users/data/comboboxItems/comboboxItems";
 
 /* HOOKS */
 import { FormProvider, useForm, useWatch } from "react-hook-form";
@@ -24,19 +25,20 @@ import { Filter, Loader } from "lucide-react";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
-import { useReportsFilter } from "@/stores/filter/reports/filterReportsStore";
+import { useUsersFilter } from "@/stores/filter/users/filterUsersStore";
 import { useModal } from "@/stores/modal/modalStore";
 
 /* TYPES */
-import { ReportsFilterFormValues } from "@/content/reports/types/forms/reportsFilterFormValues";
+import { UsersFilterFormValues } from "@/content/users/types/forms/usersFilterFormValues";
+import { DinamicInputText } from "@/components/shared/form/dinamicInput/DinamicInputText";
 
-export function FilterReportsContent() {
+export function FilterUsersContent() {
   const [filtering, setFiltering] = useState(false);
   const { setAnnouncement } = useAnnouncement();
   const { modal, setModal } = useModal();
-  const { setFilter } = useReportsFilter();
+  const { setFilter } = useUsersFilter();
 
-  const methods = useForm<ReportsFilterFormValues>({
+  const methods = useForm<UsersFilterFormValues>({
     defaultValues: {
       page: 1,
       perPage: undefined,
@@ -45,8 +47,11 @@ export function FilterReportsContent() {
       filterBy: undefined,
       operator: undefined,
       id: undefined,
-      fecha_unica: undefined,
-      fecha_intervalo: undefined,
+      numEmpleado: undefined,
+      nombre: undefined,
+      correo: undefined,
+      rol: undefined,
+      estado: undefined,
     },
   });
 
@@ -56,7 +61,7 @@ export function FilterReportsContent() {
     defaultValue: undefined,
   });
 
-  const onSubmit = (data: ReportsFilterFormValues) => {
+  const onSubmit = (data: UsersFilterFormValues) => {
     try {
       setFiltering(true);
 
@@ -83,16 +88,22 @@ export function FilterReportsContent() {
       const orderBy =
         data.orderBy === "ID"
           ? "id"
-          : data.orderBy === "Fecha"
-            ? "fecha"
-            : "usuario_id";
+          : data.orderBy === "nro. Empleado"
+            ? "numEmpleado"
+            : data.orderBy === "Nombre"
+              ? "nombre"
+              : data.orderBy === "Correo"
+                ? "email"
+                : data.orderBy === "Estado"
+                  ? "estado"
+                  : "rol";
 
       // CHECKFILTERS
       const checkFilters = data.filterBy === "Ninguno" ? false : true;
 
       if (checkFilters) {
         // FILTERS
-        let field: "id" | "fecha" | "usuario_id";
+        let field: "id" | "numEmpleado" | "nombre" | "email" | "estado" | "rol";
         let operator: "=" | "!=" | "<" | "<=" | ">" | ">=";
         let value: string | number;
 
@@ -125,8 +136,8 @@ export function FilterReportsContent() {
               },
             ],
           });
-        } else if (data.filterBy === "Fecha") {
-          field = "fecha";
+        } else if (data.filterBy === "nro. Empleado") {
+          field = "numEmpleado";
 
           if (data.operator !== undefined) {
             operator = data.operator;
@@ -134,10 +145,89 @@ export function FilterReportsContent() {
             operator = "=";
           }
 
-          if (data.fecha_unica !== undefined) {
-            value = data.fecha_unica.toDateString();
+          if (data.id !== undefined) {
+            value = data.id;
           } else {
-            value = "2026-01-01";
+            value = 1;
+          }
+
+          setFilter({
+            page: page,
+            perPage: perPage,
+            order: order,
+            orderBy: orderBy,
+            checkFilters: checkFilters,
+            filters: [
+              {
+                field: field,
+                operator: operator,
+                value: value,
+              },
+            ],
+          });
+        } else if (data.filterBy === "Nombre") {
+          field = "nombre";
+          operator = "=";
+
+          if (data.nombre !== undefined) {
+            value = data.nombre;
+          } else {
+            value = "";
+          }
+
+          setFilter({
+            page: page,
+            perPage: perPage,
+            order: order,
+            orderBy: orderBy,
+            checkFilters: checkFilters,
+            filters: [
+              {
+                field: field,
+                operator: operator,
+                value: value,
+              },
+            ],
+          });
+        } else if (data.filterBy === "Correo") {
+          field = "email";
+          operator = "=";
+
+          if (data.correo !== undefined) {
+            value = data.correo;
+          } else {
+            value = "";
+          }
+
+          setFilter({
+            page: page,
+            perPage: perPage,
+            order: order,
+            orderBy: orderBy,
+            checkFilters: checkFilters,
+            filters: [
+              {
+                field: field,
+                operator: operator,
+                value: value,
+              },
+            ],
+          });
+        } else if (data.filterBy === "Estado") {
+          field = "estado";
+          operator = "=";
+
+          if (data.estado !== undefined) {
+            value =
+              data.estado === "Administrador"
+                ? "administrador"
+                : data.estado === "Calidad"
+                  ? "calidad"
+                  : data.estado === "Auditor"
+                    ? "auditor"
+                    : "general";
+          } else {
+            value = "general";
           }
 
           setFilter({
@@ -155,56 +245,29 @@ export function FilterReportsContent() {
             ],
           });
         } else {
-          const fecha_intervalo = data.fecha_intervalo;
+          field = "rol";
+          operator = "=";
 
-          if (fecha_intervalo !== undefined) {
-            const fecha_comienzo = fecha_intervalo.from;
-            const fecha_termino = fecha_intervalo.to;
-
-            const filtro_1: {
-              field: "fecha";
-              operator: ">=";
-              value: string;
-            } = {
-              field: "fecha",
-              operator: ">=",
-              value:
-                fecha_comienzo !== undefined
-                  ? fecha_comienzo.toDateString()
-                  : "2026-01-01",
-            };
-
-            const filtro_2: {
-              field: "fecha";
-              operator: "<=";
-              value: string;
-            } = {
-              field: "fecha",
-              operator: "<=",
-              value:
-                fecha_termino !== undefined
-                  ? fecha_termino.toDateString()
-                  : "2026-02-01",
-            };
-
-            setFilter({
-              page: page,
-              perPage: perPage,
-              order: order,
-              orderBy: orderBy,
-              checkFilters: false,
-              filters: [filtro_1, filtro_2],
-            });
+          if (data.estado !== undefined) {
+            value = data.rol === "INACTIVO" ? "inactivo" : "activo";
           } else {
-            setFilter({
-              page: page,
-              perPage: perPage,
-              order: order,
-              orderBy: orderBy,
-              checkFilters: false,
-              filters: [],
-            });
+            value = "activo";
           }
+
+          setFilter({
+            page: page,
+            perPage: perPage,
+            order: order,
+            orderBy: orderBy,
+            checkFilters: checkFilters,
+            filters: [
+              {
+                field: field,
+                operator: operator,
+                value: value,
+              },
+            ],
+          });
         }
       } else {
         setFilter({
@@ -241,7 +304,7 @@ export function FilterReportsContent() {
       <div className="w-full overflow-y-auto max-h-60 pr-4 pl-4">
         <div className="grid lg:grid-cols-2 gap-4 w-full h-fit grid-cols-1">
           {/* PAGE */}
-          <DinamicInputNumber<ReportsFilterFormValues>
+          <DinamicInputNumber<UsersFilterFormValues>
             name="page"
             label="Página"
             placeholder="Ingrese el número de página"
@@ -253,22 +316,22 @@ export function FilterReportsContent() {
           />
 
           {/* PER PAGE */}
-          <SimpleCombobox<ReportsFilterFormValues>
+          <SimpleCombobox<UsersFilterFormValues>
             name="perPage"
-            items={reportsPerPage}
-            label="Reportes por página"
-            placeholder="Seleccionar reportes por página"
+            items={usersPerPage}
+            label="Usuarios por página"
+            placeholder="Seleccionar usuarios por página"
             rules={{
-              required: "Los reportes por página son necesarios",
+              required: "Los usuarios por página son necesarios",
             }}
           />
         </div>
 
         <div className="grid lg:grid-cols-2 gap-4 w-full h-fit grid-cols-1">
           {/* ORDER */}
-          <SimpleCombobox<ReportsFilterFormValues>
+          <SimpleCombobox<UsersFilterFormValues>
             name="order"
-            items={reportsOrder}
+            items={usersOrder}
             label="Orden"
             placeholder="Seleccionar orden"
             rules={{
@@ -277,9 +340,9 @@ export function FilterReportsContent() {
           />
 
           {/* ORDER BY */}
-          <SimpleCombobox<ReportsFilterFormValues>
+          <SimpleCombobox<UsersFilterFormValues>
             name="orderBy"
-            items={reportsOrderBy}
+            items={usersOrderBy}
             label="Ordenar por"
             placeholder="Seleccionar ordenar por"
             rules={{
@@ -289,9 +352,9 @@ export function FilterReportsContent() {
         </div>
 
         {/* FILTRAR POR */}
-        <SimpleCombobox<ReportsFilterFormValues>
+        <SimpleCombobox<UsersFilterFormValues>
           name="filterBy"
-          items={reportsFilterBy}
+          items={usersFilterBy}
           label="Filtrar por"
           placeholder="Seleccionar filtrar por"
           rules={{
@@ -302,21 +365,21 @@ export function FilterReportsContent() {
         {filterByValue === "ID" && (
           <div className="grid lg:grid-cols-2 gap-4 w-full h-fit grid-cols-1">
             {/* ID */}
-            <DinamicInputNumber<ReportsFilterFormValues>
+            <DinamicInputNumber<UsersFilterFormValues>
               name="id"
               label="ID"
-              placeholder="Ingrese el ID de reporte"
+              placeholder="Ingrese el ID del usuario"
               min={1}
               max={99}
               rules={{
-                required: "El ID de reporte es necesario",
+                required: "El ID del usuario es necesario",
               }}
             />
 
             {/* OPERATOR */}
-            <SimpleCombobox<ReportsFilterFormValues>
+            <SimpleCombobox<UsersFilterFormValues>
               name="operator"
-              items={reportsOperator}
+              items={usersOperator}
               label="Operador"
               placeholder="Seleccionar operador"
               rules={{
@@ -326,23 +389,24 @@ export function FilterReportsContent() {
           </div>
         )}
 
-        {filterByValue === "Fecha" && (
+        {filterByValue === "nro. Empleado" && (
           <div className="grid lg:grid-cols-2 gap-4 w-full h-fit grid-cols-1">
-            {/* FECHA_UNICA */}
-            <DinamicInputDate<ReportsFilterFormValues>
-              name="fecha_unica"
-              label="Fecha"
-              placeholder="Seleccione una fecha"
+            {/* ID */}
+            <DinamicInputNumber<UsersFilterFormValues>
+              name="numEmpleado"
+              label="nro. Empleado"
+              placeholder="Ingrese el nro. Empleado"
+              min={1}
+              max={99}
               rules={{
-                required: "La fecha es necesaria",
+                required: "El nro. Empleado es necesario",
               }}
-              mode="single"
             />
 
             {/* OPERATOR */}
-            <SimpleCombobox<ReportsFilterFormValues>
+            <SimpleCombobox<UsersFilterFormValues>
               name="operator"
-              items={reportsOperator}
+              items={usersOperator}
               label="Operador"
               placeholder="Seleccionar operador"
               rules={{
@@ -352,16 +416,73 @@ export function FilterReportsContent() {
           </div>
         )}
 
-        {/* FECHA_INTERVALO */}
-        {filterByValue === "Entre fechas" && (
-          <DinamicInputDate<ReportsFilterFormValues>
-            name="fecha_intervalo"
-            label="Entre fechas"
-            placeholder="Seleccione un intervalo"
+        {/* NOMBRE */}
+        {filterByValue === "Nombre" && (
+          <DinamicInputText<UsersFilterFormValues>
+            name="nombre"
+            label="Nombre"
+            placeholder="Ingrese el nombre de empleado"
             rules={{
-              required: "El intervalo es necesario",
+              required: "El nombre de empleado es necesario",
+              minLength: {
+                value: 2,
+                message:
+                  "El nombre de empleado debe tener al menos 2 caracteres",
+              },
+              maxLength: {
+                value: 50,
+                message:
+                  "El nombre de empleado no puede tener más de 50 caracteres",
+              },
             }}
-            mode="range"
+          />
+        )}
+
+        {/* CORREO */}
+        {filterByValue === "Correo" && (
+          <DinamicInputText<UsersFilterFormValues>
+            name="correo"
+            label="Correo"
+            placeholder="Ingrese el correo de empleado"
+            rules={{
+              required: "El correo de empleado es necesario",
+              minLength: {
+                value: 2,
+                message:
+                  "El correo de empleado debe tener al menos 2 caracteres",
+              },
+              maxLength: {
+                value: 50,
+                message:
+                  "El correo de empleado no puede tener más de 50 caracteres",
+              },
+            }}
+          />
+        )}
+
+        {/* ROL */}
+        {filterByValue === "Rol" && (
+          <SimpleCombobox<UsersFilterFormValues>
+            name="rol"
+            items={roles}
+            label="Rol"
+            placeholder="Seleccionar rol"
+            rules={{
+              required: "El rol es necesario",
+            }}
+          />
+        )}
+
+        {/* ESTADO */}
+        {filterByValue === "Estado" && (
+          <SimpleCombobox<UsersFilterFormValues>
+            name="estado"
+            items={estados}
+            label="Estado"
+            placeholder="Seleccionar estado"
+            rules={{
+              required: "El estado es necesario",
+            }}
           />
         )}
       </div>

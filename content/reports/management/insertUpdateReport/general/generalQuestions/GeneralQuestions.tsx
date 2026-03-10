@@ -10,7 +10,7 @@ import { Controller, useFormContext } from "react-hook-form";
 import { Check, X } from "lucide-react";
 
 /* TYPES */
-import { ReportFormValues } from "@/content/reports/types/reports/reportFormValues";
+import { ReportFormValues } from "@/content/reports/types/forms/reportFormValues";
 
 export function GeneralQuestions({
   sections,

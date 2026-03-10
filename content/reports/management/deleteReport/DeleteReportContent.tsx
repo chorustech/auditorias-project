@@ -16,11 +16,13 @@ import { deleteReport } from "@/temp/Reports/Infrastructure/reportsController";
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
 import { useModal } from "@/stores/modal/modalStore";
+import { useReportsFilter } from "@/stores/filter/reports/filterReportsStore";
 
 export function DeleteReportContent({ report_id }: { report_id: number }) {
   const [deleting, setDeleting] = useState(false);
   const { setAnnouncement } = useAnnouncement();
   const { modal, setModal } = useModal();
+  const { filter, setFilter } = useReportsFilter();
 
   const methods = useForm<{ id: number }>();
 
@@ -31,6 +33,12 @@ export function DeleteReportContent({ report_id }: { report_id: number }) {
       const response = await deleteReport(report_id);
 
       if (response.ok) {
+        if (!filter) return;
+
+        setFilter({
+          ...filter,
+          page: 0,
+        });
         setAnnouncement({
           isActivated: true,
           isOk: true,
@@ -48,10 +56,10 @@ export function DeleteReportContent({ report_id }: { report_id: number }) {
           message: response.message,
         });
       }
-
-      setDeleting(false);
     } catch (error) {
       console.log("Error", error);
+    } finally {
+      setDeleting(false);
     }
   };
 

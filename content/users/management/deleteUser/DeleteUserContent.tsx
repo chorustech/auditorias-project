@@ -16,6 +16,7 @@ import { deleteUser } from "@/temp/Users/Infrastructure/usersController";
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
 import { useModal } from "@/stores/modal/modalStore";
+import { useUsersFilter } from '@/stores/filter/users/filterUsersStore'
 
 /* TYPES */
 import { UserType } from "@/temp/Users/Infrastructure/Types/userData";
@@ -24,6 +25,7 @@ export function DeleteUserContent({ user }: { user: UserType }) {
   const [deleting, setDeleting] = useState(false);
   const { setAnnouncement } = useAnnouncement();
   const { modal, setModal } = useModal();
+  const { filter, setFilter } = useUsersFilter()
 
   const methods = useForm<{ id: number }>();
 
@@ -34,6 +36,12 @@ export function DeleteUserContent({ user }: { user: UserType }) {
       const response = await deleteUser(user.id);
 
       if (response.ok) {
+        if (!filter) return;
+
+        setFilter({
+          ...filter,
+          page: 0,
+        });
         setAnnouncement({
           isActivated: true,
           isOk: true,

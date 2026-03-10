@@ -30,7 +30,7 @@ import {
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
 
 /* TYPES */
-import { NcrFormValues } from "@/content/reports/types/reports/ncrFormValues";
+import { NcrFormValues } from "@/content/reports/types/forms/ncrFormValues";
 
 /* UTILS */
 import { getDate, getWeekNumber } from "@/utils/date";
