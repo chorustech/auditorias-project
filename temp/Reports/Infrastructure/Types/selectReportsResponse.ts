@@ -13,8 +13,8 @@ export type ReportType =
 
 export type GeneralReport = {
   id: number;
-  auditor_id: number;
-  auditor_nombre: string;
+  usuario_id: number;
+  usuario_nombre: string;
   fecha: string;
   semana: string;
   linea?: string;

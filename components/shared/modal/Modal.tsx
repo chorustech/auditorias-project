@@ -22,7 +22,7 @@ export function Modal() {
 
   return (
     <div
-      className={`absolute top-0 left-0 z-70 flex items-center justify-center w-full h-full ${
+      className={`fixed top-0 left-0 z-70 flex items-center justify-center w-full h-full ${
         modal.isActivated ? "pointer-events-auto" : "pointer-events-none"
       }`}
     >
@@ -54,7 +54,7 @@ export function Modal() {
             className="size-4 text-gray-600 transition duration-200 cursor-pointer hover:text-green-500"
           />
         </div>
-        <div className="px-6 pb-6 overflow-y-auto scrollbar-custom">
+        <div className="px-6 pb-6 scrollbar-custom">
           {modal.body}
         </div>
       </motion.div>

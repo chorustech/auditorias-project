@@ -45,7 +45,7 @@ export function BouncingButton({
         disabled
           ? {}
           : {
-              scale: 1.05,
+              scale: 1.03,
               backgroundColor: backgroundColorHover,
               color: textColorHover,
               border: borderHover,

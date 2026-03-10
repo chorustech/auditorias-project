@@ -28,7 +28,7 @@ export function GeneralRowContent({
       {report.kind === "general" && (
         <>
           <DinamicTd twClassName="text-nowrap">
-            <p>{report.data.auditor}</p>
+            <p>{report.data.usuario_nombre}</p>
           </DinamicTd>
           <DinamicTd twClassName="text-nowrap">
             <p>{report.data.fecha}</p>

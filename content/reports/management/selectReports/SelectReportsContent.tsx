@@ -9,12 +9,13 @@ import { GeneralRowContent } from "@/content/reports/management/selectReports/ro
 import { EolaRowContent } from "@/content/reports/management/selectReports/rowContent/EolaRowContent";
 import { NcrRowContent } from "@/content/reports/management/selectReports/rowContent/NcrRowContent";
 import { RacRowContent } from "@/content/reports/management/selectReports/rowContent/RacRowContent";
+import { FilterReportsContent } from "@/content/reports/management/selectReports/filterReports/FilterReportsContent";
 
 /* DATA */
 import { reportsColumns } from "@/content/reports/data/columns/reportsColumns";
 
 /* HOOKS */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 /* ICONS */
 import { ArrowLeft } from "lucide-react";
@@ -28,65 +29,116 @@ import { selectReports } from "@/temp/Reports/Infrastructure/reportsController";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
+import { useReportsFilter } from "@/stores/filter/reports/filterReportsStore";
+import { useModal } from "@/stores/modal/modalStore";
 
 /* TYPES */
 import { ReportType } from "@/temp/Reports/Infrastructure/Types/selectReportsResponse";
 
 /* UTILS */
 import { isPointerArea } from "@/utils/pointerArea";
-import { getTwBgColorTable } from '@/utils/getTwBgColorTable'
+import { getTwBgColorTable } from "@/utils/getTwBgColorTable";
 
 export function SelectReportsContent() {
   const router = useRouter();
+  const pathname = usePathname();
+  const rawPath = pathname.split("/").at(-1);
+  const path = rawPath ?? null;
+
   const { setAnnouncement } = useAnnouncement();
+  const { setModal } = useModal();
+  const { setFilter, filter } = useReportsFilter();
 
   const [reports, setReports] = useState<{
     data: ReportType[];
     count: number;
   }>({ data: [], count: 0 });
-  const [loading, setLoading] = useState(true);
-  
 
-  const pathname = usePathname();
+  const [loading, setLoading] = useState(false);
 
-  const rawPath = pathname.split("/").at(-1);
-  const path = rawPath ?? null;
+  const updateFilter = (changes: Partial<typeof filter>) => {
+    if (!filter) return;
+
+    setFilter({
+      ...filter,
+      ...changes,
+    });
+  };
+
+  const nextPage = () => {
+    if (!filter) return;
+
+    updateFilter({
+      page: filter.page + 1,
+    });
+  };
+
+  const prevPage = () => {
+    if (!filter) return;
+
+    updateFilter({
+      page: Math.max(filter.page - 1, 0),
+    });
+  };
+
+  const hasNextPage =
+    filter && (filter.page + 1) * filter.perPage < reports.count;
+
+  const fetchReports = useCallback(async () => {
+    if (!path) return;
+    if (!isPointerArea(path)) return;
+    if (!filter) return;
+
+    console.log(filter)
+
+    try {
+      setLoading(true);
+
+      const response = await selectReports({
+        pointer: path,
+        query: {
+          page: filter.page,
+          perPage: filter.perPage,
+          order: filter.order,
+          orderBy: filter.orderBy,
+          checkFilters: filter.checkFilters,
+          filters: filter.filters,
+        },
+      });
+
+      if (response.ok) {
+        setReports({
+          data: response.data,
+          count: response.count,
+        });
+      } else {
+        setAnnouncement({
+          isActivated: true,
+          isOk: false,
+          message: response.message,
+        });
+      }
+    } catch (error) {
+      console.log("Hubo un error al obtener los reportes:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [path, filter, setAnnouncement]);
 
   useEffect(() => {
-    const fetchReports = async () => {
-      if (!path) return;
-      if (!isPointerArea(path)) return;
-
-      try {
-        const response = await selectReports({
-          pointer: path,
-          query: {
-            page: 0,
-            perPage: 10,
-            order: "asc",
-            orderBy: "id",
-            filters: [],
-          },
-        });
-
-        if (response.ok) {
-          setReports({ data: response.data, count: response.count });
-        } else {
-          setAnnouncement({
-            isActivated: true,
-            isOk: false,
-            message: response.message,
-          });
-        }
-      } catch (error) {
-        console.log("Hubo un error al obtener los reportes: ", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchReports();
-  }, [path]);
+  }, [fetchReports]);
+
+  useEffect(() => {
+    setFilter({
+      page: 0,
+      perPage: 10,
+      order: "asc",
+      orderBy: "id",
+      checkFilters: false,
+      filters: [],
+    });
+  }, [setFilter]);
 
   return (
     <SectionContainer>
@@ -97,7 +149,10 @@ export function SelectReportsContent() {
           ),
         )}
         tbodyRows={reports.data.map((report: ReportType, index: number) => (
-          <DinamicRow key={index} twBgColor={getTwBgColorTable({ index: index })}>
+          <DinamicRow
+            key={index}
+            twBgColor={getTwBgColorTable({ index: index })}
+          >
             {report.kind === "general" ? (
               <GeneralRowContent
                 report={report}
@@ -127,10 +182,26 @@ export function SelectReportsContent() {
         count={reports.count}
         type={"reporte"}
         backAction={() => router.push("/reports")}
-        filterAction={() => {}}
+        filterAction={() =>
+          setModal({
+            isActivated: true,
+            title: "Filtrar",
+            body: <FilterReportsContent />,
+          })
+        }
         addAction={() => router.push(`/reports/${path}/add`)}
         excelAction={() => {}}
         backContent={<ArrowLeft className="size-5" />}
+        goNext={!hasNextPage}
+        goBack={filter?.page === 0 ? false : true}
+        goNextAction={nextPage}
+        goBackAction={prevPage}
+        pageFirstHalf={(filter?.page ?? 0) + 1}
+        pageSecondHalf={
+          Math.ceil(reports.count ?? 0) / (filter?.perPage ?? 1) === 0
+            ? "1"
+            : Math.ceil((reports.count ?? 0) / (filter?.perPage ?? 1))
+        }
       />
     </SectionContainer>
   );

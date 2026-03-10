@@ -29,7 +29,6 @@ export function SelectUsersContent() {
   const router = useRouter();
   const [users, setUsers] = useState<UserData>({ data: [], count: 0 });
   const [loading, setLoading] = useState(true);
-  const type = "usuario";
 
   const getTwBgColor = ({ index }: { index: number }) => {
     return index % 2 ? "bg-neutral-100" : "bg-white";
@@ -62,12 +61,18 @@ export function SelectUsersContent() {
         ))}
         loading={loading}
         count={users.count}
-        type={type}
+        type={"usuario"}
         backAction={() => router.push("/home")}
         filterAction={() => {}}
         addAction={() => router.push("/users/add")}
         excelAction={() => {}}
         backContent={<House className="size-5" />}
+        goBack={false}
+        goNext={true}
+        goBackAction={() => {}}
+        goNextAction={() => {}}
+        pageFirstHalf={"1"}
+        pageSecondHalf={"1"}
       />
     </SectionContainer>
   );

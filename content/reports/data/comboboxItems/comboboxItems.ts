@@ -83,3 +83,16 @@ export const porcentajesFalla: string[] = [
   "90",
   "100",
 ];
+
+export const reportsOrder: string[] = ["Ascendente", "Descendente"];
+
+export const reportsOrderBy: string[] = ["ID", "Fecha", "nro. Empleado"];
+
+export const reportsFilterBy: string[] = [
+  "Ninguno",
+  "ID",
+  "Fecha",
+  "Entre fechas",
+];
+
+export const reportsOperator: string[] = ["=", "!=", "<", "<=", ">", ">="];

@@ -21,6 +21,8 @@ export async function selectReports({
     // Simular delay del backend
     await new Promise((resolve) => setTimeout(resolve, 3000));
 
+    console.log("Entrando por selectReports...", query);
+
     switch (pointer) {
       case "baldwin-state":
         return {
@@ -29,8 +31,8 @@ export async function selectReports({
               kind: "general",
               data: {
                 id: 1,
-                auditor_id: 1,
-                auditor_nombre: "Pirita Dreemurr",
+                usuario_id: 1,
+                usuario_nombre: "Pirita Dreemurr",
                 fecha: "01-01-2025",
                 semana: "01",
                 linea: "01",
@@ -70,8 +72,8 @@ export async function selectReports({
               kind: "general",
               data: {
                 id: 2,
-                auditor_id: 2,
-                auditor_nombre: "Cornalina Dreemurr",
+                usuario_id: 2,
+                usuario_nombre: "Cornalina Dreemurr",
                 fecha: "01-01-2025",
                 semana: "01",
                 picker: "01",
@@ -101,8 +103,8 @@ export async function selectReports({
               kind: "general",
               data: {
                 id: 3,
-                auditor_id: 3,
-                auditor_nombre: "Nau Dreemurr",
+                usuario_id: 3,
+                usuario_nombre: "Nau Dreemurr",
                 fecha: "01-01-2025",
                 semana: "01",
                 linea: "01",
@@ -134,8 +136,8 @@ export async function selectReports({
               kind: "general",
               data: {
                 id: 4,
-                auditor_id: 4,
-                auditor_nombre: "Gravity Dreemurr",
+                usuario_id: 4,
+                usuario_nombre: "Gravity Dreemurr",
                 fecha: "01-01-2025",
                 semana: "01",
                 linea: "01",
@@ -169,8 +171,8 @@ export async function selectReports({
               kind: "general",
               data: {
                 id: 5,
-                auditor_id: 5,
-                auditor_nombre: "Fran Dreemurr",
+                usuario_id: 5,
+                usuario_nombre: "Fran Dreemurr",
                 fecha: "01-01-2025",
                 semana: "01",
                 linea: "01",
@@ -191,8 +193,8 @@ export async function selectReports({
               kind: "general",
               data: {
                 id: 6,
-                auditor_id: 6,
-                auditor_nombre: "Nirvana Dreemurr",
+                usuario_id: 6,
+                usuario_nombre: "Nirvana Dreemurr",
                 fecha: "01-01-2025",
                 semana: "01",
                 linea: "01",
@@ -214,8 +216,8 @@ export async function selectReports({
               kind: "general",
               data: {
                 id: 7,
-                auditor_id: 7,
-                auditor_nombre: "Tentalet Dreemurr",
+                usuario_id: 7,
+                usuario_nombre: "Tentalet Dreemurr",
                 fecha: "01-01-2025",
                 semana: "01",
                 linea: "01",
@@ -386,7 +388,7 @@ export async function insertReport(formData: FormData): Promise<{
       ok: true,
       message: "Reporte insertado correctamente",
     };
-  } catch (error) {
+  } catch {
     return {
       ok: false,
       message: "Ocurrió un error al ingresar el reporte",
@@ -425,7 +427,7 @@ export async function insertNcrReport(formData: FormData): Promise<{
       ok: true,
       message: "Reporte insertado correctamente",
     };
-  } catch (error) {
+  } catch {
     return {
       ok: false,
       message: "Ocurrió un error al ingresar el reporte",
@@ -477,7 +479,7 @@ export async function insertRacReport(formData: FormData): Promise<{
       ok: true,
       message: "Reporte insertado correctamente",
     };
-  } catch (error) {
+  } catch {
     return {
       ok: false,
       message: "Ocurrió un error al ingresar el reporte",
@@ -554,8 +556,8 @@ export async function selectGeneralReportById({
           message: "Reporte obtenido correctamente",
           report: {
             id: 1,
-            auditor_id: 1,
-            auditor_nombre: "Pirita Dreemurr",
+            usuario_id: 1,
+            usuario_nombre: "Pirita Dreemurr",
             fecha: "01-01-2025",
             semana: "01",
             linea: "01",
@@ -589,8 +591,8 @@ export async function selectGeneralReportById({
           message: "Reporte obtenido correctamente",
           report: {
             id: 2,
-            auditor_id: 2,
-            auditor_nombre: "Cornalina Dreemurr",
+            usuario_id: 2,
+            usuario_nombre: "Cornalina Dreemurr",
             fecha: "01-01-2025",
             semana: "01",
             picker: "01",
@@ -605,8 +607,8 @@ export async function selectGeneralReportById({
           message: "Reporte obtenido correctamente",
           report: {
             id: 3,
-            auditor_id: 3,
-            auditor_nombre: "Nau Dreemurr",
+            usuario_id: 3,
+            usuario_nombre: "Nau Dreemurr",
             fecha: "01-01-2025",
             semana: "01",
             linea: "01",
@@ -632,8 +634,8 @@ export async function selectGeneralReportById({
           message: "Reporte obtenido correctamente",
           report: {
             id: 4,
-            auditor_id: 4,
-            auditor_nombre: "Gravity Dreemurr",
+            usuario_id: 4,
+            usuario_nombre: "Gravity Dreemurr",
             fecha: "01-01-2025",
             semana: "01",
             linea: "01",
@@ -661,8 +663,8 @@ export async function selectGeneralReportById({
           message: "Reporte obtenido correctamente",
           report: {
             id: 5,
-            auditor_id: 5,
-            auditor_nombre: "Fran Dreemurr",
+            usuario_id: 5,
+            usuario_nombre: "Fran Dreemurr",
             fecha: "01-01-2025",
             semana: "01",
             linea: "01",
@@ -677,8 +679,8 @@ export async function selectGeneralReportById({
           message: "Reporte obtenido correctamente",
           report: {
             id: 6,
-            auditor_id: 6,
-            auditor_nombre: "Nirvana Dreemurr",
+            usuario_id: 6,
+            usuario_nombre: "Nirvana Dreemurr",
             fecha: "01-01-2025",
             semana: "01",
             linea: "01",
@@ -694,8 +696,8 @@ export async function selectGeneralReportById({
           message: "Reporte obtenido correctamente",
           report: {
             id: 7,
-            auditor_id: 7,
-            auditor_nombre: "Tentalet Dreemurr",
+            usuario_id: 7,
+            usuario_nombre: "Tentalet Dreemurr",
             fecha: "01-01-2025",
             semana: "01",
             linea: "01",
@@ -711,8 +713,8 @@ export async function selectGeneralReportById({
           message: "Ocurrió un error al buscar el reporte",
           report: {
             id: 0,
-            auditor_id: 0,
-            auditor_nombre: "",
+            usuario_id: 0,
+            usuario_nombre: "",
             fecha: "",
             respuestas: [],
             semana: "",
@@ -725,8 +727,8 @@ export async function selectGeneralReportById({
       message: "Ocurrió un error al buscar el reporte",
       report: {
         id: 0,
-        auditor_id: 0,
-        auditor_nombre: "",
+        usuario_id: 0,
+        usuario_nombre: "",
         fecha: "",
         respuestas: [],
         semana: "",

@@ -12,12 +12,11 @@ import { DinamicBouncingButton } from "@/components/shared/form/dinamicBouncingB
 /* DATA */
 import {
   lineas,
-  unidadesNegocio,
   tipoEolaReport,
 } from "@/content/reports/data/comboboxItems/comboboxItems";
 
 /* HOOKS */
-import { useForm, FormProvider } from "react-hook-form";
+import { useForm, FormProvider, useWatch } from "react-hook-form";
 import { useEffect, useState } from "react";
 
 /* ICONS */
@@ -57,7 +56,11 @@ export function InsertUpdateEolaReportContent({
   const [loading, setLoading] = useState(true);
 
   const methods = useForm<EolaFormValues>({ defaultValues: { tipo: "" } });
-  const isEola = methods.watch("tipo", "");
+  const isEola = useWatch({
+    control: methods.control,
+    name: "tipo",
+    defaultValue: "",
+  });
 
   const usuario_temp = {
     id: 1,
@@ -124,7 +127,7 @@ export function InsertUpdateEolaReportContent({
     } catch (error) {
       console.log("Error", error);
     }
-  }, [id, isUpdate, methods, router, setAnnouncement]);
+  }, [id, isUpdate, methods, router, setAnnouncement, usuario_temp.id]);
 
   const onSubmit = async (data: EolaFormValues) => {
     try {

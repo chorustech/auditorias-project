@@ -98,7 +98,7 @@ export function InsertUpdateGeneralReportContent({
               nivel: response.report.nivel,
               comentarios: response.report.comentarios,
               respuestas: response.report.respuestas,
-              auditor_id: response.report.auditor_id,
+              auditor_id: response.report.usuario_id,
             });
             endLoading();
           } else {
@@ -130,7 +130,7 @@ export function InsertUpdateGeneralReportContent({
     } catch (error) {
       console.log("Error", error);
     }
-  }, [id, isUpdate, methods, router, setAnnouncement]);
+  }, [id, isUpdate, methods, router, setAnnouncement, path]);
 
   const onSubmit = async (data: ReportFormValues) => {
     try {

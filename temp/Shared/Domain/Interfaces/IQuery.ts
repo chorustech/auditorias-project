@@ -4,6 +4,7 @@ export interface IQuery<T> {
   order: "asc" | "desc";
   orderBy: keyof T;
   filters: Filter<T>[];
+  checkFilters: boolean;
 }
 
 interface Filter<T> {

@@ -55,13 +55,6 @@ export function InsertUpdateUserContent({
 
   const methods = useForm<UserFormValues>();
 
-  const usuario_temp = {
-    id: 1,
-    nombre: "Pirita Dreemurr",
-    email: "pirita@assaabloy.com",
-    rol: "administrador",
-  };
-
   useEffect(() => {
     try {
       const endLoading = () => {

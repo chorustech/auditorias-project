@@ -12,7 +12,13 @@ export function DinamicTable({
   filterAction,
   addAction,
   excelAction,
-  backContent
+  backContent,
+  goNext,
+  goBack,
+  goBackAction,
+  goNextAction,
+  pageFirstHalf,
+  pageSecondHalf,
 }: {
   theadColumns: React.ReactNode;
   tbodyRows: React.ReactNode;
@@ -23,7 +29,13 @@ export function DinamicTable({
   filterAction: () => void;
   addAction: () => void;
   excelAction: () => void;
-  backContent: React.ReactNode
+  backContent: React.ReactNode;
+  goNext: boolean;
+  goBack: boolean;
+  goBackAction: () => void;
+  goNextAction: () => void;
+  pageFirstHalf: React.ReactNode
+  pageSecondHalf: React.ReactNode
 }) {
   return (
     <div className="flex flex-col h-full">
@@ -46,7 +58,17 @@ export function DinamicTable({
       />
 
       {/* FOOTER */}
-      <DinamicTableFooter loading={loading} count={count} type={type} />
+      <DinamicTableFooter
+        loading={loading}
+        count={count}
+        type={type}
+        goNext={goNext}
+        goBack={goBack}
+        goNextAction={goNextAction}
+        goBackAction={goBackAction}
+        pageFirstHalf={pageFirstHalf}
+        pageSecondHalf={pageSecondHalf}
+      />
     </div>
   );
 }

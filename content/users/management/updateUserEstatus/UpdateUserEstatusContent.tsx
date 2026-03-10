@@ -8,7 +8,7 @@ import { useForm, FormProvider } from "react-hook-form";
 import { useState } from "react";
 
 /* ICONS */
-import { Loader, Power, PowerOff, Trash2 } from "lucide-react";
+import { Loader, Power, PowerOff } from "lucide-react";
 
 /* SERVER ACTIONS */
 import { updateUserStatus } from "@/temp/Users/Infrastructure/usersController";
