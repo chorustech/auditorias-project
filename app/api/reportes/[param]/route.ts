@@ -1,10 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
-import { ReporteAuditoriaNeon } from "@/src/reporte-auditoria/infrastructure/adapters/repositorio-neon";
-import { obtenerReportes } from "@/src/reporte-auditoria/application/get-all-reportes";
+import { NextRequest, NextResponse } from "next/server"; 
+import { getReportesAction } from "@/src/reporte-auditoria/infrastructure/actions/get-all";
 import { UpdateReporte } from "@/src/reporte-auditoria/application/update-report";
 import { SaveReportDto } from "@/src/reporte-auditoria/domain/ports/dtos/save-report.dto";
-import { SearchAreaNeon } from "@/src/reporte-auditoria/infrastructure/adapters/area-find";
 import { DeleteReporte } from "@/src/reporte-auditoria/application/delete-report";
+import { Metadata } from "@/src/reporte-auditoria/domain/entities";
+import { ReporteAuditoriaConDetalles } from "@/src/reporte-auditoria/domain";
+import { IQuery } from "@/src/shared/domain/Entities/Query";
+import { ReporteAuditoriaNeon } from "@/src/reporte-auditoria/infrastructure/adapters/repositorio-neon";
 
 // GET /api/reportes/[param]
 export async function GET(
@@ -29,9 +31,17 @@ export async function GET(
       return NextResponse.json(reporte);
     } else {
       // Obtener todos los reportes por slug de área
-      const areasRepo = new SearchAreaNeon();
-      const reportes = new obtenerReportes(reporteRepo, areasRepo);
-      const data = await reportes.execute(param);
+      const { searchParams } = request.nextUrl;
+      const query: IQuery<ReporteAuditoriaConDetalles<Metadata>> = {
+        page: Number(searchParams.get("page") || 1),
+        perPage: Number(searchParams.get("perPage") || 10),
+        order: (searchParams.get("order") as "asc" | "desc") || "desc",
+        orderBy:
+          (searchParams.get("orderBy") as keyof ReporteAuditoriaConDetalles<Metadata>) ||
+          "timestamp",
+        filters: JSON.parse(searchParams.get("filters") || "[]"),
+      };
+      const data = await getReportesAction(param, query);
       return NextResponse.json(data);
     }
   } catch (error) {
@@ -49,7 +59,7 @@ export async function PUT(
 ) {
   try {
     const { param: id } = await params;
-    const body: Omit<SaveReportDto<any>, "slug"> = await request.json();
+    const body: Omit<SaveReportDto<unknown>, "slug"> = await request.json();
 
     const reporteRepo = new ReporteAuditoriaNeon();
     const updateReporte = new UpdateReporte(reporteRepo);

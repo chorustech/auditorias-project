@@ -1,7 +1,10 @@
-import { obtenerReportes } from "@/src/reporte-auditoria/application/get-all-reportes";
-import { SearchAreaNeon } from "@/src/reporte-auditoria/infrastructure/adapters/area-find";
-import { ReporteAuditoriaNeon } from "@/src/reporte-auditoria/infrastructure/adapters/repositorio-neon";
 import { POINTER_AREAS } from "@/src/shared/domain/Entities/Questions";
+import { getReportesAction } from "@/src/reporte-auditoria/infrastructure/actions/get-all";
+import { IQuery } from "@/src/shared/domain/Entities/Query";
+import {
+  Metadata,
+} from "@/src/reporte-auditoria/domain/entities";
+import { ReporteAuditoriaConDetalles } from "@/src/reporte-auditoria/domain";
 
 export const dynamic = "force-dynamic";
 
@@ -12,15 +15,18 @@ function getRandomItem<T>(array: readonly T[]): T {
 export default async function Page() {
   const randomArea = getRandomItem(POINTER_AREAS);
 
-  const useCase = new obtenerReportes(
-    new ReporteAuditoriaNeon(),
-    new SearchAreaNeon()
-  );
+  const defaultQuery: IQuery<ReporteAuditoriaConDetalles<Metadata>> = {
+    page: 1,
+    perPage: 100,
+    order: "desc",
+    orderBy: "timestamp",
+    filters: [],
+  };
 
-  let reportes = [];
+  let reportes: ReporteAuditoriaConDetalles<Metadata>[] = [];
 
   try {
-    reportes = await useCase.execute(randomArea);
+    reportes = await getReportesAction(randomArea, defaultQuery);
     console.log("Reportes encontrados:", reportes.length);
   } catch (error) {
     console.error("Error:", error);
