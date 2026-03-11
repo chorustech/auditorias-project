@@ -28,7 +28,6 @@ import { useRouter } from "next/navigation";
 
 /* SERVER ACTIONS */
 import {
-  insertUser,
   selectUserById,
 } from "@/temp/Users/Infrastructure/usersController";
 
@@ -40,6 +39,7 @@ import { UserFormValues } from "@/content/users/types/UserFormValues";
 
 /* UTILS */
 import { getDate, getWeekNumber } from "@/utils/date";
+import { insertUser } from "@/src/users/actions/create-action";
 
 export function InsertUpdateUserContent({
   isUpdate,
@@ -120,7 +120,8 @@ export function InsertUpdateUserContent({
       formData.append("email", data.email);
       formData.append("nombre", data.nombre);
       formData.append("numEmpleado", data.numEmpleado);
-      formData.append("rol", data.rol);
+      formData.append("password", "12345678");
+      formData.append("rol", data.rol.toLowerCase());
       formData.append("estado", data.estado);
 
       const response = await insertUser(formData);
@@ -134,6 +135,7 @@ export function InsertUpdateUserContent({
 
         if (!isUpdate) methods.reset();
       } else {
+        console.log(response)
         setAnnouncement({
           isActivated: true,
           isOk: false,

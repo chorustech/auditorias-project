@@ -16,13 +16,13 @@ import { Rocket } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 /* SERVER ACTIONS */
-import { login } from "@/temp/Users/Infrastructure/usersController";
 
 /* TYPES */
 import { LoginForm } from "./types/LoginForm";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
+import { LoginAction } from "@/src/users/actions/login-action";
 
 export function LoginContent() {
   const router = useRouter();
@@ -45,7 +45,9 @@ export function LoginContent() {
       formData.append("email", data.email);
       formData.append("password", data.password);
 
-      const response = await login(formData);
+      const response = await LoginAction(formData);
+
+      console.log(response.ok)
 
       if (response.ok) {
         setAnnouncement({
