@@ -57,6 +57,7 @@ export async function selectReports({
                   true,
                 ],
                 comentarios: "",
+                type: "baldwin-state",
               },
             },
           ],
@@ -88,6 +89,7 @@ export async function selectReports({
                   false,
                 ],
                 comentarios: "",
+                type: "baldwin-reserve-supply",
               },
             },
           ],
@@ -121,6 +123,7 @@ export async function selectReports({
                   false,
                 ],
                 comentarios: "",
+                type: "baldwin-reserve-stacking",
               },
             },
           ],
@@ -156,6 +159,7 @@ export async function selectReports({
                   false,
                 ],
                 comentarios: "",
+                type: "baldwin-reserve-packing",
               },
             },
           ],
@@ -178,6 +182,7 @@ export async function selectReports({
                 linea: "01",
                 respuestas: [true, false, true, false],
                 comentarios: "",
+                type: "baldwin-reserve-general",
               },
             },
           ],
@@ -201,6 +206,7 @@ export async function selectReports({
                 worktable: "WT-01",
                 respuestas: [true, false, true, false, true, false],
                 comentarios: "",
+                type: "display-area",
               },
             },
           ],
@@ -224,6 +230,7 @@ export async function selectReports({
                 nivel: 1,
                 respuestas: [true, false, true, false, true],
                 comentarios: "",
+                type: "pizza-tray",
               },
             },
           ],
@@ -582,6 +589,7 @@ export async function selectGeneralReportById({
               true,
             ],
             comentarios: "",
+            type: "baldwin-state",
           },
         };
 
@@ -598,6 +606,7 @@ export async function selectGeneralReportById({
             picker: "01",
             respuestas: [true, false, true, false, true, false, true, false],
             comentarios: "",
+            type: "baldwin-reserve-supply",
           },
         };
 
@@ -625,6 +634,7 @@ export async function selectGeneralReportById({
               false,
             ],
             comentarios: "",
+            type: "baldwin-reserve-stacking",
           },
         };
 
@@ -654,6 +664,7 @@ export async function selectGeneralReportById({
               false,
             ],
             comentarios: "",
+            type: "baldwin-reserve-packing",
           },
         };
 
@@ -670,6 +681,7 @@ export async function selectGeneralReportById({
             linea: "01",
             respuestas: [true, false, true, false],
             comentarios: "",
+            type: "baldwin-reserve-general",
           },
         };
 
@@ -687,6 +699,7 @@ export async function selectGeneralReportById({
             worktable: "WT-01",
             respuestas: [true, false, true, false, true, false],
             comentarios: "",
+            type: "display-area",
           },
         };
 
@@ -704,6 +717,7 @@ export async function selectGeneralReportById({
             nivel: 1,
             respuestas: [true, false, true, false, true],
             comentarios: "",
+            type: "pizza-tray",
           },
         };
 
@@ -718,6 +732,7 @@ export async function selectGeneralReportById({
             fecha: "",
             respuestas: [],
             semana: "",
+            type: "baldwin-state",
           },
         };
     }
@@ -732,6 +747,7 @@ export async function selectGeneralReportById({
         fecha: "",
         respuestas: [],
         semana: "",
+        type: "baldwin-state",
       },
     };
   }

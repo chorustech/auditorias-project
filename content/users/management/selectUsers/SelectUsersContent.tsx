@@ -33,6 +33,7 @@ import { useModal } from "@/stores/modal/modalStore";
 
 /* UTILS */
 import { getTwBgColorTable } from "@/utils/getTwBgColorTable";
+import ExcelDownloadButton from "@/components/shared/download/ExcelDownloadButton";
 
 export function SelectUsersContent() {
   const router = useRouter();
@@ -129,6 +130,18 @@ export function SelectUsersContent() {
 
   return (
     <SectionContainer>
+      <ExcelDownloadButton<UserType>
+        action={selectUsers}
+        filename="usuarios"
+        query={{
+          page: 0,
+          perPage: users.count,
+          order: "asc",
+          orderBy: "id",
+          checkFilters: false,
+          filters: [],
+        }}
+      />
       <DinamicTable
         theadColumns={usersColumns.map((column, index) => (
           <DinamicTh key={index} column={column} />
@@ -159,7 +172,7 @@ export function SelectUsersContent() {
         excelAction={() => {}}
         backContent={<House className="size-5" />}
         goBack={filter?.page === 0 ? false : true}
-        goNext={!hasNextPage}
+        goNext={hasNextPage ?? false}
         goBackAction={prevPage}
         goNextAction={nextPage}
         pageFirstHalf={(filter?.page ?? 0) + 1}

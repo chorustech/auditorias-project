@@ -6,6 +6,7 @@ import { RouteTitle } from "@/components/shared/routeTitle/RouteTitle";
 import { Sidebar } from "@/components/shared/sidebar/Sidebar";
 import { useSidebarStore } from "@/stores/sidebar/SidebarStore";
 import { motion } from "framer-motion";
+import DownloadProgress from "@/components/shared/download/ExcelDownloadProgress";
 
 export default function DashboardLayout({
   children,
@@ -24,6 +25,7 @@ export default function DashboardLayout({
       <Sidebar />
       <Announcement />
       <Modal />
+      <DownloadProgress />
       <div
         className={`flex flex-col h-dvh w-full transition-all duration-300 ${
           expanded
