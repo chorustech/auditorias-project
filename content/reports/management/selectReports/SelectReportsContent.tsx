@@ -24,28 +24,28 @@ import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 
 /* SERVER ACTION */
-import { selectReports } from "@/temp/Reports/Infrastructure/reportsController";
+import { getReportesAction } from "@/src/reporte-auditoria/infrastructure/actions/get-all";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
 
 /* TYPES */
-import { ReportType } from "@/temp/Reports/Infrastructure/Types/selectReportsResponse";
+import { ReporteAuditoriaConDetalles } from "@/src/reporte-auditoria/domain";
+import { Metadata } from "@/src/reporte-auditoria/domain/entities";
 
 /* UTILS */
 import { isPointerArea } from "@/utils/pointerArea";
-import { getTwBgColorTable } from '@/utils/getTwBgColorTable'
+import { getTwBgColorTable } from "@/utils/getTwBgColorTable";
 
 export function SelectReportsContent() {
   const router = useRouter();
   const { setAnnouncement } = useAnnouncement();
 
   const [reports, setReports] = useState<{
-    data: ReportType[];
+    data: ReporteAuditoriaConDetalles<Metadata>[];
     count: number;
   }>({ data: [], count: 0 });
   const [loading, setLoading] = useState(true);
-  
 
   const pathname = usePathname();
 
@@ -58,20 +58,19 @@ export function SelectReportsContent() {
       if (!isPointerArea(path)) return;
 
       try {
-        const response = await selectReports({
-          pointer: path,
-          query: {
-            page: 0,
-            perPage: 10,
-            order: "asc",
-            orderBy: "id",
-            filters: [],
-          },
+        const response = await getReportesAction(path, {
+          page: 1,
+          perPage: 10,
+          order: "asc",
+          orderBy: "id",
+          filters: [],
         });
 
         if (response.ok) {
+          console.log("Respuesta de getReportesAction:", response);
           setReports({ data: response.data, count: response.count });
         } else {
+          console.error("Error en getReportesAction:", response);
           setAnnouncement({
             isActivated: true,
             isOk: false,
@@ -88,6 +87,16 @@ export function SelectReportsContent() {
     fetchReports();
   }, [path]);
 
+  const generalReportPaths = [
+    "pizza-tray",
+    "baldwin-state",
+    "baldwin-reserve-supply",
+    "display-area",
+    "baldwin-reserve-stacking",
+    "baldwin-reserve-packing",
+    "baldwin-reserve-general",
+  ];
+
   return (
     <SectionContainer>
       <DinamicTable
@@ -96,33 +105,38 @@ export function SelectReportsContent() {
             <DinamicTh key={index} column={column} />
           ),
         )}
-        tbodyRows={reports.data.map((report: ReportType, index: number) => (
-          <DinamicRow key={index} twBgColor={getTwBgColorTable({ index: index })}>
-            {report.kind === "general" ? (
-              <GeneralRowContent
-                report={report}
-                twBgColor={`${getTwBgColorTable({ index: index })}`}
-              />
-            ) : report.kind === "eola" ? (
-              <EolaRowContent
-                report={report}
-                twBgColor={`${getTwBgColorTable({ index: index })}`}
-              />
-            ) : report.kind === "ncr" ? (
-              <NcrRowContent
-                report={report}
-                twBgColor={`${getTwBgColorTable({ index: index })}`}
-              />
-            ) : report.kind === "rac" ? (
-              <RacRowContent
-                report={report}
-                twBgColor={`${getTwBgColorTable({ index: index })}`}
-              />
-            ) : (
-              <></>
-            )}
-          </DinamicRow>
-        ))}
+        tbodyRows={reports.data.map(
+          (report: ReporteAuditoriaConDetalles<Metadata>, index: number) => (
+            <DinamicRow
+              key={index}
+              twBgColor={getTwBgColorTable({ index: index })}
+            >
+              {generalReportPaths.includes(path ?? "") ? (
+                <GeneralRowContent
+                  report={report}
+                  twBgColor={`${getTwBgColorTable({ index: index })}`}
+                />
+              ) : path === "eola" ? (
+                <EolaRowContent
+                  report={report}
+                  twBgColor={`${getTwBgColorTable({ index: index })}`}
+                />
+              ) : path === "ncr" ? (
+                <NcrRowContent
+                  report={report}
+                  twBgColor={`${getTwBgColorTable({ index: index })}`}
+                />
+              ) : path === "rac" ? (
+                <RacRowContent
+                  report={report}
+                  twBgColor={`${getTwBgColorTable({ index: index })}`}
+                />
+              ) : (
+                <></>
+              )}
+            </DinamicRow>
+          ),
+        )}
         loading={loading}
         count={reports.count}
         type={"reporte"}

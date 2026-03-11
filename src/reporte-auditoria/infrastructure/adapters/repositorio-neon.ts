@@ -95,6 +95,7 @@ export class ReporteAuditoriaNeon<
 
   async save(reporte: ReporteAuditoria<M>): Promise<void> {
     const primitivo = reporte.toPrimitive();
+    console.log("Guardando reporte con metadata:", primitivo.metadata);
 
     await this._db.insert(ReporteAuditoriaTable).values({
       area_id: primitivo.area_id,

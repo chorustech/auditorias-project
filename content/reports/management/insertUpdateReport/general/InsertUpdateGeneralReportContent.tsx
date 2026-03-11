@@ -29,10 +29,9 @@ import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 
 /* SERVER ACTION */
-import {
-  insertReport,
-  selectGeneralReportById,
-} from "@/temp/Reports/Infrastructure/reportsController";
+import { guardarReporteAction } from "@/src/reporte-auditoria/infrastructure/actions/save";
+import { getReporteByIdAction } from "@/src/reporte-auditoria/infrastructure/actions/get-by-id";
+import { updateReporteAction } from "@/src/reporte-auditoria/infrastructure/actions/update";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
@@ -73,46 +72,43 @@ export function InsertUpdateGeneralReportContent({
   };
 
   useEffect(() => {
-    try {
-      const endLoading = () => {
-        setLoading(false);
-      };
-
+    const fetchReport = async () => {
       if (isUpdate) {
-        const fetchReport = async () => {
-          if (!path) return;
-          if (!isPointerArea(path)) return;
+        setLoading(true);
+        const response = await getReporteByIdAction(Number(id));
 
-          const response = await selectGeneralReportById({
-            pointer: path,
-            id: Number(id),
-          });
+        if (response.ok && response.data) {
+          const report = response.data;
+          const metadata = report.metadata;
+          let resetData: any = {
+            comentarios: report.comentarios || '',
+            respuestas: report.respuestas,
+            auditor_id: report.auditor_id,
+          };
 
-          if (response.ok) {
-            methods.reset({
-              linea: response.report.linea,
-              coord: response.report.coord,
-              picker: response.report.picker,
-              ubicacion: response.report.ubicacion,
-              worktable: response.report.worktable,
-              nivel: response.report.nivel,
-              comentarios: response.report.comentarios,
-              respuestas: response.report.respuestas,
-              auditor_id: response.report.auditor_id,
-            });
-            endLoading();
-          } else {
-            setAnnouncement({
-              isActivated: true,
-              isOk: false,
-              message: response.message,
-            });
-
-            router.push(`/reports/`);
+          if ('nivel' in metadata) { // PizzaTrayMetadata
+            resetData.ubicacion = metadata.ubicacion;
+            resetData.nivel = Number(metadata.nivel);
+          } else if ('coordinador' in metadata) { // BaldwinStateMetadata
+            resetData.linea = metadata.linea;
+            resetData.coord = metadata.coordinador;
+          } else if ('picker' in metadata) { // SurtidoMaterialesMetadata
+            resetData.picker = metadata.picker;
+          } else if ('worktable' in metadata) { // DisplayAreaMetadata
+            resetData.worktable = metadata.worktable;
+          } else if ('linea' in metadata) { // Stacking, Packing, General (baldwin-reserve)
+            resetData.linea = metadata.linea;
           }
-        };
-
-        fetchReport();
+          methods.reset(resetData);
+        } else {
+          setAnnouncement({
+            isActivated: true,
+            isOk: false,
+            message: response.message,
+          });
+          router.push(`/reports/`);
+        }
+        setLoading(false);
       } else {
         methods.reset({
           linea: "",
@@ -123,86 +119,81 @@ export function InsertUpdateGeneralReportContent({
           nivel: 1,
           comentarios: "",
           respuestas: [],
-          auditor_id: 0,
+          auditor_id: auditor_temp.id,
         });
-        endLoading();
+        setLoading(false);
       }
-    } catch (error) {
-      console.log("Error", error);
-    }
+    };
+
+    fetchReport();
   }, [id, isUpdate, methods, router, setAnnouncement]);
 
   const onSubmit = async (data: ReportFormValues) => {
-    try {
-      setSaving(true);
+    setSaving(true);
 
-      const formData = new FormData();
-
-      // LÍNEA
-      if (
-        path === "baldwin-state" ||
-        path === "baldwin-reserve-stacking" ||
-        path === "baldwin-reserve-packing" ||
-        path === "baldwin-reserve-general"
-      ) {
-        if (data.linea !== undefined) formData.append("linea", data.linea);
-      }
-
-      // COORD
-      if (path === "baldwin-state") {
-        if (data.coord !== undefined) formData.append("coord", data.coord);
-      }
-
-      // PICKER
-      if (path === "baldwin-reserve-supply") {
-        if (data.picker !== undefined) formData.append("picker", data.picker);
-      }
-
-      if (path === "pizza-tray") {
-        // UBICACIÓN
-        if (data.ubicacion !== undefined)
-          formData.append("ubicacion", data.ubicacion);
-
-        // NIVEL
-        if (data.nivel !== undefined)
-          formData.append("nivel", data.nivel.toString());
-      }
-
-      // WORKTABLE
-      if (path === "display-area") {
-        if (data.worktable !== undefined)
-          formData.append("worktable", data.worktable);
-      }
-
-      formData.append("comentarios", data.comentarios);
-      formData.append("auditor_id", data.auditor_id.toString());
-      formData.append("respuestas", JSON.stringify(data.respuestas));
-
-      if (data.archivo instanceof FileList && data.archivo.length > 0) {
-        formData.append("archivo", data.archivo.item(0)!);
-      }
-
-      const response = await insertReport(formData);
-
-      if (response.ok) {
-        setAnnouncement({
-          isActivated: true,
-          isOk: true,
-          message: response.message,
-        });
-        if (!isUpdate) methods.reset();
-      } else {
-        setAnnouncement({
-          isActivated: true,
-          isOk: false,
-          message: response.message,
-        });
-      }
-    } catch (error) {
-      console.error("Error al guardar el reporte:", error);
-    } finally {
-      setSaving(false);
+    let metadata: any = {};
+    switch (path) {
+      case 'pizza-tray':
+        metadata = { nivel: data.nivel, ubicacion: data.ubicacion };
+        break;
+      case 'baldwin-state':
+        metadata = { coordinador: data.coord, linea: data.linea };
+        break;
+      case 'baldwin-reserve-supply':
+        metadata = { picker: data.picker };
+        break;
+      case 'display-area':
+        metadata = { worktable: data.worktable };
+        break;
+      case 'baldwin-reserve-stacking':
+      case 'baldwin-reserve-packing':
+      case 'baldwin-reserve-general':
+        metadata = { linea: data.linea };
+        break;
     }
+
+    let response;
+
+    if (isUpdate) {
+      const reportData = {
+        data: {
+          auditor_id: data.auditor_id,
+          semana: Number(getWeekNumber()),
+          respuestas: data.respuestas,
+          comentarios: data.comentarios,
+        },
+        metadata,
+      };
+      response = await updateReporteAction(Number(id), reportData, path || '');
+    } else {
+      const reportData = {
+        slug: path || '',
+        auditor_id: data.auditor_id,
+        semana: getWeekNumber().toString(),
+        respuestas: data.respuestas,
+        comentarios: data.comentarios,
+        metadata: metadata
+      };
+      response = await guardarReporteAction(reportData);
+    }
+
+    if (('ok' in response && response.ok) || ('success' in response && response.success)) {
+      setAnnouncement({
+        isActivated: true,
+        isOk: true,
+        message: response.message,
+      });
+
+      if (!isUpdate) methods.reset();
+    } else {
+      setAnnouncement({
+        isActivated: true,
+        isOk: false,
+        message: response.message,
+      });
+    }
+
+    setSaving(false);
   };
 
   return (

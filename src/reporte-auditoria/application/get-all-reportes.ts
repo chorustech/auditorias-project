@@ -14,12 +14,15 @@ export class obtenerReportes<M extends Metadata> {
     slug: string,
     query: IQuery<ReporteAuditoriaConDetalles<Metadata>>,
   ) {
+    console.log("Buscando reportes para el slug:", slug);
     const area = await this.searchArea.search(slug);
+    console.log("Área encontrada:", area);
 
-    if (area == 0)
+    if (!area)
       throw new Error(`El Area no fue encontrada con el slug: ${slug}`);
 
     const reportes = await this.reportesRepo.getAll(area, query);
+    console.log("Reportes obtenidos:", reportes.length);
 
     return reportes;
   }

@@ -30,10 +30,9 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 
 /* SERVER ACTION */
-import {
-  insertEolaReport,
-  selectEolaReportById,
-} from "@/temp/Reports/Infrastructure/reportsController";
+import { guardarReporteAction } from "@/src/reporte-auditoria/infrastructure/actions/save";
+import { getReporteByIdAction } from "@/src/reporte-auditoria/infrastructure/actions/get-by-id";
+import { updateReporteAction } from "@/src/reporte-auditoria/infrastructure/actions/update";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
@@ -67,43 +66,39 @@ export function InsertUpdateEolaReportContent({
   };
 
   useEffect(() => {
-    try {
-      const endLoading = () => {
-        setLoading(false);
-      };
-
+    const fetchReport = async () => {
       if (isUpdate) {
-        const fetchReport = async () => {
-          const response = await selectEolaReportById(Number(id));
+        setLoading(true);
+        const response = await getReporteByIdAction(Number(id));
 
-          if (response.ok) {
+        if (response.ok && response.data) {
+          const report = response.data;
+          // Type guard to ensure we have the correct metadata type
+          if ('numOrden' in report.metadata) {
             methods.reset({
-              id: response.report.id,
-              numOrden: response.report.numOrden,
+              id: report.id,
+              numOrden: report.metadata.numOrden,
               usuario_id: usuario_temp.id,
-              cantAceptada: response.report.cantAceptada,
-              cantInspeccionada: response.report.cantInspeccionada,
-              comentarios: response.report.comentarios,
-              linea: response.report.linea,
-              sizeOrden: response.report.sizeOrden,
-              sku: response.report.sku,
-              tipo: response.report.tipo,
-              uniNegocio: response.report.uniNegocio,
-              upc: response.report.upc,
+              cantAceptada: report.metadata.cantAceptada,
+              cantInspeccionada: report.metadata.cantInspeccionada,
+              comentarios: report.comentarios || '',
+              linea: report.metadata.linea,
+              sizeOrden: report.metadata.sizeOrden,
+              sku: report.metadata.sku,
+              tipo: report.metadata.tipo,
+              uniNegocio: report.metadata.uniNegocio,
+              upc: report.metadata.upc,
             });
-            endLoading();
-          } else {
-            setAnnouncement({
-              isActivated: true,
-              isOk: false,
-              message: response.message,
-            });
-
-            router.push(`/reports/`);
           }
-        };
-
-        fetchReport();
+        } else {
+          setAnnouncement({
+            isActivated: true,
+            isOk: false,
+            message: response.message,
+          });
+          router.push(`/reports/`);
+        }
+        setLoading(false);
       } else {
         methods.reset({
           id: 0,
@@ -119,63 +114,72 @@ export function InsertUpdateEolaReportContent({
           uniNegocio: "",
           upc: "",
         });
-        endLoading();
+        setLoading(false);
       }
-    } catch (error) {
-      console.log("Error", error);
-    }
+    };
+
+    fetchReport();
   }, [id, isUpdate, methods, router, setAnnouncement]);
 
   const onSubmit = async (data: EolaFormValues) => {
-    try {
-      setSaving(true);
+    setSaving(true);
 
-      const formData = new FormData();
+    const reportData = {
+      slug: 'eola',
+      data: {
+        auditor_id: data.usuario_id,
+        semana: Number(getWeekNumber()), // Ensure semana is a number
+        respuestas: [],
+        comentarios: data.comentarios,
+      },
+      metadata: {
+        numOrden: data.numOrden,
+        cantAceptada: data.cantAceptada,
+        cantInspeccionada: data.cantInspeccionada,
+        linea: data.linea,
+        sizeOrden: data.sizeOrden,
+        sku: data.sku,
+        tipo: data.tipo,
+        uniNegocio: data.uniNegocio,
+        upc: data.upc,
+      },
+    };
 
-      formData.append("id", data.id.toString());
-      formData.append("usuario_id", data.usuario_id.toString());
-      formData.append("uniNegocio", data.uniNegocio);
-      formData.append("linea", data.linea);
-      formData.append("tipo", data.tipo);
-      formData.append("sku", data.sku);
-      formData.append("upc", data.upc);
-      formData.append("sizeOrden", data.sizeOrden.toString());
-      formData.append("cantInspeccionada", data.cantInspeccionada.toString());
-      formData.append("cantAceptada", data.cantAceptada.toString());
-
-      // Número de orden EOLA
-      if (data.numOrden !== undefined) {
-        formData.append("numOrden", data.numOrden);
-      }
-
-      formData.append("comentarios", data.comentarios);
-
-      if (data.archivo instanceof FileList && data.archivo.length > 0) {
-        formData.append("archivo", data.archivo.item(0)!);
-      }
-
-      const response = await insertEolaReport(formData);
-
-      if (response.ok) {
-        setAnnouncement({
-          isActivated: true,
-          isOk: true,
-          message: response.message,
+    const response = isUpdate
+      ? await updateReporteAction(Number(id), reportData, 'eola')
+      : await guardarReporteAction({
+          ...reportData,
+          slug: 'eola',
+          auditor_id: data.usuario_id,
+          semana: getWeekNumber().toString(),
+          respuestas: [], // Changed to an empty array
         });
 
-        if (!isUpdate) methods.reset();
-      } else {
-        setAnnouncement({
-          isActivated: true,
-          isOk: false,
-          message: response.message,
-        });
-      }
+    if ('ok' in response && response.ok) {
+      setAnnouncement({
+        isActivated: true,
+        isOk: true,
+        message: response.message,
+      });
 
-      setSaving(false);
-    } catch (error) {
-      console.log("Error", error);
+      if (!isUpdate) methods.reset();
+    } else if ('success' in response && response.success) {
+      setAnnouncement({
+        isActivated: true,
+        isOk: true,
+        message: response.message,
+      });
+
+      if (!isUpdate) methods.reset();
+    } else {
+      setAnnouncement({
+        isActivated: true,
+        isOk: false,
+        message: response.message,
+      });
     }
+
+    setSaving(false);
   };
 
   return (

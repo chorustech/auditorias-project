@@ -21,10 +21,9 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 
 /* SERVER ACTION */
-import {
-  insertNcrReport,
-  selectNcrReportById,
-} from "@/temp/Reports/Infrastructure/reportsController";
+import { guardarReporteAction } from "@/src/reporte-auditoria/infrastructure/actions/save";
+import { getReporteByIdAction } from "@/src/reporte-auditoria/infrastructure/actions/get-by-id";
+import { updateReporteAction } from "@/src/reporte-auditoria/infrastructure/actions/update";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
@@ -57,37 +56,32 @@ export function InsertUpdateNcrReportContent({
   };
 
   useEffect(() => {
-    try {
-      const endLoading = () => {
-        setLoading(false);
-      };
-
+    const fetchReport = async () => {
       if (isUpdate) {
-        const fetchReport = async () => {
-          const response = await selectNcrReportById(Number(id));
+        setLoading(true);
+        const response = await getReporteByIdAction(Number(id));
 
-          if (response.ok) {
+        if (response.ok && response.data) {
+          const report = response.data;
+          if ('defecto' in report.metadata) {
             methods.reset({
-              id: response.report.id,
-              defecto: response.report.defecto,
-              ncr: response.report.numNcr,
-              numParte: response.report.numParte,
-              proveedor: response.report.proveedor,
-              usuario_id: response.report.usuario_id,
+              id: report.id,
+              defecto: report.metadata.defecto,
+              ncr: report.metadata.ncr,
+              numParte: report.metadata.numParte,
+              proveedor: report.metadata.proveedor,
+              usuario_id: report.auditor_id,
             });
-            endLoading();
-          } else {
-            setAnnouncement({
-              isActivated: true,
-              isOk: false,
-              message: response.message,
-            });
-
-            router.push(`/reports/`);
           }
-        };
-
-        fetchReport();
+        } else {
+          setAnnouncement({
+            isActivated: true,
+            isOk: false,
+            message: response.message,
+          });
+          router.push(`/reports/`);
+        }
+        setLoading(false);
       } else {
         methods.reset({
           id: 0,
@@ -97,52 +91,59 @@ export function InsertUpdateNcrReportContent({
           defecto: "",
           usuario_id: usuario_temp.id,
         });
-        endLoading();
+        setLoading(false);
       }
-    } catch (error) {
-      console.log("Error", error);
-    }
+    };
+
+    fetchReport();
   }, [id, isUpdate, methods, router, setAnnouncement]);
 
   const onSubmit = async (data: NcrFormValues) => {
-    try {
-      setSaving(true);
+    setSaving(true);
 
-      const formData = new FormData();
+    const reportData = {
+      slug: 'ncr',
+      data: {
+        auditor_id: data.usuario_id,
+        semana: Number(getWeekNumber()),
+        respuestas: [],
+        comentarios: '',
+      },
+      metadata: {
+        ncr: data.ncr,
+        numParte: data.numParte,
+        proveedor: data.proveedor,
+        defecto: data.defecto,
+      },
+    };
 
-      formData.append("id", data.id.toString());
-      formData.append("usuario_id", data.usuario_id.toString());
-      formData.append("ncr", data.ncr);
-      formData.append("numParte", data.numParte);
-      formData.append("proveedor", data.proveedor);
-      formData.append("defecto", data.defecto);
-
-      if (data.archivo instanceof FileList && data.archivo.length > 0) {
-        formData.append("archivo", data.archivo.item(0)!);
-      }
-
-      const response = await insertNcrReport(formData);
-
-      if (response.ok) {
-        setAnnouncement({
-          isActivated: true,
-          isOk: true,
-          message: response.message,
+    const response = isUpdate
+      ? await updateReporteAction(Number(id), reportData, 'ncr')
+      : await guardarReporteAction({
+          ...reportData,
+          slug: 'ncr',
+          auditor_id: data.usuario_id,
+          semana: getWeekNumber().toString(),
+          respuestas: [],
         });
 
-        if (!isUpdate) methods.reset();
-      } else {
-        setAnnouncement({
-          isActivated: true,
-          isOk: false,
-          message: response.message,
-        });
-      }
+    if (('ok' in response && response.ok) || ('success' in response && response.success)) {
+      setAnnouncement({
+        isActivated: true,
+        isOk: true,
+        message: response.message,
+      });
 
-      setSaving(false);
-    } catch (error) {
-      console.log("Error", error);
+      if (!isUpdate) methods.reset();
+    } else {
+      setAnnouncement({
+        isActivated: true,
+        isOk: false,
+        message: response.message,
+      });
     }
+
+    setSaving(false);
   };
 
   return (

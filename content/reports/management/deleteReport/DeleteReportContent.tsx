@@ -11,16 +11,19 @@ import { useState } from "react";
 import { Loader, Trash2 } from "lucide-react";
 
 /* SERVER ACTIONS */
-import { deleteReport } from "@/temp/Reports/Infrastructure/reportsController";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
 import { useModal } from "@/stores/modal/modalStore";
+import { deleteReporteAction } from "@/src/reporte-auditoria/infrastructure/actions/delete";
+import { usePathname } from "next/navigation";
 
 export function DeleteReportContent({ report_id }: { report_id: number }) {
   const [deleting, setDeleting] = useState(false);
   const { setAnnouncement } = useAnnouncement();
   const { modal, setModal } = useModal();
+  const pathname = usePathname();
+  const slug = pathname.split("/").at(-1) ?? "";
 
   const methods = useForm<{ id: number }>();
 
@@ -28,7 +31,7 @@ export function DeleteReportContent({ report_id }: { report_id: number }) {
     try {
       setDeleting(true);
 
-      const response = await deleteReport(report_id);
+      const response = await deleteReporteAction(report_id, slug);
 
       if (response.ok) {
         setAnnouncement({

@@ -11,9 +11,25 @@ export async function getReportesAction(
   slug: string,
   query: IQuery<ReporteAuditoriaConDetalles<Metadata>>,
 ) {
-  const repo = new ReporteAuditoriaNeon();
-  const searchArea = new SearchAreaNeon();
-  const useCase = new obtenerReportes(repo, searchArea);
+  try {
+    const repo = new ReporteAuditoriaNeon();
+    const searchArea = new SearchAreaNeon();
+    const useCase = new obtenerReportes(repo, searchArea);
 
-  return await useCase.execute(slug, query);
+    const data = await useCase.execute(slug, query);
+    return {
+      data: data,
+      count: data.length,
+      ok: true,
+      message: "reportes obtenidos correctamente",
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      ok: false,
+      message: "Ocurrió un error al obtener los reportes",
+      data: [],
+      count: 0,
+    };
+  }
 }
