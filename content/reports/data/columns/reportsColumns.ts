@@ -94,7 +94,7 @@ export const reportsColumns: ColumnsDictionary = {
     "Auditor",
     "Fecha",
     "Semana",
-    "Línea",
+    "Worktable",
     "1",
     "2",
     "3",

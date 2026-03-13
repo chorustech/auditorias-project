@@ -33,19 +33,11 @@ import { useReportsFilter } from "@/stores/filter/reports/filterReportsStore";
 import { useModal } from "@/stores/modal/modalStore";
 
 /* TYPES */
-import {
-  EolaReport,
-  GeneralReport,
-  NcrReport,
-  RacReport,
-  ReportType,
-} from "@/temp/Reports/Infrastructure/Types/selectReportsResponse";
+import { ReportType } from "@/temp/Reports/Infrastructure/Types/selectReportsResponse";
 
 /* UTILS */
 import { isPointerArea } from "@/utils/pointerArea";
 import { getTwBgColorTable } from "@/utils/getTwBgColorTable";
-import ExcelDownloadButton from "@/components/shared/download/ExcelDownloadButton";
-import ExcelDownloadReportsButton from "@/components/shared/download/ExcelDownloadReportsButton";
 import DownloadReportsExcelButton from "@/components/shared/download/ExcelDownloadReportsButton";
 
 export function SelectReportsContent() {
@@ -151,32 +143,6 @@ export function SelectReportsContent() {
 
   return (
     <SectionContainer>
-      <DownloadReportsExcelButton
-        pointer={
-          path !== null
-            ? path === "baldwin-state" ||
-              path === "baldwin-reserve-packing" ||
-              path === "baldwin-reserve-stacking" ||
-              path === "baldwin-reserve-general" ||
-              path === "baldwin-reserve-supply" ||
-              path === "eola" ||
-              path === "display-area" ||
-              path === "pizza-tray" ||
-              path === "rac" ||
-              path === "ncr"
-              ? path
-              : "baldwin-reserve-general"
-            : "baldwin-reserve-general"
-        }
-        query={{
-          page: 0,
-          perPage: reports.count,
-          order: filter?.order ?? "asc",
-          orderBy: filter?.orderBy ?? "id",
-          filters: filter?.filters ?? [],
-          checkFilters: filter?.checkFilters ?? false,
-        }}
-      />
       <DinamicTable
         theadColumns={reportsColumns[path ?? ""].map(
           (column: string, index: number) => (
@@ -225,7 +191,34 @@ export function SelectReportsContent() {
           })
         }
         addAction={() => router.push(`/reports/${path}/add`)}
-        excelAction={() => {}}
+        excelButtonContent={
+          <DownloadReportsExcelButton
+            pointer={
+              path !== null
+                ? path === "baldwin-state" ||
+                  path === "baldwin-reserve-packing" ||
+                  path === "baldwin-reserve-stacking" ||
+                  path === "baldwin-reserve-general" ||
+                  path === "baldwin-reserve-supply" ||
+                  path === "eola" ||
+                  path === "display-area" ||
+                  path === "pizza-tray" ||
+                  path === "rac" ||
+                  path === "ncr"
+                  ? path
+                  : "baldwin-reserve-general"
+                : "baldwin-reserve-general"
+            }
+            query={{
+              page: 0,
+              perPage: reports.count,
+              order: filter?.order ?? "asc",
+              orderBy: filter?.orderBy ?? "id",
+              filters: filter?.filters ?? [],
+              checkFilters: filter?.checkFilters ?? false,
+            }}
+          />
+        }
         backContent={<ArrowLeft className="size-5" />}
         goNext={!hasNextPage}
         goBack={filter?.page === 0 ? false : true}

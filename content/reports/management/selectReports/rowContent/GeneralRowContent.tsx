@@ -42,6 +42,11 @@ export function GeneralRowContent({
               <p>{report.data.linea}</p>
             </DinamicTd>
           )}
+          {report.data.worktable && (
+            <DinamicTd twClassName="text-nowrap">
+              <p>{report.data.worktable}</p>
+            </DinamicTd>
+          )}
           {report.data.coord && (
             <DinamicTd twClassName="text-nowrap">
               <p>{report.data.coord}</p>

@@ -32,8 +32,8 @@ export type GeneralReport = {
 };
 
 export type EolaReport = {
-  id?: number;
-  numOrden: string;
+  id: number;
+  numOrden?: string;
   usuario_id: number;
   usuario_nombre: string;
   fecha: string;
@@ -46,11 +46,11 @@ export type EolaReport = {
   sizeOrden: number;
   cantInspeccionada: number;
   cantAceptada: number;
-  comentarios: string;
+  comentarios?: string;
 };
 
 export type NcrReport = {
-  id?: number;
+  id: number;
   usuario_id: number;
   usuario_nombre: string;
   numNcr: string;
@@ -62,7 +62,7 @@ export type NcrReport = {
 };
 
 export type RacReport = {
-  id?: number;
+  id: number;
   usuario_id: number;
   usuario_nombre: string;
   fecha: string;
