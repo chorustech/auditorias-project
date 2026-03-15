@@ -195,7 +195,7 @@ export const displayAreaMerges: Merges[] = [
   },
   {
     s: { c: 6, r: 0 },
-    e: { c: 12, r: 0 },
+    e: { c: 11, r: 0 },
   },
 ];
 

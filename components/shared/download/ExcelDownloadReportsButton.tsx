@@ -31,6 +31,7 @@ import { autoSizeColumns } from "@/components/shared/download/utils/autoSizeColu
 import { transformReportsForExcel } from "@/components/shared/download/utils/transformReportsForExcel";
 import { setMerges } from "@/components/shared/download/utils/setMerges";
 import { setColumnsStyles } from "@/components/shared/download/utils/setColumnsStyles";
+import { getDate } from "@/utils/date";
 
 export default function DownloadReportsExcelButton({
   pointer,
@@ -65,11 +66,13 @@ export default function DownloadReportsExcelButton({
       style_worksheet["!cols"] = autoSizeColumns(rows);
       style_worksheet["!merges"] = setMerges(pointer);
 
+      const file_name = pointer + "_" + getDate();
+
       XLSX.utils.book_append_sheet(workbook, style_worksheet, "Reportes");
 
       setProgress(80);
 
-      XLSX.writeFile(workbook, "reportes.xlsx");
+      XLSX.writeFile(workbook, file_name + ".xlsx");
 
       setProgress(100);
 
