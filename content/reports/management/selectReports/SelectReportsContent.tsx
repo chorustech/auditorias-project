@@ -57,12 +57,6 @@ export function SelectReportsContent() {
   }>({ data: [], count: 0 });
   const [loading, setLoading] = useState(true);
 
-
-  const pathname = usePathname();
-
-  const rawPath = pathname.split("/").at(-1);
-  const path = rawPath ?? null;
-
   useEffect(() => {
     const fetchReports = async () => {
       if (!path) return;
