@@ -32,10 +32,9 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 
 /* SERVER ACTION */
-import {
-  insertRacReport,
-  selectRacReportById,
-} from "@/temp/Reports/Infrastructure/reportsController";
+import { guardarReporteAction } from "@/src/reporte-auditoria/infrastructure/actions/save";
+import { getReporteByIdAction } from "@/src/reporte-auditoria/infrastructure/actions/get-by-id";
+import { updateReporteAction } from "@/src/reporte-auditoria/infrastructure/actions/update";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
@@ -68,43 +67,38 @@ export function InsertUpdateRacReportContent({
   };
 
   useEffect(() => {
-    try {
-      const endLoading = () => {
-        setLoading(false);
-      };
-
+    const fetchReport = async () => {
       if (isUpdate) {
-        const fetchReport = async () => {
-          const response = await selectRacReportById(Number(id));
+        setLoading(true);
+        const response = await getReporteByIdAction(Number(id));
 
-          if (response.ok) {
+        if (response.ok && response.data) {
+          const report = response.data;
+          if ('descProd' in report.metadata) {
             methods.reset({
-              id: response.report.id,
-              area: response.report.area,
-              codigoFecha: response.report.codigoFecha,
-              descProb: response.report.descProb,
-              descProd: response.report.descProd,
-              estado: response.report.estado,
-              numParte: response.report.numParte,
-              ponderancia: response.report.ponderancia,
-              porcFalla: response.report.porcFalla,
-              responsable: response.report.responsable,
-              sizeLote: response.report.sizeLote,
-              usuario_id: response.report.usuario_id,
+              id: report.id,
+              area: report.metadata.area,
+              codigoFecha: report.metadata.codigoFecha,
+              descProb: report.metadata.descProb,
+              descProd: report.metadata.descProd,
+              estado: report.metadata.estado,
+              numParte: report.metadata.numParte,
+              ponderancia: report.metadata.ponderancia,
+              porcFalla: report.metadata.porcFalla,
+              responsable: report.metadata.responsable,
+              sizeLote: report.metadata.sizeLote,
+              usuario_id: report.auditor_id,
             });
-            endLoading();
-          } else {
-            setAnnouncement({
-              isActivated: true,
-              isOk: false,
-              message: response.message,
-            });
-
-            router.push(`/reports/`);
           }
-        };
-
-        fetchReport();
+        } else {
+          setAnnouncement({
+            isActivated: true,
+            isOk: false,
+            message: response.message,
+          });
+          router.push(`/reports/`);
+        }
+        setLoading(false);
       } else {
         methods.reset({
           id: 0,
@@ -120,59 +114,65 @@ export function InsertUpdateRacReportContent({
           sizeLote: 0,
           usuario_id: usuario_temp.id,
         });
-        endLoading();
+        setLoading(false);
       }
-    } catch (error) {
-      console.log("Error", error);
-    }
+    };
+
+    fetchReport();
   }, [id, isUpdate, methods, router, setAnnouncement]);
 
   const onSubmit = async (data: RacFormValues) => {
-    try {
-      setSaving(true);
+    setSaving(true);
 
-      const formData = new FormData();
+    const reportData = {
+      slug: 'rac',
+      data: {
+        auditor_id: data.usuario_id,
+        semana: Number(getWeekNumber()),
+        respuestas: [],
+        comentarios: '',
+      },
+      metadata: {
+        estado: data.estado,
+        responsable: data.responsable,
+        numParte: data.numParte,
+        descProd: data.descProd,
+        sizeLote: data.sizeLote,
+        ponderancia: data.ponderancia,
+        codigoFecha: data.codigoFecha,
+        area: data.area,
+        porcFalla: data.porcFalla,
+        descProb: data.descProb,
+      },
+    };
 
-      formData.append("id", data.id.toString());
-      formData.append("usuario_id", data.usuario_id.toString());
-      formData.append("estado", data.estado);
-      formData.append("responsable", data.responsable);
-      formData.append("numParte", data.numParte);
-      formData.append("descProd", data.descProd);
-      formData.append("sizeLote", data.sizeLote.toString());
-      formData.append("ponderancia", data.ponderancia);
-      formData.append("codigoFecha", data.codigoFecha);
-      formData.append("area", data.area);
-      formData.append("porcFalla", data.porcFalla.toString());
-      formData.append("descProb", data.descProb);
-
-      if (data.archivo instanceof FileList && data.archivo.length > 0) {
-        formData.append("archivo", data.archivo.item(0)!);
-      }
-
-      const response = await insertRacReport(formData);
-
-      if (response.ok) {
-        setAnnouncement({
-          isActivated: true,
-          isOk: true,
-          message: response.message,
+    const response = isUpdate
+      ? await updateReporteAction(Number(id), reportData, 'rac')
+      : await guardarReporteAction({
+          ...reportData,
+          slug: 'rac',
+          auditor_id: data.usuario_id,
+          semana: getWeekNumber().toString(),
+          respuestas: [],
         });
-        console.log(data);
 
-        if (!isUpdate) methods.reset();
-      } else {
-        setAnnouncement({
-          isActivated: true,
-          isOk: false,
-          message: response.message,
-        });
-      }
+    if (('ok' in response && response.ok) || ('success' in response && response.success)) {
+      setAnnouncement({
+        isActivated: true,
+        isOk: true,
+        message: response.message,
+      });
 
-      setSaving(false);
-    } catch (error) {
-      console.log("Error", error);
+      if (!isUpdate) methods.reset();
+    } else {
+      setAnnouncement({
+        isActivated: true,
+        isOk: false,
+        message: response.message,
+      });
     }
+
+    setSaving(false);
   };
 
   return (

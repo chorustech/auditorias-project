@@ -27,20 +27,18 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 
 /* SERVER ACTIONS */
-import {
-  insertUser,
-  selectUserById,
-} from "@/temp/Users/Infrastructure/usersController";
+import { selectUserById } from "@/temp/Users/Infrastructure/usersController";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
 
 /* TYPES */
-import { UserFormValues } from "@/content/users/types/forms/UserFormValues";
+import { UserFormValues } from "@/content/users/types/forms/userFormValues";
 
 /* UTILS */
 import { getDate, getWeekNumber } from "@/utils/date";
 import { DinamicInputNumber } from "@/components/shared/form/dinamicInput/DinamicInputNumber";
+import { insertUser } from "@/src/users/actions/create-action";
 
 export function InsertUpdateUserContent({
   isUpdate,
@@ -115,6 +113,8 @@ export function InsertUpdateUserContent({
       formData.append("nombre", data.nombre);
       formData.append("numEmpleado", data.numEmpleado.toString());
       formData.append("rol", data.rol);
+      formData.append("password", "12345678");
+      formData.append("rol", data.rol.toLowerCase());
       formData.append("estado", data.estado);
 
       const response = await insertUser(formData);
@@ -128,6 +128,7 @@ export function InsertUpdateUserContent({
 
         if (!isUpdate) methods.reset();
       } else {
+        console.log(response);
         setAnnouncement({
           isActivated: true,
           isOk: false,

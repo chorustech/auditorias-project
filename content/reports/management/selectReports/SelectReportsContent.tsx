@@ -25,7 +25,7 @@ import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 
 /* SERVER ACTION */
-import { selectReports } from "@/temp/Reports/Infrastructure/reportsController";
+import { getReportesAction } from "@/src/reporte-auditoria/infrastructure/actions/get-all";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
@@ -33,7 +33,8 @@ import { useReportsFilter } from "@/stores/filter/reports/filterReportsStore";
 import { useModal } from "@/stores/modal/modalStore";
 
 /* TYPES */
-import { ReportType } from "@/temp/Reports/Infrastructure/Types/selectReportsResponse";
+import { ReporteAuditoriaConDetalles } from "@/src/reporte-auditoria/domain";
+import { Metadata } from "@/src/reporte-auditoria/domain/entities";
 
 /* UTILS */
 import { isPointerArea } from "@/utils/pointerArea";
@@ -51,46 +52,21 @@ export function SelectReportsContent() {
   const { setFilter, filter } = useReportsFilter();
 
   const [reports, setReports] = useState<{
-    data: ReportType[];
+    data: ReporteAuditoriaConDetalles<Metadata>[];
     count: number;
   }>({ data: [], count: 0 });
+  const [loading, setLoading] = useState(true);
 
-  const [loading, setLoading] = useState(false);
 
-  const updateFilter = (changes: Partial<typeof filter>) => {
-    if (!filter) return;
+  const pathname = usePathname();
 
-    setFilter({
-      ...filter,
-      ...changes,
-    });
-  };
+  const rawPath = pathname.split("/").at(-1);
+  const path = rawPath ?? null;
 
-  const nextPage = () => {
-    if (!filter) return;
-
-    updateFilter({
-      page: filter.page + 1,
-    });
-  };
-
-  const prevPage = () => {
-    if (!filter) return;
-
-    updateFilter({
-      page: Math.max(filter.page - 1, 0),
-    });
-  };
-
-  const hasNextPage =
-    filter && (filter.page + 1) * filter.perPage < reports.count;
-
-  const fetchReports = useCallback(async () => {
-    if (!path) return;
-    if (!isPointerArea(path)) return;
-    if (!filter) return;
-
-    console.log(filter);
+  useEffect(() => {
+    const fetchReports = async () => {
+      if (!path) return;
+      if (!isPointerArea(path)) return;
 
     try {
       setLoading(true);
@@ -108,11 +84,13 @@ export function SelectReportsContent() {
       });
 
       if (response.ok) {
+          console.log("Respuesta de getReportesAction:", response);
         setReports({
           data: response.data,
           count: response.count,
         });
       } else {
+          console.error("Error en getReportesAction:", response);
         setAnnouncement({
           isActivated: true,
           isOk: false,
@@ -141,6 +119,16 @@ export function SelectReportsContent() {
     });
   }, [setFilter]);
 
+  const generalReportPaths = [
+    "pizza-tray",
+    "baldwin-state",
+    "baldwin-reserve-supply",
+    "display-area",
+    "baldwin-reserve-stacking",
+    "baldwin-reserve-packing",
+    "baldwin-reserve-general",
+  ];
+
   return (
     <SectionContainer>
       <DinamicTable
@@ -149,36 +137,41 @@ export function SelectReportsContent() {
             <DinamicTh key={index} column={column} />
           ),
         )}
-        tbodyRows={reports.data.map((report: ReportType, index: number) => (
-          <DinamicRow
-            key={index}
-            twBgColor={getTwBgColorTable({ index: index })}
-          >
-            {report.kind === "general" ? (
-              <GeneralRowContent
-                report={report}
-                twBgColor={`${getTwBgColorTable({ index: index })}`}
-              />
-            ) : report.kind === "eola" ? (
-              <EolaRowContent
-                report={report}
-                twBgColor={`${getTwBgColorTable({ index: index })}`}
-              />
-            ) : report.kind === "ncr" ? (
-              <NcrRowContent
-                report={report}
-                twBgColor={`${getTwBgColorTable({ index: index })}`}
-              />
-            ) : report.kind === "rac" ? (
-              <RacRowContent
-                report={report}
-                twBgColor={`${getTwBgColorTable({ index: index })}`}
-              />
-            ) : (
-              <></>
-            )}
-          </DinamicRow>
-        ))}
+        tbodyRows={reports.data.map(
+          (report: ReporteAuditoriaConDetalles<Metadata>, index: number) => (
+            <DinamicRow
+
+              key={index}
+
+              twBgColor={getTwBgColorTable({ index: index })}
+
+            >
+              {generalReportPaths.includes(path ?? "") ? (
+                <GeneralRowContent
+                  report={report}
+                  twBgColor={`${getTwBgColorTable({ index: index })}`}
+                />
+              ) : path === "eola" ? (
+                <EolaRowContent
+                  report={report}
+                  twBgColor={`${getTwBgColorTable({ index: index })}`}
+                />
+              ) : path === "ncr" ? (
+                <NcrRowContent
+                  report={report}
+                  twBgColor={`${getTwBgColorTable({ index: index })}`}
+                />
+              ) : path === "rac" ? (
+                <RacRowContent
+                  report={report}
+                  twBgColor={`${getTwBgColorTable({ index: index })}`}
+                />
+              ) : (
+                <></>
+              )}
+            </DinamicRow>
+          ),
+        )}
         loading={loading}
         count={reports.count}
         type={"reporte"}
