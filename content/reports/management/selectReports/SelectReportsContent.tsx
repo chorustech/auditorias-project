@@ -38,7 +38,7 @@ import { ReportType } from "@/temp/Reports/Infrastructure/Types/selectReportsRes
 /* UTILS */
 import { isPointerArea } from "@/utils/pointerArea";
 import { getTwBgColorTable } from "@/utils/getTwBgColorTable";
-import DownloadReportsExcelButton from "@/components/shared/download/ExcelDownloadReportsButton";
+import { DownloadReportsExcelButton } from "@/components/shared/download/ExcelDownloadReportsButton";
 
 export function SelectReportsContent() {
   const router = useRouter();

@@ -7,10 +7,10 @@ import {
   baldwinStateMerges,
   displayAreaMerges,
   pizzaTrayMerges,
-} from "@/components/shared/download/data/reportsMerges";
+} from "@/components/shared/download/data/reports/reportsMerges";
 
 /* TYPES */
-import { Merges } from "@/components/shared/download/types/merges";
+import { Merges } from "@/components/shared/download/types/shared/merges";
 
 /* UTILS */
 import { PointerArea } from "@/utils/pointerArea";

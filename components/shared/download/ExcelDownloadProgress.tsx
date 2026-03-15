@@ -20,6 +20,8 @@ export default function DownloadProgress() {
     >
       <div className="text-sm mb-1">Generando Excel</div>
 
+      <p>{progress}</p>
+
       <div className="w-48 h-2 bg-gray-700 rounded">
         <div
           className="h-2 bg-green-400 rounded transition-all"

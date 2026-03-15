@@ -1,5 +1,5 @@
 /* TYPES */
-import { StyleObject } from "@/components/shared/download/types/styleObject";
+import { StyleObject } from "@/components/shared/download/types/shared/styleObject";
 
 export const mainEvenStyles: StyleObject = {
   font: {

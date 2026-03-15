@@ -11,10 +11,10 @@ import {
   reportsNcrColumnsHeaders,
   reportsPizzaTrayColumnsHeaders,
   reportsRacColumnsHeaders,
-} from "@/components/shared/download/data/reportsColumnsHeaders";
+} from "@/components/shared/download/data/reports/reportsColumnsHeaders";
 
 /* TYPES */
-import { ReportUnion } from "@/components/shared/download/types/reportUnion";
+import { ReportUnion } from "@/components/shared/download/types/reports/reportUnion";
 
 export function transformReportsForExcel(reports: ReportUnion[]): string[][] {
   const rows: string[][] = [];

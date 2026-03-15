@@ -1,5 +1,5 @@
 /* TYPES */
-import { LettersObject } from "@/components/shared/download/types/lettersObject";
+import { LettersObject } from "@/components/shared/download/types/shared/lettersObject";
 
 export const baldwinStateColumnsId: LettersObject = {
   main: ["A", "B", "C", "D", "E", "F", "G"],

@@ -10,7 +10,7 @@ import {
   eolaColumnsId,
   ncrColumnsId,
   racColumnsId,
-} from "@/components/shared/download/data/reportsColumnsId";
+} from "@/components/shared/download/data/reports/reportsColumnsId";
 import {
   mainEvenStyles,
   mainOddStyles,
@@ -22,7 +22,7 @@ import {
   rowOddStyles,
   sentenceWhileTrueStyles,
   sentenceWhileFalseStyles,
-} from "@/components/shared/download/data/reportsMainStyles";
+} from "@/components/shared/download/data/shared/mainStyles";
 
 /* LIBS */
 import * as XLSX from "xlsx-js-style";
@@ -30,7 +30,7 @@ import * as XLSX from "xlsx-js-style";
 /* TYPES */
 import { PointerArea } from "@/utils/pointerArea";
 import { ReportType } from "@/temp/Reports/Infrastructure/Types/selectReportsResponse";
-import { LettersObject } from "@/components/shared/download/types/lettersObject";
+import { LettersObject } from "@/components/shared/download/types/shared/lettersObject";
 
 export function setColumnsStyles(
   pointer: PointerArea,
@@ -155,7 +155,7 @@ function setColumnsStylesLoop(
     columnsIdObject.main.forEach(
       (letter) =>
         (worksheet[letter + (index + addRowStartCount)].s =
-          index % 2 !== 0 ? rowEvenStyles : rowOddStyles),
+          index % 2 === 0 ? rowEvenStyles : rowOddStyles),
     );
 
     if (report.kind === "general") {

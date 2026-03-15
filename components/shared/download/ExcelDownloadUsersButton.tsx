@@ -13,7 +13,7 @@ import { Download, Loader } from "lucide-react";
 import * as XLSX from "xlsx-js-style";
 
 /* SERVER ACTION */
-import { selectReports } from "@/temp/Reports/Infrastructure/reportsController";
+import { selectUsers } from "@/temp/Users/Infrastructure/usersController";
 
 /* STORES */
 import { useDownloadStore } from "@/stores/download/downloadStore";
@@ -21,27 +21,18 @@ import { useAnnouncement } from "@/stores/announcement/announcementStore";
 
 /* TYPES */
 import { IQuery } from "@/temp/Shared/Domain/Interfaces/IQuery";
-import {
-  EolaReport,
-  GeneralReport,
-  NcrReport,
-  RacReport,
-} from "@/temp/Reports/Infrastructure/Types/selectReportsResponse";
+import { UserType } from "@/temp/Users/Infrastructure/Types/userData";
 
 /* UTILS */
-import { PointerArea } from "@/utils/pointerArea";
 import { autoSizeColumns } from "@/components/shared/download/utils/shared/autoSizeColumns";
-import { transformReportsForExcel } from "@/components/shared/download/utils/reports/transformReportsForExcel";
-import { setMerges } from "@/components/shared/download/utils/reports/setMerges";
-import { setColumnsStyles } from "@/components/shared/download/utils/reports/setColumnsStyles";
+import { setColumnsStyles } from "@/components/shared/download/utils/users/setColumnsStyles";
 import { getDate } from "@/utils/date";
+import { transformUsersForExcel } from "@/components/shared/download/utils/users/transformUsersForExcel";
 
-export function DownloadReportsExcelButton({
-  pointer,
+export function ExcelDownloadUsersButton({
   query,
 }: {
-  pointer: PointerArea;
-  query: IQuery<GeneralReport & EolaReport & NcrReport & RacReport>;
+  query: IQuery<UserType>;
 }) {
   const { setAnnouncement } = useAnnouncement();
   const { downloading, start, finish, setProgress } = useDownloadStore();
@@ -86,7 +77,7 @@ export function DownloadReportsExcelButton({
     });
   };
 
-  const handleDownloadReports = async () => {
+  const handleDownloadUsers = async () => {
     try {
       if (downloading) return;
 
@@ -96,7 +87,7 @@ export function DownloadReportsExcelButton({
       await new Promise((r) => setTimeout(r, 200));
       await animateProgressTo(99);
 
-      const result = await selectReports({ pointer, query });
+      const result = await selectUsers({ query });
 
       if (!result.ok) {
         finish();
@@ -104,16 +95,15 @@ export function DownloadReportsExcelButton({
       }
 
       const workbook = XLSX.utils.book_new();
-      const rows = transformReportsForExcel(result.data);
+      const rows = transformUsersForExcel(result.data);
       const worksheet = XLSX.utils.aoa_to_sheet(rows);
-      const style_worksheet = setColumnsStyles(pointer, worksheet, result.data);
+      const style_worksheet = setColumnsStyles(worksheet, result.data);
 
       style_worksheet["!cols"] = autoSizeColumns(rows);
-      style_worksheet["!merges"] = setMerges(pointer);
 
-      const file_name = pointer + "_" + getDate();
+      const file_name = "usuarios_" + getDate();
 
-      XLSX.utils.book_append_sheet(workbook, style_worksheet, "Reportes");
+      XLSX.utils.book_append_sheet(workbook, style_worksheet, "Usuarios");
 
       XLSX.writeFile(workbook, file_name + ".xlsx");
 
@@ -123,7 +113,7 @@ export function DownloadReportsExcelButton({
       setAnnouncement({
         isActivated: true,
         isOk: false,
-        message: "Ocurrió un error al exportar los reportes a Excel",
+        message: "Ocurrió un error al exportar los usuarios a Excel",
       });
       finish();
       stopInterval();
@@ -133,7 +123,7 @@ export function DownloadReportsExcelButton({
 
   return (
     <BouncingButton
-      action={handleDownloadReports}
+      action={handleDownloadUsers}
       backgroundColorHover="#ffffff"
       backgroundColor="#1D6F42"
       textColor="#ffffff"

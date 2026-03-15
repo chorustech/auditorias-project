@@ -1,5 +1,5 @@
 /* TYPES */
-import { Merges } from "@/components/shared/download/types/merges";
+import { Merges } from "@/components/shared/download/types/shared/merges";
 
 export const baldwinStateMerges: Merges[] = [
   {

@@ -5,8 +5,9 @@ import { SectionContainer } from "@/components/shared/sectionContainer/SectionCo
 import { DinamicTable } from "@/components/shared/dinamicTable/DinamicTable";
 import { DinamicTh } from "@/components/shared/dinamicTable/dinamicRow/DinamicTh";
 import { DinamicRow } from "@/components/shared/dinamicTable/dinamicRow/DinamicRow";
-import { UserRowContent } from "./rowContent/UserRowContent";
+import { UserRowContent } from "@/content/users/management/selectUsers/rowContent/UserRowContent";
 import { FilterUsersContent } from "@/content/users/management/selectUsers/filterUsers/FilterUsersContent";
+import { ExcelDownloadUsersButton } from "@/components/shared/download/ExcelDownloadUsersButton";
 
 /* DATA */
 import { usersColumns } from "@/content/users/data/columns/usersColumns";
@@ -33,7 +34,6 @@ import { useModal } from "@/stores/modal/modalStore";
 
 /* UTILS */
 import { getTwBgColorTable } from "@/utils/getTwBgColorTable";
-import ExcelDownloadButton from "@/components/shared/download/ExcelDownloadButton";
 
 export function SelectUsersContent() {
   const router = useRouter();
@@ -130,18 +130,6 @@ export function SelectUsersContent() {
 
   return (
     <SectionContainer>
-      <ExcelDownloadButton<UserType>
-        action={selectUsers}
-        filename="usuarios"
-        query={{
-          page: 0,
-          perPage: users.count,
-          order: "asc",
-          orderBy: "id",
-          checkFilters: false,
-          filters: [],
-        }}
-      />
       <DinamicTable
         theadColumns={usersColumns.map((column, index) => (
           <DinamicTh key={index} column={column} />
@@ -169,7 +157,18 @@ export function SelectUsersContent() {
           })
         }
         addAction={() => router.push("/users/add")}
-        excelAction={() => {}}
+        excelButtonContent={
+          <ExcelDownloadUsersButton
+            query={{
+              page: 0,
+              perPage: users.count,
+              order: filter?.order ?? "asc",
+              orderBy: filter?.orderBy ?? "id",
+              filters: filter?.filters ?? [],
+              checkFilters: filter?.checkFilters ?? false,
+            }}
+          />
+        }
         backContent={<House className="size-5" />}
         goBack={filter?.page === 0 ? false : true}
         goNext={hasNextPage ?? false}
