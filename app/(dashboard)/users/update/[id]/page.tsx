@@ -1,4 +1,4 @@
-import { InsertUpdateUserContent } from "@/content/users/management/insertUpdateUser/InsertUpdateUserContent";
+import { InsertUpdateUserContent } from "@/content/users/components/insertUpdate/InsertUpdateUserContent";
 
 export default async function UserUpdatePage({
   params,

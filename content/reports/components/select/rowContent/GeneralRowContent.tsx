@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";
 import { DinamicTd } from "@/components/shared/dinamicTable/dinamicRow/DinamicTd";
 import { useModal } from "@/stores/modal/modalStore";
-import { DeleteReportContent } from "@/content/reports/management/deleteReport/DeleteReportContent";
+import { DeleteReportContent } from "@/content/reports/components/delete/DeleteReportContent";
 
 export function GeneralRowContent({
   report,

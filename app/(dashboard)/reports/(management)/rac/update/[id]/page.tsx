@@ -1,4 +1,4 @@
-import { InsertUpdateRacReportContent } from "@/content/reports/management/insertUpdateReport/unique/rac/InsertUpdateRacReportContent";
+import { InsertUpdateRacReportContent } from "@/content/reports/components/insertUpdate/unique/rac/InsertUpdateRacReportContent";
 
 export default async function RacUpdatePage({
   params,

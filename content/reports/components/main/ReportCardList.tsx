@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ReportCard } from "./ReportCard";
+import { ReportCard } from "@/content/reports/components/main/ReportCard";
 import Link from "next/link";
 import { links } from "@/content/reports/data/links/links";
 

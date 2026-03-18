@@ -5,8 +5,8 @@ import { SectionContainer } from "@/components/shared/sectionContainer/SectionCo
 import { DinamicTable } from "@/components/shared/dinamicTable/DinamicTable";
 import { DinamicTh } from "@/components/shared/dinamicTable/dinamicRow/DinamicTh";
 import { DinamicRow } from "@/components/shared/dinamicTable/dinamicRow/DinamicRow";
-import { UserRowContent } from "@/content/users/management/selectUsers/rowContent/UserRowContent";
-import { FilterUsersContent } from "@/content/users/management/selectUsers/filterUsers/FilterUsersContent";
+import { UserRowContent } from "@/content/users/components/select/rowContent/UserRowContent";
+import { FilterUsersContent } from "@/content/users/components/select/filterUsers/FilterUsersContent";
 import { ExcelDownloadUsersButton } from "@/components/shared/download/ExcelDownloadUsersButton";
 
 /* DATA */

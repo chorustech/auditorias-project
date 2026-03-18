@@ -1,7 +1,7 @@
 "use client";
 
 /* COMPONENTS */
-import { GeneralQuestions } from "@/content/reports/management/insertUpdateReport/general/generalQuestions/GeneralQuestions";
+import { GeneralQuestions } from "@/content/reports/components/insertUpdate/general/generalQuestions/GeneralQuestions";
 import { DinamicCombobox } from "@/components/shared/form/dinamicInput/DinamicCombobox";
 import { DinamicInputText } from "@/components/shared/form/dinamicInput/DinamicInputText";
 import { DinamicInputNumber } from "@/components/shared/form/dinamicInput/DinamicInputNumber";

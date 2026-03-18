@@ -6,8 +6,8 @@ import { Power, PowerOff, SquarePen, Trash2 } from "lucide-react";
 import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";
 import { DinamicTd } from "@/components/shared/dinamicTable/dinamicRow/DinamicTd";
 import { useModal } from "@/stores/modal/modalStore";
-import { DeleteUserContent } from "@/content/users/management/deleteUser/DeleteUserContent";
-import { UpdateUserEstatusContent } from "@/content/users/management/updateUserEstatus/UpdateUserEstatusContent";
+import { DeleteUserContent } from "@/content/users/components/delete/DeleteUserContent";
+import { UpdateUserEstatusContent } from "@/content/users/components/updateUserEstatus/UpdateUserEstatusContent";
 
 export function UserRowContent({
   user,

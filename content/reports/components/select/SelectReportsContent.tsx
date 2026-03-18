@@ -5,11 +5,11 @@ import { SectionContainer } from "@/components/shared/sectionContainer/SectionCo
 import { DinamicTable } from "@/components/shared/dinamicTable/DinamicTable";
 import { DinamicTh } from "@/components/shared/dinamicTable/dinamicRow/DinamicTh";
 import { DinamicRow } from "@/components/shared/dinamicTable/dinamicRow/DinamicRow";
-import { GeneralRowContent } from "@/content/reports/management/selectReports/rowContent/GeneralRowContent";
-import { EolaRowContent } from "@/content/reports/management/selectReports/rowContent/EolaRowContent";
-import { NcrRowContent } from "@/content/reports/management/selectReports/rowContent/NcrRowContent";
-import { RacRowContent } from "@/content/reports/management/selectReports/rowContent/RacRowContent";
-import { FilterReportsContent } from "@/content/reports/management/selectReports/filterReports/FilterReportsContent";
+import { GeneralRowContent } from "@/content/reports/components/select/rowContent/GeneralRowContent";
+import { EolaRowContent } from "@/content/reports/components/select/rowContent/EolaRowContent";
+import { NcrRowContent } from "@/content/reports/components/select/rowContent/NcrRowContent";
+import { RacRowContent } from "@/content/reports/components/select/rowContent/RacRowContent";
+import { FilterReportsContent } from "@/content/reports/components/select/filterReports/FilterReportsContent";
 
 /* DATA */
 import { reportsColumns } from "@/content/reports/data/columns/reportsColumns";
