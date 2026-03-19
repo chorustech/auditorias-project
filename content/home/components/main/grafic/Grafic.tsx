@@ -19,7 +19,7 @@ export function Grafic({
   const width = minWidth + 500;
 
   return (
-    <div className="w-full overflow-x-auto h-full mb-4">
+    <div className="w-full overflow-x-auto lg:h-full h-96 mb-4">
       {discontentObject.length === 0 ? (
         <p>No se encontrarón Reportes</p>
       ) : (

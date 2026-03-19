@@ -2,12 +2,14 @@
 
 /* COMPONENTS */
 import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";
+import { DinamicInputDate } from "@/components/shared/form/dinamicInput/DinamicInputDate";
 
 /* HOOKS */
+import { FormProvider, useForm } from "react-hook-form";
 import { useRef } from "react";
 
 /* ICONS */
-import { Download, Loader } from "lucide-react";
+import { Loader, Download } from "lucide-react";
 
 /* LIBS */
 import * as XLSX from "xlsx-js-style";
@@ -16,8 +18,12 @@ import * as XLSX from "xlsx-js-style";
 import { selectStatisticsObject } from "@/temp/Reports/Infrastructure/reportsController";
 
 /* STORES */
-import { useDownloadStore } from "@/stores/download/downloadStore";
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
+import { useModal } from "@/stores/modal/modalStore";
+import { useDownloadStore } from "@/stores/download/downloadStore";
+
+/* TYPES */
+import { DownloadStatisticsFormValues } from "@/content/home/types/DownloadStatisticsFormValues";
 
 /* UTILS */
 import { autoSizeColumns } from "@/components/shared/download/utils/shared/autoSizeColumns";
@@ -26,9 +32,16 @@ import { transformStatisticsForExcel } from "@/components/shared/download/utils/
 import { setMerges } from "@/components/shared/download/utils/statistics/setMerges";
 import { setColumnsStyles } from "@/components/shared/download/utils/statistics/setColumnsStyles";
 
-export function ExcelDownloadStatisticsButton() {
+export function DownloadStatisticsModalContent() {
   const { setAnnouncement } = useAnnouncement();
+  const { modal, setModal } = useModal();
   const { downloading, start, finish, setProgress } = useDownloadStore();
+
+  const methods = useForm<DownloadStatisticsFormValues>({
+    defaultValues: {
+      date: undefined,
+    },
+  });
 
   const progressInterval = useRef<NodeJS.Timeout | null>(null);
 
@@ -70,9 +83,11 @@ export function ExcelDownloadStatisticsButton() {
     });
   };
 
-  const handleDownloadStatistics = async () => {
+  const onSubmit = async (data: DownloadStatisticsFormValues) => {
     try {
       if (downloading) return;
+
+      console.log(data);
 
       start();
       setProgress(0);
@@ -80,7 +95,9 @@ export function ExcelDownloadStatisticsButton() {
       await new Promise((r) => setTimeout(r, 200));
       await animateProgressTo(99);
 
-      const result = await selectStatisticsObject({ month: 0 });
+      const month: number = data.date?.getMonth() ?? 0;
+
+      const result = await selectStatisticsObject({ month });
 
       if (!result.ok) {
         finish();
@@ -106,6 +123,14 @@ export function ExcelDownloadStatisticsButton() {
 
       finish();
       stopInterval();
+
+      setModal({
+        isActivated: false,
+        title: modal.title ?? "",
+        body: modal.body,
+      });
+
+      methods.reset()
     } catch (error) {
       setAnnouncement({
         isActivated: true,
@@ -119,28 +144,75 @@ export function ExcelDownloadStatisticsButton() {
   };
 
   return (
-    <BouncingButton
-      action={handleDownloadStatistics}
-      backgroundColorHover="#ffffff"
-      backgroundColor="#22c55e"
-      textColor="#ffffff"
-      textColorHover="#22c55e"
-      border="2px solid #ffffff"
-      borderHover="2px solid #22c55e"
-      twClassName="w-fit h-fit py-2 px-4 rounded-2xl"
-      disabled={downloading}
-    >
-      {downloading ? (
-        <>
-          <Loader className="size-4 animate-spin" />
-          <p>Descargar estadísticas</p>
-        </>
-      ) : (
-        <>
-          <Download className="size-4" />
-          <p>Descargar estadísticas</p>
-        </>
-      )}
-    </BouncingButton>
+    <FormProvider {...methods}>
+      <div className="w-full overflow-y-auto max-h-60">
+        {/* FECHA */}
+        <DinamicInputDate<DownloadStatisticsFormValues>
+          name="date"
+          label="Fecha"
+          placeholder="Seleccione una fecha"
+          rules={{
+            required: "La fecha es necesaria",
+          }}
+          mode="single"
+        />
+      </div>
+
+      <div className="flex gap-4">
+        {/* BOTÓN CANCELAR */}
+        <BouncingButton
+          action={
+            downloading
+              ? () => {}
+              : () => {
+                  setModal({
+                    isActivated: false,
+                    title: modal.title ?? "",
+                    body: modal.body,
+                  });
+                }
+          }
+          backgroundColorHover="#00A0D0"
+          backgroundColor="#ffffff"
+          textColor="#00A0D0"
+          textColorHover="#ffffff"
+          border="2px solid #00A0D0"
+          borderHover="2px solid #00A0D0"
+          twClassName="w-full h-fit px-4 py-2 rounded-2xl"
+          disabled={downloading ? true : false}
+        >
+          <span>Cancelar</span>
+        </BouncingButton>
+
+        {/* BOTÓN DESCARGAR */}
+        <BouncingButton
+          action={() => {
+            if (downloading) return;
+            methods.handleSubmit(onSubmit)();
+          }}
+          backgroundColorHover="#22c55e"
+          backgroundColor="#22c55e"
+          textColor="#ffffff"
+          textColorHover="#ffffff"
+          border="2px solid #22c55e"
+          borderHover="2px solid #22c55e"
+          twClassName="w-full h-fit px-4 py-2 rounded-2xl"
+          disabled={downloading ? true : false}
+        >
+          {downloading ? (
+            <>
+              <span className="text-transparent">E</span>
+              <Loader className="size-4 animate-spin" />
+              <span className="text-transparent">E</span>
+            </>
+          ) : (
+            <>
+              <Download className="size-4" />
+              <span>Descargar</span>
+            </>
+          )}
+        </BouncingButton>
+      </div>
+    </FormProvider>
   );
 }

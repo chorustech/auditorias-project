@@ -7,11 +7,15 @@ import { useState, useEffect } from "react";
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
 import { selectStatisticsObject } from "@/temp/Reports/Infrastructure/reportsController";
-import { Skeleton } from "@/content/home/components/skeleton/Skeleton";
-import { ExcelDownloadStatisticsButton } from "@/components/shared/download/ExcelDownloadStatisticsButton";
+import { Skeleton } from "@/content/home/components/main/skeleton/Skeleton";
+import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";
+import { useModal } from "@/stores/modal/modalStore";
+import { Download } from "lucide-react";
+import { DownloadStatisticsModalContent } from "@/content/home/components/download/DownloadStatisticsModalContent";
 
 export function HomeContent() {
   const { setAnnouncement } = useAnnouncement();
+  const { setModal } = useModal();
 
   const [loading, setLoading] = useState(false);
 
@@ -153,8 +157,8 @@ export function HomeContent() {
           className="pb-4 lg:pb-0 flex flex-col w-full h-full"
         >
           <div className="w-full h-fit">
-            <div className="flex justify-between items-center flex-col lg:flex-row">
-              <h2 className="text-4xl font-light mb-4">
+            <div className="flex justify-between items-center flex-col lg:flex-row gap-4 mb-4">
+              <h2 className="text-4xl font-light text-center lg:text-left">
                 ¡Hola,{" "}
                 <span className="font-medium text-[#00A0D0]">
                   Pirita Dreemurr
@@ -162,7 +166,28 @@ export function HomeContent() {
                 !
               </h2>
 
-              <ExcelDownloadStatisticsButton />
+              <BouncingButton
+                action={() =>
+                  setModal({
+                    isActivated: true,
+                    title: "Descargar Estadísticas",
+                    body: <DownloadStatisticsModalContent />,
+                  })
+                }
+                backgroundColorHover="#ffffff"
+                backgroundColor="#22c55e"
+                textColor="#ffffff"
+                textColorHover="#22c55e"
+                border="2px solid #ffffff"
+                borderHover="2px solid #22c55e"
+                twClassName="w-fit h-fit py-2 px-4 rounded-2xl"
+                disabled={false}
+              >
+                <>
+                  <Download className="size-4" />
+                  <p>Descargar estadísticas</p>
+                </>
+              </BouncingButton>
             </div>
 
             <h2 className="mb-4 font-light text-lg text-neutral-500">
@@ -175,7 +200,7 @@ export function HomeContent() {
             </h2>
           </div>
 
-          <div className="flex-1">
+          <div className="lg:flex-1">
             <Grafic discontentObject={auditReports} />
           </div>
         </motion.div>
