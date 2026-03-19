@@ -1,6 +1,5 @@
 import { PointerArea } from "@/utils/pointerArea";
 
-
 export type SelectReportsResponse = {
   data: ReportType[];
   count: number;
@@ -28,7 +27,7 @@ export type GeneralReport = {
   nivel?: number;
   respuestas: boolean[];
   comentarios?: string;
-  type: PointerArea
+  type: PointerArea;
 };
 
 export type EolaReport = {
@@ -76,4 +75,16 @@ export type RacReport = {
   codigoFecha: string;
   porcFalla: string;
   descProb: string;
+};
+
+export type StatisticsObject = {
+  discontentReports: {
+    name: string;
+    count: number;
+  }[];
+  auditReports: {
+    report: string;
+    positive: number;
+    negative: number;
+  }[];
 };

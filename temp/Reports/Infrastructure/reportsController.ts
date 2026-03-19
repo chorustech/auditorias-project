@@ -7,8 +7,87 @@ import {
   NcrReport,
   RacReport,
   SelectReportsResponse,
+  StatisticsObject,
 } from "@/temp/Reports/Infrastructure/Types/selectReportsResponse";
 import { IQuery } from "@/temp/Shared/Domain/Interfaces/IQuery";
+
+export async function selectStatisticsObject(): Promise<{
+  ok: boolean;
+  message: string;
+  statisticsObject: StatisticsObject;
+}> {
+  try {
+    // Simular delay del backend
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+
+    return {
+      ok: true,
+      message: "Estadísticas encontradas correctamente",
+      statisticsObject: {
+        auditReports: [
+          {
+            report: "Baldwin State",
+            negative: 2,
+            positive: 13,
+          },
+          {
+            report: "Baldwin Reserve Supply",
+            negative: 3,
+            positive: 27,
+          },
+          {
+            report: "Baldwin Reserve Stacking",
+            negative: 12,
+            positive: 10,
+          },
+          {
+            report: "Baldwin Reserve Packing",
+            negative: 9,
+            positive: 1,
+          },
+          {
+            report: "Baldwin Reserve General",
+            negative: 3,
+            positive: 17,
+          },
+          {
+            report: "Display Area",
+            negative: 2,
+            positive: 20,
+          },
+          {
+            report: "Pizza Tray",
+            negative: 20,
+            positive: 40,
+          },
+        ],
+        discontentReports: [
+          {
+            name: "EOLA",
+            count: 33,
+          },
+          {
+            name: "Reporte de Producto no Conforme",
+            count: 44,
+          },
+          {
+            name: "Requerimiento de Acción Correctiva",
+            count: 10,
+          },
+        ],
+      },
+    };
+  } catch {
+    return {
+      ok: false,
+      message: "Ocurrió un error al obtener las estadísticas",
+      statisticsObject: {
+        auditReports: [],
+        discontentReports: [],
+      },
+    };
+  }
+}
 
 export async function selectReports({
   pointer,

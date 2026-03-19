@@ -8,7 +8,7 @@ import { links } from "@/content/reports/data/links/links";
 export function ReportCardList() {
   return (
     <div className="w-full max-h-full overflow-y-auto scrollbar-custom">
-      <div className="grid grid-cols-1 p-4 gap-6 overflow-hidden md:grid-cols-3 lg:grid-cols-5">
+      <div className="grid grid-cols-1 p-6 gap-6 overflow-hidden md:grid-cols-3 lg:grid-cols-5">
         {links[1].subLinks.map((info, index) => (
           <motion.div
             key={index}
