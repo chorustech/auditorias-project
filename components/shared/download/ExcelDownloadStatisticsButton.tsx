@@ -13,27 +13,22 @@ import { Download, Loader } from "lucide-react";
 import * as XLSX from "xlsx-js-style";
 
 /* SERVER ACTION */
-import { selectUsers } from "@/temp/Users/Infrastructure/usersController";
+import { selectStatisticsObject } from "@/temp/Reports/Infrastructure/reportsController";
 
 /* STORES */
 import { useDownloadStore } from "@/stores/download/downloadStore";
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
 
 /* TYPES */
-import { IQuery } from "@/temp/Shared/Domain/Interfaces/IQuery";
-import { UserType } from "@/temp/Users/Infrastructure/Types/userData";
 
 /* UTILS */
 import { autoSizeColumns } from "@/components/shared/download/utils/shared/autoSizeColumns";
-import { setColumnsStyles } from "@/components/shared/download/utils/users/setColumnsStyles";
 import { getDate } from "@/utils/date";
-import { transformUsersForExcel } from "@/components/shared/download/utils/users/transformUsersForExcel";
+import { transformStatisticsForExcel } from "@/components/shared/download/utils/statistics/transformStatisticsForExcel";
+import { setMerges } from "@/components/shared/download/utils/statistics/setMerges";
+import { setColumnsStyles } from "@/components/shared/download/utils/statistics/setColumnsStyles";
 
-export function ExcelDownloadUsersButton({
-  query,
-}: {
-  query: IQuery<UserType>;
-}) {
+export function ExcelDownloadStatisticsButton() {
   const { setAnnouncement } = useAnnouncement();
   const { downloading, start, finish, setProgress } = useDownloadStore();
 
@@ -77,7 +72,7 @@ export function ExcelDownloadUsersButton({
     });
   };
 
-  const handleDownloadUsers = async () => {
+  const handleDownloadStatistics = async () => {
     try {
       if (downloading) return;
 
@@ -87,7 +82,7 @@ export function ExcelDownloadUsersButton({
       await new Promise((r) => setTimeout(r, 200));
       await animateProgressTo(99);
 
-      const result = await selectUsers({ query });
+      const result = await selectStatisticsObject({ month: 0 });
 
       if (!result.ok) {
         finish();
@@ -95,15 +90,19 @@ export function ExcelDownloadUsersButton({
       }
 
       const workbook = XLSX.utils.book_new();
-      const rows = transformUsersForExcel(result.data);
+      const rows = transformStatisticsForExcel(result.statisticsObject);
       const worksheet = XLSX.utils.aoa_to_sheet(rows);
-      const style_worksheet = setColumnsStyles(worksheet, result.data);
+      const style_worksheet = setColumnsStyles(
+        worksheet,
+        result.statisticsObject,
+      );
 
       style_worksheet["!cols"] = autoSizeColumns(rows);
+      style_worksheet["!merges"] = setMerges();
 
-      const file_name = "usuarios_" + getDate();
+      const file_name = "estadisticas_" + getDate();
 
-      XLSX.utils.book_append_sheet(workbook, style_worksheet, "Usuarios");
+      XLSX.utils.book_append_sheet(workbook, style_worksheet, "Estadísticas");
 
       XLSX.writeFile(workbook, file_name + ".xlsx");
 
@@ -113,7 +112,7 @@ export function ExcelDownloadUsersButton({
       setAnnouncement({
         isActivated: true,
         isOk: false,
-        message: "Ocurrió un error al exportar los usuarios a Excel",
+        message: "Ocurrió un error al exportar las estadísticas a Excel",
       });
       finish();
       stopInterval();
@@ -123,20 +122,26 @@ export function ExcelDownloadUsersButton({
 
   return (
     <BouncingButton
-      action={handleDownloadUsers}
+      action={handleDownloadStatistics}
       backgroundColorHover="#ffffff"
       backgroundColor="#22c55e"
       textColor="#ffffff"
       textColorHover="#22c55e"
       border="2px solid #ffffff"
       borderHover="2px solid #22c55e"
-      twClassName="w-fit h-fit p-4 rounded-2xl"
+      twClassName="w-fit h-fit py-2 px-4 rounded-2xl"
       disabled={downloading}
     >
       {downloading ? (
-        <Loader className="size-5 animate-spin" />
+        <>
+          <Loader className="size-4 animate-spin" />
+          <p>Descargar estadísticas</p>
+        </>
       ) : (
-        <Download className="size-5" />
+        <>
+          <Download className="size-4" />
+          <p>Descargar estadísticas</p>
+        </>
       )}
     </BouncingButton>
   );

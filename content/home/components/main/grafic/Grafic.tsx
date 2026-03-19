@@ -19,7 +19,7 @@ export function Grafic({
   const width = minWidth + 500;
 
   return (
-    <div className="w-full overflow-x-auto h-80 mb-4">
+    <div className="w-full overflow-x-auto h-full mb-4">
       {discontentObject.length === 0 ? (
         <p>No se encontrarón Reportes</p>
       ) : (
@@ -32,10 +32,10 @@ export function Grafic({
             <BarChart data={discontentObject} barGap={20} barCategoryGap="20%">
               <XAxis dataKey="report" interval={0} />
               <YAxis domain={[0, "dataMax + 10"]} />
-              <Bar dataKey="positive" fill="#4ade80">
+              <Bar dataKey="positive" fill="#22c55e">
                 <LabelList dataKey="positive" position="top" />
               </Bar>
-              <Bar dataKey="negative" fill="#f87171">
+              <Bar dataKey="negative" fill="#ef4444">
                 <LabelList dataKey="negative" position="top" />
               </Bar>
             </BarChart>

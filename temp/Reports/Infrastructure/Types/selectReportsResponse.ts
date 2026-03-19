@@ -78,13 +78,27 @@ export type RacReport = {
 };
 
 export type StatisticsObject = {
-  discontentReports: {
-    name: string;
-    count: number;
-  }[];
-  auditReports: {
-    report: string;
-    positive: number;
-    negative: number;
-  }[];
+  discontentReports: DiscontentReport;
+  auditReports: AuditReport;
+};
+
+export type DiscontentReport = {
+  eolaCount: number;
+  ncrCount: number;
+  racCount: number;
+};
+
+export type AuditReport = {
+  baldwinState: AuditReportContent;
+  baldwinReserveSupply: AuditReportContent;
+  baldwinReservePacking: AuditReportContent;
+  baldwinReserveStacking: AuditReportContent;
+  baldwinReserveGeneral: AuditReportContent;
+  displayArea: AuditReportContent;
+  pizzaTray: AuditReportContent;
+};
+
+type AuditReportContent = {
+  positive: number;
+  negative: number;
 };

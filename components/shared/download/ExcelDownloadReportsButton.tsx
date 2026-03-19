@@ -135,11 +135,11 @@ export function DownloadReportsExcelButton({
     <BouncingButton
       action={handleDownloadReports}
       backgroundColorHover="#ffffff"
-      backgroundColor="#1D6F42"
+      backgroundColor="#22c55e"
       textColor="#ffffff"
-      textColorHover="#1D6F42"
+      textColorHover="#22c55e"
       border="2px solid #ffffff"
-      borderHover="2px solid #1D6F42"
+      borderHover="2px solid #22c55e"
       twClassName="w-fit h-fit p-4 rounded-2xl"
       disabled={downloading}
     >

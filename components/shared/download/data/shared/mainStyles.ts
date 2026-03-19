@@ -187,6 +187,40 @@ export const sentenceWhileTrueStyles: StyleObject = {
   },
 };
 
+export const sentenceWhileRegularStyles: StyleObject = {
+  font: {
+    bold: true,
+    color: { rgb: "FFFFFFFF" },
+  },
+  fill: {
+    patternType: "solid",
+    fgColor: { rgb: "FFEAB308" },
+  },
+  alignment: {
+    horizontal: "center",
+    vertical: "center",
+    wrapText: true,
+  },
+  border: {
+    top: {
+      color: { rgb: "FFCA8A04" },
+      style: "medium",
+    },
+    bottom: {
+      color: { rgb: "FFCA8A04" },
+      style: "medium",
+    },
+    left: {
+      color: { rgb: "FFCA8A04" },
+      style: "medium",
+    },
+    right: {
+      color: { rgb: "FFCA8A04" },
+      style: "medium",
+    },
+  },
+};
+
 export const sentenceWhileFalseStyles: StyleObject = {
   font: {
     bold: true,
@@ -218,5 +252,65 @@ export const sentenceWhileFalseStyles: StyleObject = {
       color: { rgb: "FFDC2626" },
       style: "medium",
     },
+  },
+};
+
+export const sentenceWhileTruePaleStyles: StyleObject = {
+  font: {
+    bold: true,
+    color: { rgb: "FFFFFFFF" },
+  },
+  fill: {
+    patternType: "solid",
+    fgColor: { rgb: "FF4ADE80" },
+  },
+  alignment: {
+    horizontal: "center",
+    vertical: "center",
+    wrapText: true,
+  },
+};
+
+export const sentenceWhileRegularPaleStyles: StyleObject = {
+  font: {
+    bold: true,
+    color: { rgb: "FFFFFFFF" },
+  },
+  fill: {
+    patternType: "solid",
+    fgColor: { rgb: "FFFACC15" },
+  },
+  alignment: {
+    horizontal: "center",
+    vertical: "center",
+    wrapText: true,
+  },
+};
+
+export const sentenceWhileFalsePaleStyles: StyleObject = {
+  font: {
+    bold: true,
+    color: { rgb: "FFFFFFFF" },
+  },
+  fill: {
+    patternType: "solid",
+    fgColor: { rgb: "FFF87171" },
+  },
+  alignment: {
+    horizontal: "center",
+    vertical: "center",
+    wrapText: true,
+  },
+};
+
+export const titleStyles: StyleObject = {
+  font: {
+    bold: true,
+    color: { rgb: "FF000000" },
+  },
+  alignment: {
+    horizontal: "left",
+    vertical: "center",
+    wrapText: true,
   },
 };

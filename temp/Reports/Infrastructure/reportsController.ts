@@ -11,7 +11,11 @@ import {
 } from "@/temp/Reports/Infrastructure/Types/selectReportsResponse";
 import { IQuery } from "@/temp/Shared/Domain/Interfaces/IQuery";
 
-export async function selectStatisticsObject(): Promise<{
+export async function selectStatisticsObject({
+  month,
+}: {
+  month: number;
+}): Promise<{
   ok: boolean;
   message: string;
   statisticsObject: StatisticsObject;
@@ -20,61 +24,48 @@ export async function selectStatisticsObject(): Promise<{
     // Simular delay del backend
     await new Promise((resolve) => setTimeout(resolve, 3000));
 
+    // Devolver un statisticsObject según el mes seleccionado
+    console.log(month);
+
     return {
       ok: true,
       message: "Estadísticas encontradas correctamente",
       statisticsObject: {
-        auditReports: [
-          {
-            report: "Baldwin State",
+        auditReports: {
+          baldwinState: {
             negative: 2,
             positive: 13,
           },
-          {
-            report: "Baldwin Reserve Supply",
+          baldwinReserveSupply: {
             negative: 3,
             positive: 27,
           },
-          {
-            report: "Baldwin Reserve Stacking",
+          baldwinReserveStacking: {
             negative: 12,
             positive: 10,
           },
-          {
-            report: "Baldwin Reserve Packing",
+          baldwinReservePacking: {
             negative: 9,
             positive: 1,
           },
-          {
-            report: "Baldwin Reserve General",
+          baldwinReserveGeneral: {
             negative: 3,
             positive: 17,
           },
-          {
-            report: "Display Area",
+          displayArea: {
             negative: 2,
             positive: 20,
           },
-          {
-            report: "Pizza Tray",
+          pizzaTray: {
             negative: 20,
             positive: 40,
           },
-        ],
-        discontentReports: [
-          {
-            name: "EOLA",
-            count: 33,
-          },
-          {
-            name: "Reporte de Producto no Conforme",
-            count: 44,
-          },
-          {
-            name: "Requerimiento de Acción Correctiva",
-            count: 10,
-          },
-        ],
+        },
+        discontentReports: {
+          eolaCount: 2,
+          ncrCount: 11,
+          racCount: 25,
+        },
       },
     };
   } catch {
@@ -82,8 +73,16 @@ export async function selectStatisticsObject(): Promise<{
       ok: false,
       message: "Ocurrió un error al obtener las estadísticas",
       statisticsObject: {
-        auditReports: [],
-        discontentReports: [],
+        auditReports: {
+          baldwinState: { negative: 0, positive: 0 },
+          baldwinReserveSupply: { negative: 0, positive: 0 },
+          baldwinReserveStacking: { negative: 0, positive: 0 },
+          baldwinReservePacking: { negative: 0, positive: 0 },
+          baldwinReserveGeneral: { negative: 0, positive: 0 },
+          displayArea: { negative: 0, positive: 0 },
+          pizzaTray: { negative: 0, positive: 0 },
+        },
+        discontentReports: { eolaCount: 0, ncrCount: 0, racCount: 0 },
       },
     };
   }

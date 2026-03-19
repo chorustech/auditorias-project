@@ -7,9 +7,9 @@ export function TrafficLightArea({
   };
 }) {
   const getTwTextColor = (negativeReports: number) => {
-    if (negativeReports < 20) {
+    if (negativeReports < 10) {
       return "text-green-500";
-    } else if (negativeReports >= 20 && negativeReports < 40) {
+    } else if (negativeReports >= 10 && negativeReports < 20) {
       return "text-yellow-500";
     } else {
       return "text-red-500";

@@ -6,28 +6,119 @@ import { TrafficLights } from "@/content/home/components/main/trafficLights/Traf
 import { useState, useEffect } from "react";
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
-import { StatisticsObject } from "@/temp/Reports/Infrastructure/Types/selectReportsResponse";
 import { selectStatisticsObject } from "@/temp/Reports/Infrastructure/reportsController";
 import { Skeleton } from "@/content/home/components/skeleton/Skeleton";
+import { ExcelDownloadStatisticsButton } from "@/components/shared/download/ExcelDownloadStatisticsButton";
 
 export function HomeContent() {
   const { setAnnouncement } = useAnnouncement();
 
   const [loading, setLoading] = useState(false);
-  const [statisticsObject, setStatisticsObject] = useState<StatisticsObject>({
-    auditReports: [],
-    discontentReports: [],
-  });
+
+  const [discontentReports, setDiscontentReports] = useState<
+    { name: string; count: number }[]
+  >([]);
+
+  const [auditReports, setAuditReports] = useState<
+    { report: string; positive: number; negative: number }[]
+  >([]);
 
   useEffect(() => {
     try {
       const fetchStatisticsObject = async () => {
         setLoading(true);
 
-        const response = await selectStatisticsObject();
+        const month = new Date().getMonth();
+        const response = await selectStatisticsObject({ month });
 
         if (response.ok) {
-          setStatisticsObject(response.statisticsObject);
+          const newDiscontentReports: { name: string; count: number }[] = [];
+
+          newDiscontentReports.push({
+            name: "EOLA",
+            count: response.statisticsObject.discontentReports.eolaCount,
+          });
+          newDiscontentReports.push({
+            name: "Reporte de Producto no Conforme",
+            count: response.statisticsObject.discontentReports.ncrCount,
+          });
+          newDiscontentReports.push({
+            name: "Requerimiento de Acción Correctiva",
+            count: response.statisticsObject.discontentReports.racCount,
+          });
+
+          setDiscontentReports(newDiscontentReports);
+
+          const newAuditReports: {
+            report: string;
+            positive: number;
+            negative: number;
+          }[] = [];
+
+          newAuditReports.push({
+            report: "Baldwin State",
+            negative:
+              response.statisticsObject.auditReports.baldwinState.negative,
+            positive:
+              response.statisticsObject.auditReports.baldwinState.positive,
+          });
+
+          newAuditReports.push({
+            report: "Baldwin Reserve Supply",
+            negative:
+              response.statisticsObject.auditReports.baldwinReserveSupply
+                .negative,
+            positive:
+              response.statisticsObject.auditReports.baldwinReserveSupply
+                .positive,
+          });
+
+          newAuditReports.push({
+            report: "Baldwin Reserve Packing",
+            negative:
+              response.statisticsObject.auditReports.baldwinReservePacking
+                .negative,
+            positive:
+              response.statisticsObject.auditReports.baldwinReservePacking
+                .positive,
+          });
+
+          newAuditReports.push({
+            report: "Baldwin Reserve Stacking",
+            negative:
+              response.statisticsObject.auditReports.baldwinReserveStacking
+                .negative,
+            positive:
+              response.statisticsObject.auditReports.baldwinReserveStacking
+                .positive,
+          });
+
+          newAuditReports.push({
+            report: "Baldwin Reserve General",
+            negative:
+              response.statisticsObject.auditReports.baldwinReserveGeneral
+                .negative,
+            positive:
+              response.statisticsObject.auditReports.baldwinReserveGeneral
+                .positive,
+          });
+
+          newAuditReports.push({
+            report: "Display Area",
+            negative:
+              response.statisticsObject.auditReports.displayArea.negative,
+            positive:
+              response.statisticsObject.auditReports.displayArea.positive,
+          });
+
+          newAuditReports.push({
+            report: "Pizza Tray",
+            negative: response.statisticsObject.auditReports.pizzaTray.negative,
+            positive: response.statisticsObject.auditReports.pizzaTray.positive,
+          });
+
+          setAuditReports(newAuditReports);
+
           setLoading(false);
         } else {
           setAnnouncement({
@@ -59,24 +150,34 @@ export function HomeContent() {
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeInOut" }}
-          className="pb-4"
+          className="pb-4 lg:pb-0 flex flex-col w-full h-full"
         >
-          <h2 className="text-4xl font-light mb-4">
-            ¡Hola,{" "}
-            <span className="font-medium text-[#00A0D0]">Pirita Dreemurr</span>!
-          </h2>
-          
-          <h2 className="mb-4 font-light text-lg text-neutral-500">
-            Reportes de Inconformidad del Mes
-          </h2>
-          <TrafficLights
-            trafficLightsObject={statisticsObject.discontentReports}
-          />
+          <div className="w-full h-fit">
+            <div className="flex justify-between items-center flex-col lg:flex-row">
+              <h2 className="text-4xl font-light mb-4">
+                ¡Hola,{" "}
+                <span className="font-medium text-[#00A0D0]">
+                  Pirita Dreemurr
+                </span>
+                !
+              </h2>
 
-          <h2 className="mb-4 font-light text-lg text-neutral-500">
-            Reportes de Auditoría del Mes
-          </h2>
-          <Grafic discontentObject={statisticsObject.auditReports} />
+              <ExcelDownloadStatisticsButton />
+            </div>
+
+            <h2 className="mb-4 font-light text-lg text-neutral-500">
+              Reportes de Inconformidad del Mes
+            </h2>
+            <TrafficLights trafficLightsObject={discontentReports} />
+
+            <h2 className="mb-4 font-light text-lg text-neutral-500">
+              Reportes de Auditoría del Mes
+            </h2>
+          </div>
+
+          <div className="flex-1">
+            <Grafic discontentObject={auditReports} />
+          </div>
         </motion.div>
       )}
     </motion.div>
