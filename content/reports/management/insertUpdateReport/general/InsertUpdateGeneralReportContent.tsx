@@ -33,6 +33,7 @@ import { createReportAction } from "@/src/reporte-auditoria/infrastructure/actio
 import { getReporteByIdAction } from "@/src/reporte-auditoria/infrastructure/actions/get-by-id";
 import { updateReporteAction } from "@/src/reporte-auditoria/infrastructure/actions/update";
 import { logoutAction } from "@/src/shared/infrastructure/utils/logout-action";
+import { getAllAreas } from "@/src/area/infrastructure/actions/get-all-areas";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
@@ -41,34 +42,30 @@ import { useAnnouncement } from "@/stores/announcement/announcementStore";
 import { ReportFormValues } from "@/content/reports/types/forms/reportFormValues";
 import { UserPrimitive } from "@/src/users";
 
+// Defining Area type locally based on DB schema
+type Area = {
+  id: number;
+  nombre: string;
+  slug: string;
+  encargado_email: string;
+};
+
 /* UTILS */
 import { getDate, getWeekNumber } from "@/utils/date";
 
 /* LIBS */
 import { motion } from "framer-motion";
 
-const getAreaIdFromSlug = (slug: string): number => {
-  const areaMap: { [key: string]: number } = {
-    "pizza-tray": 1,
-    "baldwin-state": 2,
-    "baldwin-reserve-supply": 3,
-    "display-area": 4,
-    "baldwin-reserve-stacking": 5,
-    "baldwin-reserve-packing": 6,
-    "baldwin-reserve-general": 7,
-    eola: 8,
-    ncr: 9,
-    rac: 10,
-  };
-  return areaMap[slug] || 0;
-};
-
 const createReport = async (
   data: ReportFormValues,
   user: UserPrimitive,
   path: string,
+  areas: Area[],
 ) => {
-  const area_id = getAreaIdFromSlug(path);
+  const area = areas.find((a) => a.slug === path);
+  const area_id = area ? area.id : 0;
+  console.log("Debug: Correct area_id to save:", area_id, "from slug:", path);
+
   const es_negativo =
     data.respuestas.filter((r) => r).length < data.respuestas.length / 2;
 
@@ -102,6 +99,7 @@ const createReport = async (
     es_negativo,
   };
 
+  console.log("Debug: reportData to send:", reportData);
   return await createReportAction(reportData as any);
 };
 
@@ -115,93 +113,86 @@ export function InsertUpdateGeneralReportContent({
   const router = useRouter();
   const pathname = usePathname();
   const { setAnnouncement } = useAnnouncement();
+
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
-
-  const rawPath = pathname.split("/").at(isUpdate ? -3 : -2);
-  const path = rawPath ?? null;
-
-  const methods = useForm<ReportFormValues>();
+  const [areas, setAreas] = useState<Area[]>([]);
   const [user, setUser] = useState<UserPrimitive | null>(null);
 
+  const methods = useForm<ReportFormValues>();
+
+  const path = pathname.split("/")[2] ?? null;
+
   useEffect(() => {
-    const fetchUser = async () => {
+    console.log("Debug: Pathname changed:", pathname);
+    console.log("Debug: Extracted path:", path);
+  }, [pathname, path]);
+
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      setLoading(true);
+
       const sessionUser = await getSessionUser();
       if (!sessionUser) {
         await logoutAction();
         router.push("/");
-      } else {
-        setUser(sessionUser);
+        return;
       }
-    };
+      setUser(sessionUser);
 
-    fetchUser();
-  }, [router]);
+      const areasResponse = await getAllAreas();
+      if (areasResponse.ok) {
+        console.log("Debug: Areas loaded from DB:", areasResponse.data);
+        setAreas(areasResponse.data);
+      } else {
+        setAnnouncement({
+          isActivated: true,
+          isOk: false,
+          message: "Error al cargar las áreas. Inténtalo de nuevo.",
+        });
+      }
 
-  useEffect(() => {
-    const fetchReport = async () => {
       if (isUpdate) {
-        setLoading(true);
         const response = await getReporteByIdAction(Number(id));
-
         if (response.ok && response.data) {
-          const report = response.data;
-          const metadata = report.metadata;
+          const { data: report } = response;
+          const { metadata } = report;
           const resetData: any = {
             comentarios: report.comentarios || "",
             respuestas: report.respuestas,
           };
 
-          if ("nivel" in metadata) {
-            resetData.ubicacion = metadata.ubicacion;
-            resetData.nivel = Number(metadata.nivel);
-          } else if ("coordinador" in metadata) {
-            resetData.linea = metadata.linea;
-            resetData.coord = metadata.coordinador;
-          } else if ("picker" in metadata) {
-            resetData.picker = metadata.picker;
-          } else if ("worktable" in metadata) {
-            resetData.worktable = metadata.worktable;
-          } else if ("linea" in metadata) {
-            resetData.linea = metadata.linea;
+          if (metadata && typeof metadata === 'object') {
+            if ("nivel" in metadata) resetData.nivel = Number((metadata as any).nivel);
+            if ("ubicacion" in metadata) resetData.ubicacion = (metadata as any).ubicacion;
+            if ("coordinador" in metadata) resetData.coord = (metadata as any).coordinador;
+            if ("linea" in metadata) resetData.linea = (metadata as any).linea;
+            if ("picker" in metadata) resetData.picker = (metadata as any).picker;
+            if ("worktable" in metadata) resetData.worktable = (metadata as any).worktable;
           }
           methods.reset(resetData);
         } else {
-          setAnnouncement({
-            isActivated: true,
-            isOk: false,
-            message: response.message,
-          });
+          setAnnouncement({ isActivated: true, isOk: false, message: response.message });
           router.push(`/reports/`);
         }
-        setLoading(false);
       } else {
         methods.reset({
-          linea: "",
-          coord: "",
-          picker: "",
-          ubicacion: "",
-          worktable: "",
-          nivel: 1,
-          comentarios: "",
-          respuestas: [],
+          linea: "", coord: "", picker: "", ubicacion: "", worktable: "",
+          nivel: 1, comentarios: "", respuestas: [],
         });
-        setLoading(false);
       }
+      setLoading(false);
     };
 
-    fetchReport();
-  }, [id, isUpdate, methods, router, setAnnouncement]);
+    fetchInitialData();
+  }, [id, isUpdate, router, setAnnouncement, methods]);
 
   const onSubmit = async (data: ReportFormValues) => {
     setSaving(true);
     try {
       if (!user || !path) {
-        setAnnouncement({
-          isActivated: true,
-          isOk: false,
-          message: "Error de sesión. Por favor, vuelve a iniciar sesión.",
-        });
+        setAnnouncement({ isActivated: true, isOk: false, message: "Error de sesión. Por favor, vuelve a iniciar sesión." });
+        setSaving(false);
         return;
       }
 
@@ -209,29 +200,17 @@ export function InsertUpdateGeneralReportContent({
       if (isUpdate) {
         // ... update logic
       } else {
-        response = await createReport(data, user, path);
+        response = await createReport(data, user, path, areas);
       }
 
       if (response && response.ok) {
-        setAnnouncement({
-          isActivated: true,
-          isOk: true,
-          message: response.message,
-        });
+        setAnnouncement({ isActivated: true, isOk: true, message: response.message });
         if (!isUpdate) methods.reset();
       } else if (response) {
-        setAnnouncement({
-          isActivated: true,
-          isOk: false,
-          message: response.message,
-        });
+        setAnnouncement({ isActivated: true, isOk: false, message: response.message });
       }
     } catch (error) {
-      setAnnouncement({
-        isActivated: true,
-        isOk: false,
-        message: "Ocurrió un error inesperado. Inténtalo de nuevo.",
-      });
+      setAnnouncement({ isActivated: true, isOk: false, message: "Ocurrió un error inesperado. Inténtalo de nuevo." });
     } finally {
       setSaving(false);
     }
