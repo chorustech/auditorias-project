@@ -94,7 +94,7 @@ export const reportsColumns: ColumnsDictionary = {
     "Auditor",
     "Fecha",
     "Semana",
-    "Línea",
+    "Worktable",
     "1",
     "2",
     "3",
@@ -117,7 +117,7 @@ export const reportsColumns: ColumnsDictionary = {
   ],
   "eola": [
     "nro. Orden",
-    "Auditor",
+    "Usuario",
     "Fecha",
     "Semana",
     "Ud. Negocio",

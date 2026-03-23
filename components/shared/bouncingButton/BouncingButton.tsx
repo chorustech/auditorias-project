@@ -28,29 +28,7 @@ export function BouncingButton({
   return (
     <motion.button
       className={`flex items-center justify-center gap-2 ${twClassName}`}
-      whileHover={
-        disabled
-          ? {}
-          : {
-              scale: 1.05,
-              backgroundColor: backgroundColorHover,
-              color: textColorHover,
-              border: borderHover,
-            }
-      }
-      whileTap={disabled ? {} : { scale: 0.9 }}
-      transition={
-        disabled
-          ? {}
-          : {
-              type: "spring",
-              stiffness: 300,
-              damping: 20,
-              backgroundColor: { duration: 0.3 },
-              color: { duration: 0.3 },
-            }
-      }
-      style={
+      animate={
         disabled
           ? {
               backgroundColor: "#e5e5e5",
@@ -61,9 +39,30 @@ export function BouncingButton({
               backgroundColor: backgroundColor,
               color: textColor,
               border: border,
-              cursor: "pointer"
             }
       }
+      whileHover={
+        disabled
+          ? {}
+          : {
+              scale: 1.03,
+              backgroundColor: backgroundColorHover,
+              color: textColorHover,
+              border: borderHover,
+            }
+      }
+      whileTap={disabled ? {} : { scale: 0.9 }}
+      transition={{
+        type: "spring",
+        stiffness: 300,
+        damping: 20,
+        backgroundColor: { duration: 0.3 },
+        color: { duration: 0.3 },
+        border: { duration: 0.3 },
+      }}
+      style={{
+        cursor: disabled ? "default" : "pointer",
+      }}
       onClick={disabled ? () => {} : action}
     >
       {children}

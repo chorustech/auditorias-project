@@ -1,3 +1,9 @@
-export function DinamicTd({ children }: { children: React.ReactNode }) {
-  return <td className="px-3 py-6 text-left text-nowrap">{children}</td>;
+export function DinamicTd({
+  children,
+  twClassName,
+}: {
+  children: React.ReactNode;
+  twClassName: string;
+}) {
+  return <td className={`px-3 py-6 text-left ${twClassName}`}>{children}</td>;
 }

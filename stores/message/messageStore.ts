@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 interface MessageUpdated {
-  kind: "AGREGADO" | "ACTUALIZADO" | "ELIMINADO" | "FILTRADO";
+  kind: /* "AGREGADO" | "ACTUALIZADO" | */ "ELIMINADO" | "FILTRADO";
 }
 
 interface MessageUpdatedStore {

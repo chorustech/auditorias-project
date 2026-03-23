@@ -9,14 +9,27 @@ export interface ReporteAuditoriaPrimitivo<M extends Metadata> {
   respuestas: boolean[];
   comentarios: string | null;
   es_negativo: boolean;
-  metadata: M
+  metadata: M;
 }
 
-export interface ReporteAuditoriaConDetalles<M extends Metadata> extends ReporteAuditoriaPrimitivo<M> {
+export interface ReporteAuditoriaConDetalles<
+  M extends Metadata,
+> extends ReporteAuditoriaPrimitivo<M> {
   auditor: string;
   tipo_auditoria: string;
+  type:
+    | "baldwin-state"
+    | "baldwin-reserve-supply"
+    | "baldwin-reserve-stacking"
+    | "baldwin-reserve-packing"
+    | "baldwin-reserve-general"
+    | "display-area"
+    | "pizza-tray"
+    | "eola"
+    | "ncr"
+    | "rac"
+    | "general";
 }
-
 
 export class ReporteAuditoria<M extends Metadata> {
   id: number;
@@ -27,7 +40,7 @@ export class ReporteAuditoria<M extends Metadata> {
   respuestas: boolean[];
   comentarios: string | null;
   es_negativo: boolean;
-  metadata: M
+  metadata: M;
 
   private constructor(
     id: number,
@@ -48,7 +61,7 @@ export class ReporteAuditoria<M extends Metadata> {
     this.respuestas = respuestas;
     this.comentarios = comentarios ?? null;
     this.es_negativo = esNegativo;
-    this.metadata = metadata
+    this.metadata = metadata;
   }
 
   static create<M extends Metadata>(
@@ -59,8 +72,7 @@ export class ReporteAuditoria<M extends Metadata> {
     metadata: M,
     comentarios: string | null,
   ) {
-
-    const esNegativo = ReporteAuditoria.esNegativo(respuestas)
+    const esNegativo = ReporteAuditoria.esNegativo(respuestas);
 
     return new ReporteAuditoria<M>(
       0,
@@ -76,7 +88,7 @@ export class ReporteAuditoria<M extends Metadata> {
   }
 
   static esNegativo(respuestas: boolean[]) {
-    const positivas = respuestas.filter(r => r).length;
+    const positivas = respuestas.filter((r) => r).length;
     return positivas >= respuestas.length / 2;
   }
 

@@ -6,9 +6,10 @@ import { DinamicTable } from "@/components/shared/dinamicTable/DinamicTable";
 import { DinamicTh } from "@/components/shared/dinamicTable/dinamicRow/DinamicTh";
 import { DinamicRow } from "@/components/shared/dinamicTable/dinamicRow/DinamicRow";
 import { GeneralRowContent } from "@/content/reports/management/selectReports/rowContent/GeneralRowContent";
-import { EolaRowContent } from "./rowContent/EolaRowContent";
-import { NcrRowContent } from "./rowContent/NcrRowContent";
-import { RacRowContent } from "./rowContent/RacRowContent";
+import { EolaRowContent } from "@/content/reports/management/selectReports/rowContent/EolaRowContent";
+import { NcrRowContent } from "@/content/reports/management/selectReports/rowContent/NcrRowContent";
+import { RacRowContent } from "@/content/reports/management/selectReports/rowContent/RacRowContent";
+import { FilterReportsContent } from "@/content/reports/management/selectReports/filterReports/FilterReportsContent";
 
 /* DATA */
 import { reportsColumns } from "@/content/reports/data/columns/reportsColumns";
@@ -23,132 +24,121 @@ import { ArrowLeft } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 
+/* SERVER ACTION */
+import { getReportesAction } from "@/src/reporte-auditoria/infrastructure/actions/get-all";
+
+/* STORES */
+import { useAnnouncement } from "@/stores/announcement/announcementStore";
+import { useReportsFilter } from "@/stores/filter/reports/filterReportsStore";
+import { useModal } from "@/stores/modal/modalStore";
+
+/* TYPES */
+import { ReporteAuditoriaConDetalles } from "@/src/reporte-auditoria/domain";
+import { Metadata } from "@/src/reporte-auditoria/domain/entities";
+
 /* UTILS */
 import { isPointerArea } from "@/utils/pointerArea";
-import { useAnnouncement } from "@/stores/announcement/announcementStore";
-import { ReporteAuditoriaConDetalles } from "@/src/reporte-auditoria/domain";
-
-export type ReportType =
-  | { kind: "general"; data: any }
-  | { kind: "eola"; data: any }
-  | { kind: "ncr"; data: any }
-  | { kind: "rac"; data: any };
+import { getTwBgColorTable } from "@/utils/getTwBgColorTable";
+import { DownloadReportsExcelButton } from "@/components/shared/download/ExcelDownloadReportsButton";
 
 export function SelectReportsContent() {
   const router = useRouter();
-  const { setAnnouncement } = useAnnouncement();
-  const [reports, setReports] = useState<{ data: ReportType[]; count: number }>(
-    { data: [], count: 0 },
-  );
-  
-  const handleDelete = async (id: number) => {
-    if (!window.confirm("¿Estás seguro de que deseas eliminar este reporte?")) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/reportes/${id}`, {
-        method: 'DELETE',
-      });
-
-      const result = await response.json();
-
-      if (result.ok) {
-        setAnnouncement(true, "bg-green-500", <span>{result.message}</span>);
-        // Eliminar el reporte del estado para actualizar la UI instantáneamente
-        setReports(prev => ({
-          ...prev,
-          data: prev.data.filter(report => report.data.id !== id),
-          count: prev.count - 1,
-        }));
-      } else {
-        setAnnouncement(true, "bg-red-500", <span>{result.message}</span>);
-      }
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Error inesperado";
-      setAnnouncement(true, "bg-red-500", <span>{message}</span>);
-    }
-  };
-
-  const [loading, setLoading] = useState(true);
-  const type = "reporte";
-
   const pathname = usePathname();
-
   const rawPath = pathname.split("/").at(-1);
   const path = rawPath ?? null;
 
-  console.log("Detectado pathname:", pathname);
-  console.log("Detectado path:", path);
+  const { setAnnouncement } = useAnnouncement();
+  const { setModal } = useModal();
+  const { setFilter, filter } = useReportsFilter();
 
-  const getTwBgColor = ({ index }: { index: number }) => {
-    return index % 2 ? "bg-neutral-100" : "bg-white";
-  };
+  const [reports, setReports] = useState<{
+    data: ReporteAuditoriaConDetalles<Metadata>[];
+    count: number;
+  }>({ data: [], count: 0 });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchReports = async () => {
-      if (!path) return;
+      if (!path || !filter) return;
       if (!isPointerArea(path)) return;
 
       try {
-        const res = await fetch(`/api/reportes/${path}`);
+        setLoading(true);
 
-        console.log(
-          "Respuesta de la API - Status:",
-          res.status,
-          res.statusText,
-        );
-
-        const rawText = await res.text();
-        console.log("Respuesta de la API - Texto crudo:", rawText);
-
-        if (!res.ok) {
-          throw new Error(`Error: ${res.statusText} - ${rawText}`);
-        }
-
-        const data: ReporteAuditoriaConDetalles<any>[] = JSON.parse(rawText);
-
-        if (!Array.isArray(data)) {
-          console.error("Error: La respuesta de la API no es un array.", data);
-          throw new Error("La respuesta de la API no es un array");
-        }
-
-        const transformedData = data.map(
-          (report) => {
-            const uniqueKinds = ["eola", "ncr", "rac"];
-            const kind = uniqueKinds.includes(report.tipo_auditoria)
-              ? report.tipo_auditoria
-              : "general";
-
-            return {
-              kind: kind,
-              data: {
-                id: report.id,
-                respuestas: report.respuestas,
-                auditor: report.auditor,
-                semana: report.semana,
-                fecha: new Date(report.timestamp).toLocaleDateString(),
-                coord: report.metadata.coordinador,
-                ...report.metadata,
-              },
-            };
-          },
-        );
-
-        console.log("Datos transformados para renderizar:", transformedData);
-        setReports({
-          data: transformedData as ReportType[],
-          count: data.length,
+        const response = await getReportesAction(path, {
+          page: filter.page,
+          perPage: filter.perPage,
+          order: filter.order,
+          orderBy: filter.orderBy,
+          filters: filter.filters,
         });
+
+        if (response.ok) {
+          console.log("Respuesta de getReportesAction:", response);
+          setReports({
+            data: response.data,
+            count: response.count,
+          });
+        } else {
+          console.error("Error en getReportesAction:", response);
+          setAnnouncement({
+            isActivated: true,
+            isOk: false,
+            message: response.message,
+          });
+        }
       } catch (error) {
-        console.error("No se pudieron obtener los reportes:", error);
+        console.log("Hubo un error al obtener los reportes:", error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchReports();
-  }, [path]);
+  }, [path, filter, setAnnouncement]);
+
+  useEffect(() => {
+    setFilter({
+      page: 0,
+      perPage: 10,
+      order: "asc",
+      orderBy: "id",
+      checkFilters: false,
+      filters: [],
+    });
+  }, [setFilter]);
+
+  const generalReportPaths = [
+    "pizza-tray",
+    "baldwin-state",
+    "baldwin-reserve-supply",
+    "display-area",
+    "baldwin-reserve-stacking",
+    "baldwin-reserve-packing",
+    "baldwin-reserve-general",
+  ];
+
+  const nextPage = () => {
+    if (filter) {
+      const newPage = filter.page + 1;
+      const totalPages = Math.ceil(reports.count / filter.perPage);
+      if (newPage < totalPages) {
+        setFilter({ ...filter, page: newPage });
+      }
+    }
+  };
+
+  const prevPage = () => {
+    if (filter) {
+      const newPage = filter.page - 1;
+      if (newPage >= 0) {
+        setFilter({ ...filter, page: newPage });
+      }
+    }
+  };
+
+  const hasNextPage =
+    filter && reports.count > (filter.page + 1) * filter.perPage;
 
   return (
     <SectionContainer>
@@ -158,42 +148,88 @@ export function SelectReportsContent() {
             <DinamicTh key={index} column={column} />
           ),
         )}
-        tbodyRows={reports.data.map((report: ReportType, index: number) => (
-          <DinamicRow key={index} twBgColor={getTwBgColor({ index: index })}>
-            {report.kind === "general" ? (
-              <GeneralRowContent
-                report={report}
-                twBgColor={`${getTwBgColor({ index: index })}`}
-                onDelete={handleDelete}
-              />
-            ) : report.kind === "eola" ? (
-              <EolaRowContent
-                report={report}
-                twBgColor={`${getTwBgColor({ index: index })}`}
-              />
-            ) : report.kind === "ncr" ? (
-              <NcrRowContent
-                report={report}
-                twBgColor={`${getTwBgColor({ index: index })}`}
-              />
-            ) : report.kind === "rac" ? (
-              <RacRowContent
-                report={report}
-                twBgColor={`${getTwBgColor({ index: index })}`}
-              />
-            ) : (
-              <></>
-            )}
-          </DinamicRow>
-        ))}
+        tbodyRows={reports.data.map(
+          (report: ReporteAuditoriaConDetalles<Metadata>, index: number) => (
+            <DinamicRow
+              key={index}
+              twBgColor={getTwBgColorTable({ index: index })}
+            >
+              {generalReportPaths.includes(path ?? "") ? (
+                <GeneralRowContent
+                  report={report}
+                  twBgColor={`${getTwBgColorTable({ index: index })}`}
+                />
+              ) : path === "eola" ? (
+                <EolaRowContent
+                  report={report}
+                  twBgColor={`${getTwBgColorTable({ index: index })}`}
+                />
+              ) : path === "ncr" ? (
+                <NcrRowContent
+                  report={report}
+                  twBgColor={`${getTwBgColorTable({ index: index })}`}
+                />
+              ) : path === "rac" ? (
+                <RacRowContent
+                  report={report}
+                  twBgColor={`${getTwBgColorTable({ index: index })}`}
+                />
+              ) : (
+                <></>
+              )}
+            </DinamicRow>
+          ),
+        )}
         loading={loading}
         count={reports.count}
-        type={type}
+        type={"reporte"}
         backAction={() => router.push("/reports")}
-        filterAction={() => {}}
+        filterAction={() =>
+          setModal({
+            isActivated: true,
+            title: "Filtrar",
+            body: <FilterReportsContent />,
+          })
+        }
         addAction={() => router.push(`/reports/${path}/add`)}
-        excelAction={() => {}}
+        excelButtonContent={
+          <DownloadReportsExcelButton
+            pointer={
+              path !== null
+                ? path === "baldwin-state" ||
+                  path === "baldwin-reserve-packing" ||
+                  path === "baldwin-reserve-stacking" ||
+                  path === "baldwin-reserve-general" ||
+                  path === "baldwin-reserve-supply" ||
+                  path === "eola" ||
+                  path === "display-area" ||
+                  path === "pizza-tray" ||
+                  path === "rac" ||
+                  path === "ncr"
+                  ? path
+                  : "baldwin-reserve-general"
+                : "baldwin-reserve-general"
+            }
+            query={{
+              page: 0,
+              perPage: reports.count,
+              order: filter?.order ?? "asc",
+              orderBy: filter?.orderBy ?? "id",
+              filters: filter?.filters ?? [],
+            }}
+          />
+        }
         backContent={<ArrowLeft className="size-5" />}
+        goNext={!hasNextPage}
+        goBack={filter?.page === 0 ? false : true}
+        goNextAction={nextPage}
+        goBackAction={prevPage}
+        pageFirstHalf={(filter?.page ?? 0) + 1}
+        pageSecondHalf={
+          Math.ceil(reports.count ?? 0) / (filter?.perPage ?? 1) === 0
+            ? "1"
+            : Math.ceil((reports.count ?? 0) / (filter?.perPage ?? 1))
+        }
       />
     </SectionContainer>
   );

@@ -1,11 +1,12 @@
+"use client";
 import { InsertUpdateGeneralReportContent } from "@/content/reports/management/insertUpdateReport/general/InsertUpdateGeneralReportContent";
 
-export default async function BaldwinReserveSupplyUpdatePage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
+type Props = {
+  params: {
+    id: string;
+  };
+};
 
+export default function BaldwinReserveSupplyUpdatePage({ params: { id } }: Props) {
   return <InsertUpdateGeneralReportContent isUpdate id={id} />;
 }

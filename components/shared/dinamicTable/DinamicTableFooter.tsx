@@ -2,20 +2,29 @@
 
 import { ChevronLeft, ChevronRight, Loader } from "lucide-react";
 import { BouncingButton } from "../bouncingButton/BouncingButton";
-import { useFilter } from "@/stores/filter/filterStore";
 import { motion } from "framer-motion";
 
 export function DinamicTableFooter({
   loading,
   count,
   type,
+  goNext,
+  goBack,
+  goBackAction,
+  goNextAction,
+  pageFirstHalf,
+  pageSecondHalf,
 }: {
   loading: boolean;
   count: number;
   type: string;
+  goNext: boolean;
+  goBack: boolean;
+  goBackAction: () => void;
+  goNextAction: () => void;
+  pageFirstHalf: React.ReactNode;
+  pageSecondHalf: React.ReactNode;
 }) {
-  const { filter } = useFilter();
-
   return (
     <motion.div
       className="flex flex-col justify-center items-center p-6 lg:justify-between md:justify-between lg:flex-row md:flex-row"
@@ -41,21 +50,7 @@ export function DinamicTableFooter({
       </div>
       <div className="flex gap-4">
         <BouncingButton
-          action={() => {}}
-          backgroundColorHover="#ffffff"
-          backgroundColor="#e5e5e5"
-          textColor="#000"
-          textColorHover="#00A0D0"
-          border="2px solid #ffffff"
-          borderHover="2px solid #00A0D0"
-          twClassName="w-fit h-fit px-4 py-2 rounded-xl"
-          disabled={true}
-        >
-          <ChevronLeft className="size-5" />
-          <p>Anterior</p>
-        </BouncingButton>
-        <BouncingButton
-          action={() => {}}
+          action={goBackAction}
           backgroundColorHover="#ffffff"
           backgroundColor="#00A0D0"
           textColor="#ffffff"
@@ -63,7 +58,21 @@ export function DinamicTableFooter({
           border="2px solid #ffffff"
           borderHover="2px solid #00A0D0"
           twClassName="w-fit h-fit px-4 py-2 rounded-xl"
-          disabled={false}
+          disabled={loading ? true : goBack ? false : true}
+        >
+          <ChevronLeft className="size-5" />
+          <p>Anterior</p>
+        </BouncingButton>
+        <BouncingButton
+          action={goNextAction}
+          backgroundColorHover="#ffffff"
+          backgroundColor="#00A0D0"
+          textColor="#ffffff"
+          textColorHover="#00A0D0"
+          border="2px solid #ffffff"
+          borderHover="2px solid #00A0D0"
+          twClassName="w-fit h-fit px-4 py-2 rounded-xl"
+          disabled={loading ? true : goNext ? false : true}
         >
           <p>Siguiente</p>
           <ChevronRight className="size-5" />
@@ -79,7 +88,7 @@ export function DinamicTableFooter({
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, ease: "easeInOut" }}
           >
-            {(filter?.page ?? 0) + 1}
+            {pageFirstHalf}
           </motion.p>
         )}
         <p>de</p>
@@ -91,9 +100,7 @@ export function DinamicTableFooter({
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, ease: "easeInOut" }}
           >
-            {Math.ceil(count ?? 0) / (filter?.perPage ?? 1) === 0
-              ? "1"
-              : Math.ceil((count ?? 0) / (filter?.perPage ?? 1))}
+            {pageSecondHalf}
           </motion.p>
         )}
       </div>

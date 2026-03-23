@@ -1,9 +1,12 @@
 "use client";
 
 import { Announcement } from "@/components/shared/announcement/Announcement";
+import { Modal } from "@/components/shared/modal/Modal";
 import { RouteTitle } from "@/components/shared/routeTitle/RouteTitle";
 import { Sidebar } from "@/components/shared/sidebar/Sidebar";
 import { useSidebarStore } from "@/stores/sidebar/SidebarStore";
+import { motion } from "framer-motion";
+import DownloadProgress from "@/components/shared/download/ExcelDownloadProgress";
 
 export default function DashboardLayout({
   children,
@@ -13,9 +16,16 @@ export default function DashboardLayout({
   const { expanded } = useSidebarStore();
 
   return (
-    <div className="flex min-h-dvh">
+    <motion.div
+      className="flex min-h-dvh overflow-y-hidden overflow-x-hidden"
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: "easeInOut" }}
+    >
       <Sidebar />
       <Announcement />
+      <Modal />
+      <DownloadProgress />
       <div
         className={`flex flex-col h-dvh w-full transition-all duration-300 ${
           expanded
@@ -26,6 +36,6 @@ export default function DashboardLayout({
         <RouteTitle />
         <main className={`overflow-y-auto flex-1`}>{children}</main>
       </div>
-    </div>
+    </motion.div>
   );
 }

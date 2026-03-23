@@ -1,28 +1,44 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { useAnnouncement } from "@/stores/announcement/announcementStore";
+/* HOOKS */
 import { useEffect } from "react";
 
+/* ICONS */
+import { CircleCheckBig, CircleOff } from "lucide-react";
+
+/* STORES */
+import { useAnnouncement } from "@/stores/announcement/announcementStore";
+
+/* LIBS */
+import { motion } from "framer-motion";
+
 export function Announcement() {
-  const { isActivated, setAnnouncement, color, announcementBody } =
-    useAnnouncement();
+  const { announcement, setAnnouncement } = useAnnouncement();
 
   useEffect(() => {
-    if (isActivated) {
+    if (announcement.isActivated) {
       const timer = setTimeout(() => {
-        setAnnouncement(false, color ?? "", announcementBody);
+        setAnnouncement({
+          isActivated: false,
+          isOk: announcement.isOk,
+          message: announcement.message,
+        });
       }, 5000);
       return () => clearTimeout(timer);
     }
-  }, [isActivated, setAnnouncement, announcementBody, color]);
+  }, [
+    setAnnouncement,
+    announcement.isActivated,
+    announcement.isOk,
+    announcement.message,
+  ]);
 
   return (
     <motion.div
-      className={`fixed bottom-0 left-0 z-80 flex items-center justify-center w-full p-4 h-fit rounded-t-2xl ${color}`}
+      className={`fixed bottom-0 left-0 z-80 flex items-center justify-center w-full p-4 h-fit rounded-t-2xl ${announcement.isOk ? "bg-green-500" : "bg-red-500"}`}
       initial={{ y: "100%" }} // Empieza oculto
       animate={{
-        y: isActivated ? 0 : "100%", // Se mueve arriba o desaparece
+        y: announcement.isActivated ? 0 : "100%", // Se mueve arriba o desaparece
         transition: {
           duration: 0.6,
           type: "spring",
@@ -40,7 +56,14 @@ export function Announcement() {
         },
       }}
     >
-      {announcementBody}
+      <div className="flex gap-2 items-center">
+        {announcement.isOk ? (
+          <CircleCheckBig className="size-4 text-white" />
+        ) : (
+          <CircleOff className="size-4 text-white" />
+        )}
+        <p className="text-white">{announcement.message}</p>
+      </div>
     </motion.div>
   );
 }
