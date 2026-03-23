@@ -29,6 +29,8 @@ import { useModal } from "@/stores/modal/modalStore";
 
 /* TYPES */
 import { ReportsFilterFormValues } from "@/content/reports/types/forms/reportsFilterFormValues";
+import { ReporteAuditoriaConDetalles } from "@/src/reporte-auditoria/domain";
+import { Metadata } from "@/src/reporte-auditoria/domain/entities";
 
 export function FilterReportsContent() {
   const [filtering, setFiltering] = useState(false);
@@ -84,15 +86,15 @@ export function FilterReportsContent() {
         data.orderBy === "ID"
           ? "id"
           : data.orderBy === "Fecha"
-            ? "fecha"
-            : "usuario_id";
+          ? "timestamp"
+          : "auditor";
 
       // CHECKFILTERS
       const checkFilters = data.filterBy === "Ninguno" ? false : true;
 
       if (checkFilters) {
         // FILTERS
-        let field: "id" | "fecha" | "usuario_id";
+        let field: keyof ReporteAuditoriaConDetalles<Metadata>;
         let operator: "=" | "!=" | "<" | "<=" | ">" | ">=";
         let value: string | number;
 
@@ -126,7 +128,7 @@ export function FilterReportsContent() {
             ],
           });
         } else if (data.filterBy === "Fecha") {
-          field = "fecha";
+          field = "timestamp";
 
           if (data.operator !== undefined) {
             operator = data.operator;
@@ -162,11 +164,11 @@ export function FilterReportsContent() {
             const fecha_termino = fecha_intervalo.to;
 
             const filtro_1: {
-              field: "fecha";
+              field: "timestamp";
               operator: ">=";
               value: string;
             } = {
-              field: "fecha",
+              field: "timestamp",
               operator: ">=",
               value:
                 fecha_comienzo !== undefined
@@ -175,11 +177,11 @@ export function FilterReportsContent() {
             };
 
             const filtro_2: {
-              field: "fecha";
+              field: "timestamp";
               operator: "<=";
               value: string;
             } = {
-              field: "fecha",
+              field: "timestamp",
               operator: "<=",
               value:
                 fecha_termino !== undefined

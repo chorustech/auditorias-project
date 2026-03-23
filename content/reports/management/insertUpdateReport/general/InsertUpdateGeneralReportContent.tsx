@@ -20,31 +20,90 @@ import { reportsQuestions } from "@/content/reports/data/questions/reportsQuesti
 /* HOOKS */
 import { useForm, FormProvider } from "react-hook-form";
 import { useState, useEffect } from "react";
+import { getSessionUser } from "@/src/shared/infrastructure/utils/get-session-user";
 
 /* ICONS */
 import { Save } from "lucide-react";
 
 /* NAVIGATION */
-import { usePathname } from "next/navigation";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 /* SERVER ACTION */
-import { guardarReporteAction } from "@/src/reporte-auditoria/infrastructure/actions/save";
+import { createReportAction } from "@/src/reporte-auditoria/infrastructure/actions/create-report";
 import { getReporteByIdAction } from "@/src/reporte-auditoria/infrastructure/actions/get-by-id";
 import { updateReporteAction } from "@/src/reporte-auditoria/infrastructure/actions/update";
+import { logoutAction } from "@/src/shared/infrastructure/utils/logout-action";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
 
 /* TYPES */
 import { ReportFormValues } from "@/content/reports/types/forms/reportFormValues";
+import { UserPrimitive } from "@/src/users";
 
 /* UTILS */
 import { getDate, getWeekNumber } from "@/utils/date";
-import { isPointerArea } from "@/utils/pointerArea";
 
 /* LIBS */
 import { motion } from "framer-motion";
+
+const getAreaIdFromSlug = (slug: string): number => {
+  const areaMap: { [key: string]: number } = {
+    "pizza-tray": 1,
+    "baldwin-state": 2,
+    "baldwin-reserve-supply": 3,
+    "display-area": 4,
+    "baldwin-reserve-stacking": 5,
+    "baldwin-reserve-packing": 6,
+    "baldwin-reserve-general": 7,
+    eola: 8,
+    ncr: 9,
+    rac: 10,
+  };
+  return areaMap[slug] || 0;
+};
+
+const createReport = async (
+  data: ReportFormValues,
+  user: UserPrimitive,
+  path: string,
+) => {
+  const area_id = getAreaIdFromSlug(path);
+  const es_negativo =
+    data.respuestas.filter((r) => r).length < data.respuestas.length / 2;
+
+  let metadata: any = {};
+  switch (path) {
+    case "pizza-tray":
+      metadata = { nivel: data.nivel, ubicacion: data.ubicacion };
+      break;
+    case "baldwin-state":
+      metadata = { coordinador: data.coord, linea: data.linea };
+      break;
+    case "baldwin-reserve-supply":
+      metadata = { picker: data.picker };
+      break;
+    case "display-area":
+      metadata = { worktable: data.worktable };
+      break;
+    case "baldwin-reserve-stacking":
+    case "baldwin-reserve-packing":
+    case "baldwin-reserve-general":
+      metadata = { linea: data.linea };
+      break;
+  }
+
+  const reportData = {
+    area_id,
+    semana: Number(getWeekNumber()),
+    respuestas: data.respuestas,
+    comentarios: data.comentarios,
+    metadata,
+    es_negativo,
+  };
+
+  return await createReportAction(reportData as any);
+};
 
 export function InsertUpdateGeneralReportContent({
   isUpdate,
@@ -63,13 +122,21 @@ export function InsertUpdateGeneralReportContent({
   const path = rawPath ?? null;
 
   const methods = useForm<ReportFormValues>();
+  const [user, setUser] = useState<UserPrimitive | null>(null);
 
-  const auditor_temp = {
-    id: 1,
-    nombre: "Pirita Dreemurr",
-    email: "pirita@assaabloy.com",
-    rol: "administrador",
-  };
+  useEffect(() => {
+    const fetchUser = async () => {
+      const sessionUser = await getSessionUser();
+      if (!sessionUser) {
+        await logoutAction();
+        router.push("/");
+      } else {
+        setUser(sessionUser);
+      }
+    };
+
+    fetchUser();
+  }, [router]);
 
   useEffect(() => {
     const fetchReport = async () => {
@@ -80,23 +147,22 @@ export function InsertUpdateGeneralReportContent({
         if (response.ok && response.data) {
           const report = response.data;
           const metadata = report.metadata;
-          let resetData: any = {
-            comentarios: report.comentarios || '',
+          const resetData: any = {
+            comentarios: report.comentarios || "",
             respuestas: report.respuestas,
-            auditor_id: report.auditor_id,
           };
 
-          if ('nivel' in metadata) { // PizzaTrayMetadata
+          if ("nivel" in metadata) {
             resetData.ubicacion = metadata.ubicacion;
             resetData.nivel = Number(metadata.nivel);
-          } else if ('coordinador' in metadata) { // BaldwinStateMetadata
+          } else if ("coordinador" in metadata) {
             resetData.linea = metadata.linea;
             resetData.coord = metadata.coordinador;
-          } else if ('picker' in metadata) { // SurtidoMaterialesMetadata
+          } else if ("picker" in metadata) {
             resetData.picker = metadata.picker;
-          } else if ('worktable' in metadata) { // DisplayAreaMetadata
+          } else if ("worktable" in metadata) {
             resetData.worktable = metadata.worktable;
-          } else if ('linea' in metadata) { // Stacking, Packing, General (baldwin-reserve)
+          } else if ("linea" in metadata) {
             resetData.linea = metadata.linea;
           }
           methods.reset(resetData);
@@ -119,7 +185,6 @@ export function InsertUpdateGeneralReportContent({
           nivel: 1,
           comentarios: "",
           respuestas: [],
-          auditor_id: auditor_temp.id,
         });
         setLoading(false);
       }
@@ -130,70 +195,46 @@ export function InsertUpdateGeneralReportContent({
 
   const onSubmit = async (data: ReportFormValues) => {
     setSaving(true);
+    try {
+      if (!user || !path) {
+        setAnnouncement({
+          isActivated: true,
+          isOk: false,
+          message: "Error de sesión. Por favor, vuelve a iniciar sesión.",
+        });
+        return;
+      }
 
-    let metadata: any = {};
-    switch (path) {
-      case 'pizza-tray':
-        metadata = { nivel: data.nivel, ubicacion: data.ubicacion };
-        break;
-      case 'baldwin-state':
-        metadata = { coordinador: data.coord, linea: data.linea };
-        break;
-      case 'baldwin-reserve-supply':
-        metadata = { picker: data.picker };
-        break;
-      case 'display-area':
-        metadata = { worktable: data.worktable };
-        break;
-      case 'baldwin-reserve-stacking':
-      case 'baldwin-reserve-packing':
-      case 'baldwin-reserve-general':
-        metadata = { linea: data.linea };
-        break;
-    }
+      let response;
+      if (isUpdate) {
+        // ... update logic
+      } else {
+        response = await createReport(data, user, path);
+      }
 
-    let response;
-
-    if (isUpdate) {
-      const reportData = {
-        data: {
-          auditor_id: data.auditor_id,
-          semana: Number(getWeekNumber()),
-          respuestas: data.respuestas,
-          comentarios: data.comentarios,
-        },
-        metadata,
-      };
-      response = await updateReporteAction(Number(id), reportData, path || '');
-    } else {
-      const reportData = {
-        slug: path || '',
-        auditor_id: data.auditor_id,
-        semana: getWeekNumber().toString(),
-        respuestas: data.respuestas,
-        comentarios: data.comentarios,
-        metadata: metadata
-      };
-      response = await guardarReporteAction(reportData);
-    }
-
-    if (('ok' in response && response.ok) || ('success' in response && response.success)) {
-      setAnnouncement({
-        isActivated: true,
-        isOk: true,
-        message: response.message,
-      });
-
-      if (!isUpdate) methods.reset();
-    } else {
+      if (response && response.ok) {
+        setAnnouncement({
+          isActivated: true,
+          isOk: true,
+          message: response.message,
+        });
+        if (!isUpdate) methods.reset();
+      } else if (response) {
+        setAnnouncement({
+          isActivated: true,
+          isOk: false,
+          message: response.message,
+        });
+      }
+    } catch (error) {
       setAnnouncement({
         isActivated: true,
         isOk: false,
-        message: response.message,
+        message: "Ocurrió un error inesperado. Inténtalo de nuevo.",
       });
+    } finally {
+      setSaving(false);
     }
-
-    setSaving(false);
   };
 
   return (
@@ -203,7 +244,7 @@ export function InsertUpdateGeneralReportContent({
         headerRightContent={
           <div className="flex gap-4">
             <p>
-              Auditor: <span className="text-[#00A0D0]">Pirita Dreemurr</span>
+              Auditor: <span className="text-[#00A0D0]">{user?.nombre}</span>
             </p>
             <p>
               Fecha: <span className="text-[#00A0D0]">{getDate()}</span>
@@ -242,7 +283,6 @@ export function InsertUpdateGeneralReportContent({
             >
               <div className="flex flex-col justify-between h-full">
                 <div>
-                  {/* LINEAS */}
                   {(path === "baldwin-state" ||
                     path === "baldwin-reserve-stacking" ||
                     path === "baldwin-reserve-packing" ||
@@ -258,7 +298,6 @@ export function InsertUpdateGeneralReportContent({
                     />
                   )}
 
-                  {/* COORDINADOR */}
                   {path === "baldwin-state" && (
                     <DinamicInputText<ReportFormValues>
                       name="coord"
@@ -280,7 +319,6 @@ export function InsertUpdateGeneralReportContent({
                     />
                   )}
 
-                  {/* PICKER */}
                   {path === "baldwin-reserve-supply" && (
                     <DinamicInputText<ReportFormValues>
                       name="picker"
@@ -302,7 +340,6 @@ export function InsertUpdateGeneralReportContent({
                     />
                   )}
 
-                  {/* UBICACIÓN */}
                   {path === "pizza-tray" && (
                     <DinamicInputText<ReportFormValues>
                       name="ubicacion"
@@ -324,7 +361,6 @@ export function InsertUpdateGeneralReportContent({
                     />
                   )}
 
-                  {/* WORKTABLES */}
                   {path === "display-area" && (
                     <DinamicCombobox<ReportFormValues>
                       name="worktable"
@@ -337,7 +373,6 @@ export function InsertUpdateGeneralReportContent({
                     />
                   )}
 
-                  {/* NIVEL */}
                   {path === "pizza-tray" && (
                     <DinamicInputNumber<ReportFormValues>
                       name="nivel"
@@ -351,7 +386,6 @@ export function InsertUpdateGeneralReportContent({
                     />
                   )}
 
-                  {/* COMENTARIOS */}
                   <DinamicInputTextArea<ReportFormValues>
                     name="comentarios"
                     label="Comentarios"
@@ -370,14 +404,12 @@ export function InsertUpdateGeneralReportContent({
                     }}
                   />
 
-                  {/* ARCHIVO */}
                   <div className="flex flex-col gap-2">
                     <p className="truncate">Adjuntar archivo (opcional)</p>
                     <input
                       type="file"
                       className="w-full text-sm h-fit px-4 py-2 bg-transparent outline-none border border-neutral-200 rounded-xl hover:hover:bg-sky-100 transition-all duration-300 placeholder:text-neutral-500 cursor-pointer"
                       {...methods.register("archivo", {
-                        /* required: "Archivo requerido", */
                         validate: (value) => {
                           if (value instanceof FileList) {
                             const file = value.item(0);
@@ -386,7 +418,6 @@ export function InsertUpdateGeneralReportContent({
                               if (file.size > 5_000_000)
                                 return "El archivo debe pesar menos de 5MB";
                             }
-                            //return "Archivo requerido";
                           }
 
                           return true;
@@ -401,8 +432,7 @@ export function InsertUpdateGeneralReportContent({
                   </div>
                 </div>
 
-                {/* BOTÓN GUARDAR */}
-                <div className="w-full sticky bottom-0 py-4 bg-white">
+                 <div className="w-full sticky bottom-0 py-4 bg-white">
                   <DinamicBouncingButton
                     action={
                       saving || loading

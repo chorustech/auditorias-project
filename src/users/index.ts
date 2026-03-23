@@ -28,7 +28,9 @@ export type SaveUserDTO = {
 }
 
 export interface UserRepository {
-    create(user: SaveUserDTO): Promise<void | UserPrimitive>
-    findByEmail(email: string): Promise<UserPrimitive | null>
-    findByNumEmpleado(numEmpleado: number): Promise<UserPrimitive | null>
+  create(user: SaveUserDTO): Promise<void | UserPrimitive>;
+  findByEmail(email: string): Promise<UserPrimitive | null>;
+  findByNumEmpleado(numEmpleado: number): Promise<UserPrimitive | null>;
+  delete(id: number): Promise<void>;
+  updateStatus(id: number, status: boolean): Promise<void>;
 }

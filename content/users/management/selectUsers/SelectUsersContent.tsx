@@ -22,10 +22,10 @@ import { House } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 /* TYPES */
-import { UserType } from "@/temp/Users/Infrastructure/Types/userData";
+import { UserPrimitive } from "@/src/users";
 
 /* SERVER ACTION */
-import { selectUsers } from "@/temp/Users/Infrastructure/usersController";
+import { getAllUsersAction } from "@/src/users/infrastructure/actions/get-all";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
@@ -37,7 +37,7 @@ import { getTwBgColorTable } from "@/utils/getTwBgColorTable";
 
 export function SelectUsersContent() {
   const router = useRouter();
-  const [users, setUsers] = useState<{ data: UserType[]; count: number }>({
+  const [users, setUsers] = useState<{ data: UserPrimitive[]; count: number }>({
     data: [],
     count: 0,
   });
@@ -83,16 +83,7 @@ export function SelectUsersContent() {
     try {
       setLoading(true);
 
-      const response = await selectUsers({
-        query: {
-          page: filter.page,
-          perPage: filter.perPage,
-          order: filter.order,
-          orderBy: filter.orderBy,
-          checkFilters: filter.checkFilters,
-          filters: filter.filters,
-        },
-      });
+      const response = await getAllUsersAction();
 
       if (response.ok) {
         setUsers({
@@ -165,7 +156,6 @@ export function SelectUsersContent() {
               order: filter?.order ?? "asc",
               orderBy: filter?.orderBy ?? "id",
               filters: filter?.filters ?? [],
-              checkFilters: filter?.checkFilters ?? false,
             }}
           />
         }

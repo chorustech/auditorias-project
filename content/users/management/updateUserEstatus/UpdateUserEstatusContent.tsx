@@ -11,7 +11,7 @@ import { useState } from "react";
 import { Loader, Power, PowerOff } from "lucide-react";
 
 /* SERVER ACTIONS */
-import { updateUserStatus } from "@/temp/Users/Infrastructure/usersController";
+import { updateUserStatusAction } from "@/src/users/infrastructure/actions/update-user-status";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
@@ -19,9 +19,9 @@ import { useModal } from "@/stores/modal/modalStore";
 import { useUsersFilter } from '@/stores/filter/users/filterUsersStore'
 
 /* TYPES */
-import { UserType } from "@/temp/Users/Infrastructure/Types/userData";
+import { UserPrimitive } from "@/src/users";
 
-export function UpdateUserEstatusContent({ user }: { user: UserType }) {
+export function UpdateUserEstatusContent({ user }: { user: UserPrimitive }) {
   const [changingState, setChangingState] = useState(false);
   const { setAnnouncement } = useAnnouncement();
   const { modal, setModal } = useModal();
@@ -33,7 +33,7 @@ export function UpdateUserEstatusContent({ user }: { user: UserType }) {
     try {
       setChangingState(true);
 
-      const response = await updateUserStatus(user.id, user.estado);
+      const response = await updateUserStatusAction(user.id, !user.estado);
 
       if (response.ok) {
         if (!filter) return;
@@ -72,16 +72,16 @@ export function UpdateUserEstatusContent({ user }: { user: UserType }) {
         <p>
           Al dar clic en{" "}
           <span
-            className={`font-semibold ${user.estado === "ACTIVO" ? "text-red-500" : "text-green-500"}`}
+            className={`font-semibold ${user.estado ? "text-red-500" : "text-green-500"}`}
           >
-            {user.estado === "ACTIVO" ? "Inactivar" : "Activar"}
+            {user.estado ? "Inactivar" : "Activar"}
           </span>
           , el estatus del usuario{" "}
           <span className="font-semibold">{user.nombre}</span> será cambiado a{" "}
           <span
-            className={`font-semibold ${user.estado === "ACTIVO" ? "text-red-500" : "text-green-500"}`}
+            className={`font-semibold ${user.estado ? "text-red-500" : "text-green-500"}`}
           >
-            {user.estado === "ACTIVO" ? "INACTIVO" : "ACTIVO"}
+            {user.estado ? "INACTIVO" : "ACTIVO"}
           </span>
         </p>
       </div>
@@ -117,12 +117,12 @@ export function UpdateUserEstatusContent({ user }: { user: UserType }) {
                 action={
                   changingState ? () => {} : methods.handleSubmit(onSubmit)
                 }
-                backgroundColorHover={`${user.estado === "ACTIVO" ? "#ef4444" : "#22c55e"}`}
-                backgroundColor={`${user.estado === "ACTIVO" ? "#ef4444" : "#22c55e"}`}
+                backgroundColorHover={`${user.estado ? "#ef4444" : "#22c55e"}`}
+                backgroundColor={`${user.estado ? "#ef4444" : "#22c55e"}`}
                 textColor="#ffffff"
                 textColorHover="#ffffff"
-                border={`2px solid ${user.estado === "ACTIVO" ? "#ef4444" : "#22c55e"}`}
-                borderHover={`2px solid ${user.estado === "ACTIVO" ? "#ef4444" : "#22c55e"}`}
+                border={`2px solid ${user.estado ? "#ef4444" : "#22c55e"}`}
+                borderHover={`2px solid ${user.estado ? "#ef4444" : "#22c55e"}`}
                 twClassName="w-full h-fit px-4 py-2 rounded-2xl"
                 disabled={changingState ? true : false}
               >
@@ -134,13 +134,13 @@ export function UpdateUserEstatusContent({ user }: { user: UserType }) {
                   </>
                 ) : (
                   <>
-                    {user.estado === "ACTIVO" ? (
+                    {user.estado ? (
                       <PowerOff className="size-4" />
                     ) : (
                       <Power className="size-4" />
                     )}
                     <span>
-                      {user.estado === "ACTIVO" ? "Inactivar" : "Activar"}
+                      {user.estado ? "Inactivar" : "Activar"}
                     </span>
                   </>
                 )}

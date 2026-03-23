@@ -12,11 +12,11 @@ import * as XLSX from "xlsx-js-style";
 
 /* TYPES */
 import { LettersObject } from "@/components/shared/download/types/shared/lettersObject";
-import { UserType } from "@/temp/Users/Infrastructure/Types/userData";
+import { UserPrimitive } from "@/src/users";
 
 export function setColumnsStyles(
   worksheet: XLSX.WorkSheet,
-  users: UserType[],
+  users: UserPrimitive[],
 ): XLSX.WorkSheet {
   worksheet = setColumnsStylesLoop(worksheet, usersColumnsId, users);
 
@@ -26,7 +26,7 @@ export function setColumnsStyles(
 function setColumnsStylesLoop(
   worksheet: XLSX.WorkSheet,
   columnsIdObject: LettersObject,
-  users: UserType[],
+  users: UserPrimitive[],
 ): XLSX.WorkSheet {
   columnsIdObject.main.forEach(
     (letter, index) =>

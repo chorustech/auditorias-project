@@ -2,12 +2,10 @@
 import { usersColumnsHeaders } from "@/components/shared/download/data/users/usersColumnsHeaders";
 
 /* TYPES */
-import { UserType } from "@/temp/Users/Infrastructure/Types/userData";
+import { UserPrimitive } from "@/src/users";
 
-export function transformUsersForExcel(users: UserType[]): string[][] {
+export function transformUsersForExcel(users: UserPrimitive[]): string[][] {
   const rows: string[][] = [];
-
-  console.log(users);
 
   if (users.length > 0) {
     rows.push(usersColumnsHeaders);
@@ -20,13 +18,11 @@ export function transformUsersForExcel(users: UserType[]): string[][] {
       final_user.push(user.nombre);
       final_user.push(user.email);
       final_user.push(user.rol);
-      final_user.push(user.estado);
+      final_user.push(user.estado ? "ACTIVO" : "INACTIVO");
 
       rows.push(final_user);
     });
   }
-
-  console.log(rows);
 
   return rows;
 }

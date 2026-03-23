@@ -17,6 +17,18 @@ export interface ReporteAuditoriaConDetalles<
 > extends ReporteAuditoriaPrimitivo<M> {
   auditor: string;
   tipo_auditoria: string;
+  type:
+    | "baldwin-state"
+    | "baldwin-reserve-supply"
+    | "baldwin-reserve-stacking"
+    | "baldwin-reserve-packing"
+    | "baldwin-reserve-general"
+    | "display-area"
+    | "pizza-tray"
+    | "eola"
+    | "ncr"
+    | "rac"
+    | "general";
 }
 
 export class ReporteAuditoria<M extends Metadata> {

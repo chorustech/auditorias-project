@@ -1,9 +1,5 @@
-import {
-  EolaReport,
-  GeneralReport,
-  NcrReport,
-  RacReport,
-} from "@/temp/Reports/Infrastructure/Types/selectReportsResponse";
+import { ReporteAuditoriaConDetalles } from "@/src/reporte-auditoria/domain";
+import { Metadata } from "@/src/reporte-auditoria/domain/entities";
 import { create } from "zustand";
 
 export interface Filter<T> {
@@ -22,9 +18,9 @@ export interface Filter<T> {
 type Operator = "=" | "!=" | "<" | "<=" | ">" | ">=";
 
 interface FilterStore {
-  filter: Filter<GeneralReport & EolaReport & NcrReport & RacReport> | null;
+  filter: Filter<ReporteAuditoriaConDetalles<Metadata>> | null;
   setFilter: (
-    data: Filter<GeneralReport & EolaReport & NcrReport & RacReport>,
+    data: Filter<ReporteAuditoriaConDetalles<Metadata>>,
   ) => void;
 }
 
@@ -38,6 +34,6 @@ export const useReportsFilter = create<FilterStore>((set) => ({
     filters: [],
   },
   setFilter: (
-    data: Filter<GeneralReport & EolaReport & NcrReport & RacReport>,
+    data: Filter<ReporteAuditoriaConDetalles<Metadata>>,
   ) => set({ filter: data }),
 }));

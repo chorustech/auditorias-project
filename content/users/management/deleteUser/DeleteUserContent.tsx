@@ -11,7 +11,7 @@ import { useState } from "react";
 import { Loader, Trash2 } from "lucide-react";
 
 /* SERVER ACTIONS */
-import { deleteUser } from "@/temp/Users/Infrastructure/usersController";
+import { deleteUserAction } from "@/src/users/infrastructure/actions/delete-user";
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
@@ -19,9 +19,9 @@ import { useModal } from "@/stores/modal/modalStore";
 import { useUsersFilter } from '@/stores/filter/users/filterUsersStore'
 
 /* TYPES */
-import { UserType } from "@/temp/Users/Infrastructure/Types/userData";
+import { UserPrimitive } from "@/src/users";
 
-export function DeleteUserContent({ user }: { user: UserType }) {
+export function DeleteUserContent({ user }: { user: UserPrimitive }) {
   const [deleting, setDeleting] = useState(false);
   const { setAnnouncement } = useAnnouncement();
   const { modal, setModal } = useModal();
@@ -33,7 +33,7 @@ export function DeleteUserContent({ user }: { user: UserType }) {
     try {
       setDeleting(true);
 
-      const response = await deleteUser(user.id);
+      const response = await deleteUserAction(user.id);
 
       if (response.ok) {
         if (!filter) return;

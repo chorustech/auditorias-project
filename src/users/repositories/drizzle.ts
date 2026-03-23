@@ -19,4 +19,12 @@ export class DrizzleUserRepository implements UserRepository {
         const res = await this._db.select().from(UsuarioTable).where(eq(UsuarioTable.numEmpleado, numEmpleado))
         return res[0] || null
     }
+
+    async delete(id: number): Promise<void> {
+        await this._db.delete(UsuarioTable).where(eq(UsuarioTable.id, id));
+    }
+
+    async updateStatus(id: number, status: boolean): Promise<void> {
+        await this._db.update(UsuarioTable).set({ estado: status }).where(eq(UsuarioTable.id, id));
+    }
 }

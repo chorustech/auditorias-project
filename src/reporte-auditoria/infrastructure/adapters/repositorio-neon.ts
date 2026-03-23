@@ -64,7 +64,7 @@ export class ReporteAuditoriaNeon<
 
     const orderCol = columnMap[query.orderBy as string];
     const orderFn = query.order === "asc" ? asc(orderCol) : desc(orderCol);
-    const offset = (query.page - 1) * query.perPage;
+    const offset = query.page * query.perPage;
 
     return await this._db
       .select({
@@ -80,6 +80,7 @@ export class ReporteAuditoriaNeon<
 
         auditor: UsuarioTable.nombre,
         tipo_auditoria: AreaTable.slug,
+        type: AreaTable.slug as any,
       })
       .from(ReporteAuditoriaTable)
       .innerJoin(AreaTable, eq(ReporteAuditoriaTable.area_id, AreaTable.id))
@@ -145,6 +146,7 @@ export class ReporteAuditoriaNeon<
         es_negativo: ReporteAuditoriaTable.es_negativo,
         metadata: ReporteAuditoriaTable.metadata,
         tipo_auditoria: AreaTable.slug,
+        type: AreaTable.slug as any,
       })
       .from(ReporteAuditoriaTable)
       .innerJoin(AreaTable, eq(ReporteAuditoriaTable.area_id, AreaTable.id))

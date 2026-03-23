@@ -13,15 +13,15 @@ import { Download, Loader } from "lucide-react";
 import * as XLSX from "xlsx-js-style";
 
 /* SERVER ACTION */
-import { selectUsers } from "@/temp/Users/Infrastructure/usersController";
+import { getAllUsersAction } from "@/src/users/infrastructure/actions/get-all";
 
 /* STORES */
 import { useDownloadStore } from "@/stores/download/downloadStore";
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
 
 /* TYPES */
-import { IQuery } from "@/temp/Shared/Domain/Interfaces/IQuery";
-import { UserType } from "@/temp/Users/Infrastructure/Types/userData";
+import { IQuery } from "@/src/shared/domain/Entities/Query";
+import { UserPrimitive } from "@/src/users";
 
 /* UTILS */
 import { autoSizeColumns } from "@/components/shared/download/utils/shared/autoSizeColumns";
@@ -32,7 +32,7 @@ import { transformUsersForExcel } from "@/components/shared/download/utils/users
 export function ExcelDownloadUsersButton({
   query,
 }: {
-  query: IQuery<UserType>;
+  query: IQuery<UserPrimitive>;
 }) {
   const { setAnnouncement } = useAnnouncement();
   const { downloading, start, finish, setProgress } = useDownloadStore();
@@ -87,7 +87,7 @@ export function ExcelDownloadUsersButton({
       await new Promise((r) => setTimeout(r, 200));
       await animateProgressTo(99);
 
-      const result = await selectUsers({ query });
+      const result = await getAllUsersAction();
 
       if (!result.ok) {
         finish();

@@ -1,4 +1,4 @@
-import { UserType } from "@/temp/Users/Infrastructure/Types/userData";
+import { UserPrimitive } from "@/src/users";
 import { create } from "zustand";
 
 export interface Filter<T> {
@@ -17,8 +17,8 @@ export interface Filter<T> {
 type Operator = "=" | "!=" | "<" | "<=" | ">" | ">=";
 
 interface FilterStore {
-  filter: Filter<UserType> | null;
-  setFilter: (data: Filter<UserType>) => void;
+  filter: Filter<UserPrimitive> | null;
+  setFilter: (data: Filter<UserPrimitive>) => void;
 }
 
 export const useUsersFilter = create<FilterStore>((set) => ({
@@ -30,5 +30,5 @@ export const useUsersFilter = create<FilterStore>((set) => ({
     checkFilters: false,
     filters: [],
   },
-  setFilter: (data: Filter<UserType>) => set({ filter: data }),
+  setFilter: (data: Filter<UserPrimitive>) => set({ filter: data }),
 }));

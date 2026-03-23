@@ -29,13 +29,14 @@ import * as XLSX from "xlsx-js-style";
 
 /* TYPES */
 import { PointerArea } from "@/utils/pointerArea";
-import { ReportType } from "@/temp/Reports/Infrastructure/Types/selectReportsResponse";
+import { ReporteAuditoriaConDetalles } from "@/src/reporte-auditoria/domain";
+import { Metadata } from "@/src/reporte-auditoria/domain/entities";
 import { LettersObject } from "@/components/shared/download/types/shared/lettersObject";
 
 export function setColumnsStyles(
   pointer: PointerArea,
   worksheet: XLSX.WorkSheet,
-  reports: ReportType[],
+  reports: ReporteAuditoriaConDetalles<Metadata>[],
 ): XLSX.WorkSheet {
   switch (pointer) {
     case "baldwin-state":
@@ -128,46 +129,63 @@ function setColumnsStylesLoop(
   worksheet: XLSX.WorkSheet,
   sentencesCount: number,
   columnsIdObject: LettersObject,
-  reports: ReportType[],
+  reports: ReporteAuditoriaConDetalles<Metadata>[],
   addRowStartCount: number,
 ): XLSX.WorkSheet {
-  columnsIdObject.main.forEach(
-    (letter, index) =>
-      (worksheet[letter + "1"].s =
-        index % 2 === 0 ? mainEvenStyles : mainOddStyles),
-  );
+  columnsIdObject.main.forEach((letter, index) => {
+    const cellAddress = letter + "1";
+    if (!worksheet[cellAddress]) {
+      worksheet[cellAddress] = { t: "s", v: "" };
+    }
+    worksheet[cellAddress].s =
+      index % 2 === 0 ? mainEvenStyles : mainOddStyles;
+  });
 
   if (columnsIdObject.sections)
     columnsIdObject.sections.forEach((section, index) => {
-      worksheet[section.title + "1"].s =
+      const cellAddress = section.title + "1";
+      if (!worksheet[cellAddress]) {
+        worksheet[cellAddress] = { t: "s", v: "" };
+      }
+      worksheet[cellAddress].s =
         index % 2 === 0 ? sectionEvenStyles : sectionOddStyles;
 
-      section.sentences.forEach(
-        (sentence) =>
-          (worksheet[sentence + "2"].s =
-            index % 2 === 0
-              ? sectionEvenSentencesStyles
-              : sectionOddSentencesStyles),
-      );
+      section.sentences.forEach((sentence) => {
+        const cellAddress = sentence + "2";
+        if (!worksheet[cellAddress]) {
+          worksheet[cellAddress] = { t: "s", v: "" };
+        }
+        worksheet[cellAddress].s =
+          index % 2 === 0
+            ? sectionEvenSentencesStyles
+            : sectionOddSentencesStyles;
+      });
     });
 
   reports.forEach((report, index) => {
-    columnsIdObject.main.forEach(
-      (letter) =>
-        (worksheet[letter + (index + addRowStartCount)].s =
-          index % 2 === 0 ? rowEvenStyles : rowOddStyles),
-    );
+    const rowIndex = index + addRowStartCount;
+    columnsIdObject.main.forEach((letter) => {
+      const cellAddress = letter + rowIndex;
+      if (!worksheet[cellAddress]) {
+        worksheet[cellAddress] = { t: "s", v: "" };
+      }
+      worksheet[cellAddress].s =
+        index % 2 === 0 ? rowEvenStyles : rowOddStyles;
+    });
 
-    if (report.kind === "general") {
-      if (report.data.respuestas.length === sentencesCount) {
+    if (report.type === "general") {
+      if (report.respuestas.length === sentencesCount) {
         if (columnsIdObject.sections) {
           let count = -1;
 
           columnsIdObject.sections.forEach((section) => {
             section.sentences.forEach((sentence) => {
               count++;
-              worksheet[sentence + (index + addRowStartCount)].s = report.data
-                .respuestas[count]
+              const cellAddress = sentence + rowIndex;
+              if (!worksheet[cellAddress]) {
+                worksheet[cellAddress] = { t: "s", v: "" };
+              }
+              worksheet[cellAddress].s = report.respuestas[count]
                 ? sentenceWhileTrueStyles
                 : sentenceWhileFalseStyles;
             });

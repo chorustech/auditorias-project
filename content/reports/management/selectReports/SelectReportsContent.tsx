@@ -15,7 +15,7 @@ import { FilterReportsContent } from "@/content/reports/management/selectReports
 import { reportsColumns } from "@/content/reports/data/columns/reportsColumns";
 
 /* HOOKS */
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 
 /* ICONS */
 import { ArrowLeft } from "lucide-react";
@@ -59,48 +59,43 @@ export function SelectReportsContent() {
 
   useEffect(() => {
     const fetchReports = async () => {
-      if (!path) return;
+      if (!path || !filter) return;
       if (!isPointerArea(path)) return;
 
-    try {
-      setLoading(true);
+      try {
+        setLoading(true);
 
-      const response = await selectReports({
-        pointer: path,
-        query: {
+        const response = await getReportesAction(path, {
           page: filter.page,
           perPage: filter.perPage,
           order: filter.order,
           orderBy: filter.orderBy,
-          checkFilters: filter.checkFilters,
           filters: filter.filters,
-        },
-      });
+        });
 
-      if (response.ok) {
+        if (response.ok) {
           console.log("Respuesta de getReportesAction:", response);
-        setReports({
-          data: response.data,
-          count: response.count,
-        });
-      } else {
+          setReports({
+            data: response.data,
+            count: response.count,
+          });
+        } else {
           console.error("Error en getReportesAction:", response);
-        setAnnouncement({
-          isActivated: true,
-          isOk: false,
-          message: response.message,
-        });
+          setAnnouncement({
+            isActivated: true,
+            isOk: false,
+            message: response.message,
+          });
+        }
+      } catch (error) {
+        console.log("Hubo un error al obtener los reportes:", error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.log("Hubo un error al obtener los reportes:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [path, filter, setAnnouncement]);
+    };
 
-  useEffect(() => {
     fetchReports();
-  }, [fetchReports]);
+  }, [path, filter, setAnnouncement]);
 
   useEffect(() => {
     setFilter({
@@ -123,6 +118,28 @@ export function SelectReportsContent() {
     "baldwin-reserve-general",
   ];
 
+  const nextPage = () => {
+    if (filter) {
+      const newPage = filter.page + 1;
+      const totalPages = Math.ceil(reports.count / filter.perPage);
+      if (newPage < totalPages) {
+        setFilter({ ...filter, page: newPage });
+      }
+    }
+  };
+
+  const prevPage = () => {
+    if (filter) {
+      const newPage = filter.page - 1;
+      if (newPage >= 0) {
+        setFilter({ ...filter, page: newPage });
+      }
+    }
+  };
+
+  const hasNextPage =
+    filter && reports.count > (filter.page + 1) * filter.perPage;
+
   return (
     <SectionContainer>
       <DinamicTable
@@ -134,11 +151,8 @@ export function SelectReportsContent() {
         tbodyRows={reports.data.map(
           (report: ReporteAuditoriaConDetalles<Metadata>, index: number) => (
             <DinamicRow
-
               key={index}
-
               twBgColor={getTwBgColorTable({ index: index })}
-
             >
               {generalReportPaths.includes(path ?? "") ? (
                 <GeneralRowContent
@@ -202,7 +216,6 @@ export function SelectReportsContent() {
               order: filter?.order ?? "asc",
               orderBy: filter?.orderBy ?? "id",
               filters: filter?.filters ?? [],
-              checkFilters: filter?.checkFilters ?? false,
             }}
           />
         }

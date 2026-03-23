@@ -1,6 +1,6 @@
 "use client";
 
-import { UserType } from "@/temp/Users/Infrastructure/Types/userData";
+import { UserPrimitive } from "@/src/users";
 import { useRouter } from "next/navigation";
 import { Power, PowerOff, SquarePen, Trash2 } from "lucide-react";
 import { BouncingButton } from "@/components/shared/bouncingButton/BouncingButton";
@@ -13,7 +13,7 @@ export function UserRowContent({
   user,
   twBgColor,
 }: {
-  user: UserType;
+  user: UserPrimitive;
   twBgColor: string;
 }) {
   const router = useRouter();
@@ -26,20 +26,20 @@ export function UserRowContent({
           action={() =>
             setModal({
               isActivated: true,
-              title: user.estado === "ACTIVO" ? "Inactivar" : "Activar",
+              title: user.estado ? "Inactivar" : "Activar",
               body: <UpdateUserEstatusContent user={user} />,
             })
           }
           backgroundColorHover="#ffffff"
-          backgroundColor={`${user.estado === "ACTIVO" ? "#22c55e" : "#ef4444"}`}
+          backgroundColor={`${user.estado ? "#22c55e" : "#ef4444"}`}
           textColor="#ffffff"
-          textColorHover={`${user.estado === "ACTIVO" ? "#22c55e" : "#ef4444"}`}
+          textColorHover={`${user.estado ? "#22c55e" : "#ef4444"}`}
           border="2px solid #ffffff"
-          borderHover={`2px solid ${user.estado === "ACTIVO" ? "#22c55e" : "#ef4444"}`}
+          borderHover={`2px solid ${user.estado ? "#22c55e" : "#ef4444"}`}
           twClassName="p-2 rounded-full w-fit h-fit m-auto"
           disabled={false}
         >
-          {user.estado === "ACTIVO" ? (
+          {user.estado ? (
             <Power className="size-5" />
           ) : (
             <PowerOff className="size-5" />

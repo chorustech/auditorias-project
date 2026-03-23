@@ -13,20 +13,16 @@ import { Download, Loader } from "lucide-react";
 import * as XLSX from "xlsx-js-style";
 
 /* SERVER ACTION */
-import { selectReports } from "@/temp/Reports/Infrastructure/reportsController";
+import { getReportesAction } from "@/src/reporte-auditoria/infrastructure/actions/get-all";
 
 /* STORES */
 import { useDownloadStore } from "@/stores/download/downloadStore";
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
 
 /* TYPES */
-import { IQuery } from "@/temp/Shared/Domain/Interfaces/IQuery";
-import {
-  EolaReport,
-  GeneralReport,
-  NcrReport,
-  RacReport,
-} from "@/temp/Reports/Infrastructure/Types/selectReportsResponse";
+import { IQuery } from "@/src/shared/domain/Entities/Query";
+import { ReporteAuditoriaConDetalles } from "@/src/reporte-auditoria/domain";
+import { Metadata } from "@/src/reporte-auditoria/domain/entities";
 
 /* UTILS */
 import { PointerArea } from "@/utils/pointerArea";
@@ -41,7 +37,7 @@ export function DownloadReportsExcelButton({
   query,
 }: {
   pointer: PointerArea;
-  query: IQuery<GeneralReport & EolaReport & NcrReport & RacReport>;
+  query: IQuery<ReporteAuditoriaConDetalles<Metadata>>;
 }) {
   const { setAnnouncement } = useAnnouncement();
   const { downloading, start, finish, setProgress } = useDownloadStore();
@@ -96,7 +92,7 @@ export function DownloadReportsExcelButton({
       await new Promise((r) => setTimeout(r, 200));
       await animateProgressTo(99);
 
-      const result = await selectReports({ pointer, query });
+      const result = await getReportesAction(pointer, query);
 
       if (!result.ok) {
         finish();
