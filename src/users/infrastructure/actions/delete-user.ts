@@ -1,21 +1,32 @@
 "use server";
 
-import { UserRepositoryNeon } from "../adapters/user-repository-neon";
+import { db } from "@/db";
+import { UsuarioTable } from "@/db/schemas/usuario";
+import { eq } from "drizzle-orm";
 
-export async function deleteUserAction(id: number) {
+export async function deleteUserAction(userId: number) {
   try {
-    const repo = new UserRepositoryNeon();
-    await (repo as any).delete(id);
+    const deletedUser = await db
+      .delete(UsuarioTable)
+      .where(eq(UsuarioTable.id, userId))
+      .returning();
+
+    if (deletedUser.length === 0) {
+      return {
+        ok: false,
+        message: "El usuario no fue encontrado.",
+      };
+    }
 
     return {
       ok: true,
-      message: "Usuario eliminado correctamente",
+      message: "Usuario eliminado exitosamente.",
     };
   } catch (error) {
-    console.log(error);
+    console.error("Error deleting user:", error);
     return {
       ok: false,
-      message: "Ocurrió un error al eliminar el usuario",
+      message: "Ocurrió un error al eliminar el usuario.",
     };
   }
 }

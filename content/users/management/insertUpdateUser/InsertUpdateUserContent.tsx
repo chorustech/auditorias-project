@@ -6,6 +6,7 @@ import { BoxSkeleton } from "@/components/shared/boxSkeleton/BoxSkeleton";
 import { DinamicInputText } from "@/components/shared/form/dinamicInput/DinamicInputText";
 import { DinamicCombobox } from "@/components/shared/form/dinamicInput/DinamicCombobox";
 import { DinamicBouncingButton } from "@/components/shared/form/dinamicBouncingButton/DinamicBouncingButton";
+import { DinamicInputNumber } from "@/components/shared/form/dinamicInput/DinamicInputNumber";
 
 /* DATA */
 import {
@@ -27,7 +28,10 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 
 /* SERVER ACTIONS */
-import { selectUserById } from "@/temp/Users/Infrastructure/usersController";
+import { getUserByIdAction } from "@/src/users/infrastructure/actions/get-user-by-id";
+import { updateUserAction } from "@/src/users/infrastructure/actions/update-user";
+import { insertUser } from "@/src/users/actions/create-action";
+
 
 /* STORES */
 import { useAnnouncement } from "@/stores/announcement/announcementStore";
@@ -37,8 +41,7 @@ import { UserFormValues } from "@/content/users/types/forms/userFormValues";
 
 /* UTILS */
 import { getDate, getWeekNumber } from "@/utils/date";
-import { DinamicInputNumber } from "@/components/shared/form/dinamicInput/DinamicInputNumber";
-import { insertUser } from "@/src/users/actions/create-action";
+import { Roles } from "@/db/schemas/usuario";
 
 export function InsertUpdateUserContent({
   isUpdate,
@@ -55,91 +58,83 @@ export function InsertUpdateUserContent({
   const methods = useForm<UserFormValues>();
 
   useEffect(() => {
-    try {
-      const endLoading = () => {
-        setLoading(false);
-      };
-
+    const fetchUser = async () => {
       if (isUpdate) {
-        const fetchUser = async () => {
-          const response = await selectUserById(Number(id));
+        const response = await getUserByIdAction(Number(id));
 
-          if (response.ok) {
-            methods.reset({
-              id: response.user.id,
-              email: response.user.email,
-              nombre: response.user.nombre,
-              numEmpleado: response.user.numEmpleado,
-              rol: response.user.rol,
-              estado: response.user.estado,
-            });
-            endLoading();
-          } else {
-            setAnnouncement({
-              isActivated: true,
-              isOk: false,
-              message: response.message,
-            });
-
-            router.push(`/users/`);
-          }
-        };
-
-        fetchUser();
+        if (response.ok && response.data) {
+          methods.reset({
+            id: response.data.id,
+            email: response.data.email,
+            nombre: response.data.nombre,
+            numEmpleado: response.data.numEmpleado,
+            rol: response.data.rol,
+            estado: response.data.estado ? "Activo" : "Inactivo",
+          });
+        } else {
+          setAnnouncement({
+            isActivated: true,
+            isOk: false,
+            message: response.message,
+          });
+          router.push(`/users/`);
+        }
       } else {
         methods.reset({
           id: 0,
           email: "",
           nombre: "",
           numEmpleado: 0,
-          rol: "",
-          estado: "",
+          rol: "auditor",
+          estado: "Activo",
         });
-        endLoading();
       }
-    } catch (error) {
-      console.log("Error", error);
-    }
+      setLoading(false);
+    };
+
+    fetchUser();
   }, [id, isUpdate, methods, router, setAnnouncement]);
 
   const onSubmit = async (data: UserFormValues) => {
-    try {
-      setSaving(true);
+    setSaving(true);
+    let response;
 
+    if (isUpdate) {
+      const userDataToUpdate = {
+        email: data.email,
+        nombre: data.nombre,
+        numEmpleado: Number(data.numEmpleado),
+        rol: data.rol as Roles,
+        estado: data.estado === "Activo",
+      };
+      response = await updateUserAction(Number(id), userDataToUpdate);
+    } else {
       const formData = new FormData();
-
-      formData.append("id", data.id.toString());
       formData.append("email", data.email);
       formData.append("nombre", data.nombre);
       formData.append("numEmpleado", data.numEmpleado.toString());
-      formData.append("rol", data.rol);
-      formData.append("password", "12345678");
       formData.append("rol", data.rol.toLowerCase());
-      formData.append("estado", data.estado);
-
-      const response = await insertUser(formData);
-
-      if (response.ok) {
-        setAnnouncement({
-          isActivated: true,
-          isOk: true,
-          message: response.message,
-        });
-
-        if (!isUpdate) methods.reset();
-      } else {
-        console.log(response);
-        setAnnouncement({
-          isActivated: true,
-          isOk: false,
-          message: response.message,
-        });
-      }
-
-      setSaving(false);
-    } catch (error) {
-      console.log("Error", error);
+      formData.append("password", "12345678"); // Default password, consider changing this
+      formData.append("estado", data.estado === "Activo" ? "true" : "false");
+      response = await insertUser(formData);
     }
+
+    if (response.ok) {
+      setAnnouncement({
+        isActivated: true,
+        isOk: true,
+        message: response.message,
+      });
+      if (!isUpdate) methods.reset();
+    } else {
+      setAnnouncement({
+        isActivated: true,
+        isOk: false,
+        message: response.message,
+      });
+    }
+
+    setSaving(false);
   };
 
   return (
@@ -167,81 +162,40 @@ export function InsertUpdateUserContent({
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: "easeInOut" }}
             >
-              {/* NÚMERO DE EMPLEADO */}
               <DinamicInputNumber<UserFormValues>
                 name="numEmpleado"
-                label="nro. Empleado"
+                label="Nro. Empleado"
                 placeholder="Ingrese el número de empleado"
-                min={1}
-                max={99}
-                rules={{
-                  required: "El número de empleado es necesario",
-                }}
+                rules={{ required: "El número de empleado es necesario" }}
               />
-
               <div className="grid lg:grid-cols-2 gap-4 w-full h-fit grid-cols-1">
-                {/* NOMBRE */}
                 <DinamicInputText<UserFormValues>
                   name="nombre"
                   label="Nombre"
                   placeholder="Ingrese el nombre de empleado"
-                  rules={{
-                    required: "El nombre de empleado es necesario",
-                    minLength: {
-                      value: 2,
-                      message:
-                        "El nombre de empleado debe tener al menos 2 caracteres",
-                    },
-                    maxLength: {
-                      value: 50,
-                      message:
-                        "El nombre de empleado no puede tener más de 50 caracteres",
-                    },
-                  }}
+                  rules={{ required: "El nombre de empleado es necesario" }}
                 />
-
-                {/* CORREO */}
                 <DinamicInputText<UserFormValues>
                   name="email"
                   label="Correo"
                   placeholder="Ingrese el correo de empleado"
-                  rules={{
-                    required: "El correo de empleado es necesario",
-                    minLength: {
-                      value: 2,
-                      message:
-                        "El correo de empleado debe tener al menos 2 caracteres",
-                    },
-                    maxLength: {
-                      value: 50,
-                      message:
-                        "El correo de empleado no puede tener más de 50 caracteres",
-                    },
-                  }}
+                  rules={{ required: "El correo de empleado es necesario" }}
                 />
               </div>
-
               <div className="grid lg:grid-cols-2 gap-4 w-full h-fit grid-cols-1">
-                {/* ROL */}
                 <DinamicCombobox<UserFormValues>
                   name="rol"
                   label="Rol"
                   items={roles}
                   placeholder="Seleccionar rol"
-                  rules={{
-                    required: "El rol es necesario",
-                  }}
+                  rules={{ required: "El rol es necesario" }}
                 />
-
-                {/* ESTADO */}
                 <DinamicCombobox<UserFormValues>
                   name="estado"
                   label="Estado"
                   items={estados}
                   placeholder="Seleccionar estado"
-                  rules={{
-                    required: "El estado es necesario",
-                  }}
+                  rules={{ required: "El estado es necesario" }}
                 />
               </div>
             </motion.div>
@@ -259,7 +213,6 @@ export function InsertUpdateUserContent({
             >
               <div className="flex flex-col justify-between h-full">
                 <div></div>
-                {/* BOTÓN GUARDAR */}
                 <div className="w-full sticky bottom-0 py-4 bg-white">
                   <DinamicBouncingButton
                     action={
@@ -267,8 +220,8 @@ export function InsertUpdateUserContent({
                         ? () => {}
                         : methods.handleSubmit(onSubmit)
                     }
-                    disabled={saving || loading ? true : false}
-                    spin={saving || loading ? true : false}
+                    disabled={saving || loading}
+                    spin={saving || loading}
                     text="Guardar"
                     Icon={Save}
                   />
