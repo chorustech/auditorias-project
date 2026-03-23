@@ -1,13 +1,12 @@
+"use client";
 import { InsertUpdateGeneralReportContent } from "@/content/reports/management/insertUpdateReport/general/InsertUpdateGeneralReportContent";
-import { getSessionUser } from "@/src/shared/infrastructure/utils/get-session-user";
 
-export default async function DisplayAreaUpdatePage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-  const user = await getSessionUser();
+type Props = {
+  params: {
+    id: string;
+  };
+};
 
-  return <InsertUpdateGeneralReportContent isUpdate id={id} user={user} />;
+export default function DisplayAreaUpdatePage({ params: { id } }: Props) {
+  return <InsertUpdateGeneralReportContent isUpdate id={id} />;
 }
