@@ -6,9 +6,17 @@ import { Menu, LogOut, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { links } from "@/content/reports/data/links/links";
+import { UserPrimitive } from "@/src/users";
 
-export function Sidebar() {
+export function Sidebar({ user }: { user: UserPrimitive | null }) {
   const { expanded, toggleSidebar } = useSidebarStore();
+
+  const filteredLinks = links.filter((link) => {
+  if (link.href === "/users") {
+    return user?.rol === "administrador";
+  }
+  return true;
+});
 
   const pathname = usePathname();
 
@@ -45,7 +53,7 @@ export function Sidebar() {
           </div>
 
           <nav className="flex flex-col gap-2">
-            {links.map((link) => (
+            {filteredLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -81,8 +89,8 @@ export function Sidebar() {
             className={`flex items-center max-w-40 transition-all duration-300 gap-2 absolute ${expanded ? "right-4 opacity-100" : "lg:-right-64 right-4 lg:opacity-0 opacity-100 pointer-events-none"}`}
           >
             <div className="flex flex-col truncate">
-              <span className="font-semibold truncate">Pirita Dreemurr</span>
-              <span className="text-xs text-neutral-400 truncate">pirita@assaabloy.com</span>
+              <span className="font-semibold truncate">{user?.nombre}</span>
+              <span className="text-xs text-neutral-400 truncate">{user?.email}</span>
             </div>
             <Link
               href={"/"}

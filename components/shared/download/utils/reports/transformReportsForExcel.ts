@@ -35,8 +35,14 @@ export function transformReportsForExcel(
   if (reports.length > 0) {
     // Headers
     const first_report = reports[0];
+    console.log("TYPE:", first_report.type);
+    console.log("METADATA:", first_report.metadata);
 
-    if (first_report.type === "general") {
+    if (
+      first_report.type.startsWith("baldwin") ||
+      first_report.type === "display-area" ||
+      first_report.type === "pizza-tray"
+    ) {
       const report_type = first_report;
 
       switch (report_type.type) {
@@ -141,7 +147,11 @@ export function transformReportsForExcel(
     // Body
     reports.map((report) => {
       const final_report: string[] = [];
-      if (report.type === "general") {
+      if (
+        first_report.type.startsWith("baldwin") ||
+        first_report.type === "display-area" ||
+        first_report.type === "pizza-tray"
+      ) {
         // Compartidos
         final_report.push(report.id.toString());
         final_report.push(report.auditor);

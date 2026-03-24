@@ -17,6 +17,8 @@ export async function getReportesAction(
     const useCase = new obtenerReportes(repo, searchArea);
 
     const data = await useCase.execute(slug, query);
+
+    console.log("Reportes obtenidos:", data);
     return {
       data: data,
       count: data.length,

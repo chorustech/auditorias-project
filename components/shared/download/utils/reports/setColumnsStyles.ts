@@ -173,7 +173,11 @@ function setColumnsStylesLoop(
         index % 2 === 0 ? rowEvenStyles : rowOddStyles;
     });
 
-    if (report.type === "general") {
+    if (
+      report.type.startsWith("baldwin") ||
+      report.type === "display-area" ||
+      report.type === "pizza-tray"
+    ) {
       if (report.respuestas.length === sentencesCount) {
         if (columnsIdObject.sections) {
           let count = -1;

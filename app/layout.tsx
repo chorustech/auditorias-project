@@ -1,4 +1,3 @@
-import NextAuthProvider from "@/components/providers/NextAuthProvider";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
@@ -22,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className={`${poppins.className} antialiased`}>
-        <NextAuthProvider>{children}</NextAuthProvider>
+        {children}
       </body>
     </html>
   );

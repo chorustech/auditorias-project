@@ -3,6 +3,8 @@ export type UserFormValues = {
   numEmpleado: number;
   nombre: string;
   email: string;
+  password: string;
+  password_confirm: string;
   rol: string;
   estado: string
 };

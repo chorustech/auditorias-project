@@ -70,6 +70,8 @@ export function InsertUpdateUserContent({
             numEmpleado: response.data.numEmpleado,
             rol: response.data.rol,
             estado: response.data.estado ? "Activo" : "Inactivo",
+            password: "",
+            password_confirm: "",
           });
         } else {
           setAnnouncement({
@@ -87,6 +89,8 @@ export function InsertUpdateUserContent({
           numEmpleado: 0,
           rol: "auditor",
           estado: "Activo",
+          password: "",
+          password_confirm: "",
         });
       }
       setLoading(false);
@@ -106,15 +110,27 @@ export function InsertUpdateUserContent({
         numEmpleado: Number(data.numEmpleado),
         rol: data.rol as Roles,
         estado: data.estado === "Activo",
+        password: data.password,
       };
       response = await updateUserAction(Number(id), userDataToUpdate);
     } else {
       const formData = new FormData();
+
+      if (data.password !== data.password_confirm) {
+        setAnnouncement({
+          isActivated: true,
+          isOk: false,
+          message: "Las contraseñas no coinciden",
+        });
+        setSaving(false);
+        return;
+      }
+
       formData.append("email", data.email);
       formData.append("nombre", data.nombre);
       formData.append("numEmpleado", data.numEmpleado.toString());
       formData.append("rol", data.rol.toLowerCase());
-      formData.append("password", "12345678"); // Default password, consider changing this
+      formData.append("password", data.password);
       formData.append("estado", data.estado === "Activo" ? "true" : "false");
       response = await insertUser(formData);
     }
@@ -198,6 +214,22 @@ export function InsertUpdateUserContent({
                   rules={{ required: "El estado es necesario" }}
                 />
               </div>
+              <div className="grid lg:grid-cols-2 gap-4 w-full h-fit grid-cols-1">
+                <DinamicInputText<UserFormValues>
+                  name="password"
+                  type="password"
+                  label="Contraseña"
+                  placeholder="Ingrese la contraseña"
+                  rules={{ required: "La contraseña es necesaria" }}
+                />
+                                <DinamicInputText<UserFormValues>
+                  name="password_confirm"
+                  type="password"
+                  label="Confirmar Contraseña"
+                  placeholder="Ingrese la contraseña nuevamente"
+                  rules={{ required: "La confirmación de la contraseña es necesaria" }}
+                />
+              </div>
             </motion.div>
           )
         }
@@ -217,7 +249,7 @@ export function InsertUpdateUserContent({
                   <DinamicBouncingButton
                     action={
                       saving || loading
-                        ? () => {}
+                        ? () => { }
                         : methods.handleSubmit(onSubmit)
                     }
                     disabled={saving || loading}
