@@ -41,12 +41,13 @@ import { Metadata } from "@/src/reporte-auditoria/domain/entities";
 import { isPointerArea } from "@/utils/pointerArea";
 import { getTwBgColorTable } from "@/utils/getTwBgColorTable";
 import { DownloadReportsExcelButton } from "@/components/shared/download/ExcelDownloadReportsButton";
+import { PointerArea } from "@/utils/pointerArea";
 
 export function SelectReportsContent() {
   const router = useRouter();
   const pathname = usePathname();
   const rawPath = pathname.split("/").at(-1);
-  const path = rawPath ?? null;
+  const path = (rawPath ?? "baldwin-state") as PointerArea;
 
   const { setAnnouncement } = useAnnouncement();
   const { setModal } = useModal();
@@ -133,7 +134,7 @@ export function SelectReportsContent() {
     filter && reports.count > (filter.page + 1) * filter.perPage;
   const totalPages = filter ? Math.ceil(reports.count / filter.perPage) : 1;
 
-  const resolvePointer = () => {
+  const resolvePointer = (): PointerArea => {
     const validPaths = [
       "baldwin-state",
       "baldwin-reserve-packing",
@@ -146,7 +147,7 @@ export function SelectReportsContent() {
       "rac",
       "ncr",
     ];
-    return path && validPaths.includes(path) ? path : "baldwin-reserve-general";
+    return path && validPaths.includes(path) ? path : "baldwin-state";
   };
 
   return (
