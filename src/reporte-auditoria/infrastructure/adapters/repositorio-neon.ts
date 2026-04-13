@@ -1,9 +1,5 @@
 import { ReporteAuditoriaRepositorio } from "@/src/reporte-auditoria/domain/repository";
-import {
-  ReporteAuditoria,
-  ReporteAuditoriaConDetalles,
-  ReporteAuditoriaPrimitivo,
-} from "../../domain";
+import { ReporteAuditoria, ReporteAuditoriaConDetalles } from "../../domain";
 import { db } from "@/db";
 import { ReporteAuditoriaTable } from "@/db/schemas/reporte-auditoria";
 import {
@@ -84,7 +80,7 @@ export class ReporteAuditoriaNeon<
         comentarios: ReporteAuditoriaTable.comentarios,
         es_negativo: ReporteAuditoriaTable.es_negativo,
         metadata: ReporteAuditoriaTable.metadata,
-
+        archivo_url: ReporteAuditoriaTable.archivo_url,
         auditor: UsuarioTable.nombre,
         tipo_auditoria: AreaTable.slug,
         type: AreaTable.slug as any,
@@ -218,6 +214,7 @@ export class ReporteAuditoriaNeon<
         es_negativo: ReporteAuditoriaTable.es_negativo,
         metadata: ReporteAuditoriaTable.metadata,
         tipo_auditoria: AreaTable.slug,
+        archivo_url: ReporteAuditoriaTable.archivo_url
         type: AreaTable.slug as any,
       })
       .from(ReporteAuditoriaTable)

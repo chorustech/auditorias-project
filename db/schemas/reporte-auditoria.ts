@@ -23,5 +23,6 @@ export const ReporteAuditoriaTable = pgTable("reporte_auditoria", {
   respuestas: boolean().array().notNull(),
   comentarios: varchar(),
   es_negativo: boolean().notNull(),
-  metadata:  json().$type<Metadata>().notNull()
+  metadata: json().$type<Metadata>().notNull(),
+  archivo_url: varchar(),
 });

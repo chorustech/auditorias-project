@@ -10,6 +10,7 @@ export interface ReporteAuditoriaPrimitivo<M extends Metadata> {
   comentarios: string | null;
   es_negativo: boolean;
   metadata: M;
+  archivo_url: string | null;
 }
 
 export interface ReporteAuditoriaConDetalles<
@@ -41,6 +42,7 @@ export class ReporteAuditoria<M extends Metadata> {
   comentarios: string | null;
   es_negativo: boolean;
   metadata: M;
+  archivo_url: string | null;
 
   private constructor(
     id: number,
@@ -52,6 +54,7 @@ export class ReporteAuditoria<M extends Metadata> {
     esNegativo: boolean,
     metadata: M,
     comentarios: string | null,
+    archivo_url: string | null, // ✅ nuevo
   ) {
     this.id = id;
     this.area_id = area_id;
@@ -62,6 +65,7 @@ export class ReporteAuditoria<M extends Metadata> {
     this.comentarios = comentarios ?? null;
     this.es_negativo = esNegativo;
     this.metadata = metadata;
+    this.archivo_url = archivo_url;
   }
 
   static create<M extends Metadata>(
@@ -71,9 +75,9 @@ export class ReporteAuditoria<M extends Metadata> {
     respuestas: boolean[],
     metadata: M,
     comentarios: string | null,
+    archivo_url: string | null, // ✅ nuevo
   ) {
     const esNegativo = ReporteAuditoria.esNegativo(respuestas);
-
     return new ReporteAuditoria<M>(
       0,
       area_id,
@@ -84,6 +88,7 @@ export class ReporteAuditoria<M extends Metadata> {
       esNegativo,
       metadata,
       comentarios,
+      archivo_url,
     );
   }
 
@@ -103,6 +108,7 @@ export class ReporteAuditoria<M extends Metadata> {
       comentarios: this.comentarios,
       es_negativo: this.es_negativo,
       metadata: this.metadata,
+      archivo_url: this.archivo_url,
     };
   }
 }
