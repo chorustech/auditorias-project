@@ -22,8 +22,9 @@ export class obtenerReportes<M extends Metadata> {
       throw new Error(`El Area no fue encontrada con el slug: ${slug}`);
 
     const reportes = await this.reportesRepo.getAll(area, query);
+    const count = await this.reportesRepo.count(area, query);
     console.log("Reportes obtenidos:", reportes.length);
 
-    return reportes;
+    return { reportes, count };
   }
 }

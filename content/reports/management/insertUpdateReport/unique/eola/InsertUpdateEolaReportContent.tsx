@@ -42,6 +42,15 @@ import { EolaFormValues } from "@/content/reports/types/forms/eolaFormValues";
 /* UTILS */
 import { getDate, getWeekNumber } from "@/utils/date";
 
+import { getAllAreas } from "@/src/area/infrastructure/actions/get-all-areas";
+
+type Area = {
+  id: number;
+  nombre: string;
+  slug: string;
+  encargado_email: string;
+};
+
 export function InsertUpdateEolaReportContent({
   isUpdate,
   id,
@@ -53,6 +62,7 @@ export function InsertUpdateEolaReportContent({
   const { setAnnouncement } = useAnnouncement();
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [areas, setAreas] = useState<Area[]>([]);
 
   const methods = useForm<EolaFormValues>({ defaultValues: { tipo: "" } });
   const isEola = useWatch({
@@ -69,9 +79,21 @@ export function InsertUpdateEolaReportContent({
   };
 
   useEffect(() => {
-    const fetchReport = async () => {
+    const fetchInitialData = async () => {
+      setLoading(true);
+
+      const areasResponse = await getAllAreas();
+      if (areasResponse.ok) {
+        setAreas(areasResponse.data);
+      } else {
+        setAnnouncement({
+          isActivated: true,
+          isOk: false,
+          message: "Error al cargar las áreas. Inténtalo de nuevo.",
+        });
+      }
+
       if (isUpdate) {
-        setLoading(true);
         const response = await getReporteByIdAction(Number(id));
 
         if (response.ok && response.data) {
@@ -101,7 +123,6 @@ export function InsertUpdateEolaReportContent({
           });
           router.push(`/reports/`);
         }
-        setLoading(false);
       } else {
         methods.reset({
           id: 0,
@@ -117,20 +138,25 @@ export function InsertUpdateEolaReportContent({
           uniNegocio: "",
           upc: "",
         });
-        setLoading(false);
       }
+      setLoading(false);
     };
 
-    fetchReport();
+    fetchInitialData();
   }, [id, isUpdate, methods, router, setAnnouncement]);
+
 
   const onSubmit = async (data: EolaFormValues) => {
     setSaving(true);
+
+    const area = areas.find((a) => a.slug === 'eola');
+    const area_id = area ? area.id : 0;
 
     const reportData = {
       slug: 'eola',
       data: {
         auditor_id: data.usuario_id,
+        area_id,
         semana: Number(getWeekNumber()), // Ensure semana is a number
         respuestas: [],
         comentarios: data.comentarios,
@@ -153,6 +179,7 @@ export function InsertUpdateEolaReportContent({
       : await guardarReporteAction({
           ...reportData,
           slug: 'eola',
+          area_id,
           auditor_id: data.usuario_id,
           semana: getWeekNumber().toString(),
           respuestas: [], // Changed to an empty array

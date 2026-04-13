@@ -34,6 +34,15 @@ import { NcrFormValues } from "@/content/reports/types/forms/ncrFormValues";
 /* UTILS */
 import { getDate, getWeekNumber } from "@/utils/date";
 
+import { getAllAreas } from "@/src/area/infrastructure/actions/get-all-areas";
+
+type Area = {
+  id: number;
+  nombre: string;
+  slug: string;
+  encargado_email: string;
+};
+
 export function InsertUpdateNcrReportContent({
   isUpdate,
   id,
@@ -45,6 +54,7 @@ export function InsertUpdateNcrReportContent({
   const { setAnnouncement } = useAnnouncement();
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [areas, setAreas] = useState<Area[]>([]);
 
   const methods = useForm<NcrFormValues>();
 
@@ -56,9 +66,21 @@ export function InsertUpdateNcrReportContent({
   };
 
   useEffect(() => {
-    const fetchReport = async () => {
+    const fetchInitialData = async () => {
+      setLoading(true);
+
+      const areasResponse = await getAllAreas();
+      if (areasResponse.ok) {
+        setAreas(areasResponse.data);
+      } else {
+        setAnnouncement({
+          isActivated: true,
+          isOk: false,
+          message: "Error al cargar las áreas. Inténtalo de nuevo.",
+        });
+      }
+
       if (isUpdate) {
-        setLoading(true);
         const response = await getReporteByIdAction(Number(id));
 
         if (response.ok && response.data) {
@@ -81,7 +103,6 @@ export function InsertUpdateNcrReportContent({
           });
           router.push(`/reports/`);
         }
-        setLoading(false);
       } else {
         methods.reset({
           id: 0,
@@ -91,20 +112,25 @@ export function InsertUpdateNcrReportContent({
           defecto: "",
           usuario_id: usuario_temp.id,
         });
-        setLoading(false);
       }
+      setLoading(false);
     };
 
-    fetchReport();
+    fetchInitialData();
   }, [id, isUpdate, methods, router, setAnnouncement]);
+
 
   const onSubmit = async (data: NcrFormValues) => {
     setSaving(true);
+
+    const area = areas.find((a) => a.slug === 'ncr');
+    const area_id = area ? area.id : 0;
 
     const reportData = {
       slug: 'ncr',
       data: {
         auditor_id: data.usuario_id,
+        area_id,
         semana: Number(getWeekNumber()),
         respuestas: [],
         comentarios: '',
@@ -122,6 +148,7 @@ export function InsertUpdateNcrReportContent({
       : await guardarReporteAction({
           ...reportData,
           slug: 'ncr',
+          area_id,
           auditor_id: data.usuario_id,
           semana: getWeekNumber().toString(),
           respuestas: [],

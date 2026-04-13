@@ -4,12 +4,28 @@ import { motion } from "framer-motion";
 import { ReportCard } from "./ReportCard";
 import Link from "next/link";
 import { links } from "@/content/reports/data/links/links";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
 
 export function ReportCardList() {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredLinks = links[1].subLinks.filter((link) =>
+    link.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="w-full max-h-full overflow-y-auto scrollbar-custom">
+      <div className="p-4">
+        <Input
+          type="text"
+          placeholder="Buscar reportes..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
       <div className="grid grid-cols-1 p-4 gap-6 overflow-hidden md:grid-cols-3 lg:grid-cols-5">
-        {links[1].subLinks.map((info, index) => (
+        {filteredLinks.map((info, index) => (
           <motion.div
             key={index}
             initial={{ opacity: 0, y: -10 }}

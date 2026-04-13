@@ -162,23 +162,38 @@ export function InsertUpdateGeneralReportContent({
             respuestas: report.respuestas,
           };
 
-          if (metadata && typeof metadata === 'object') {
-            if ("nivel" in metadata) resetData.nivel = Number((metadata as any).nivel);
-            if ("ubicacion" in metadata) resetData.ubicacion = (metadata as any).ubicacion;
-            if ("coordinador" in metadata) resetData.coord = (metadata as any).coordinador;
+          if (metadata && typeof metadata === "object") {
+            if ("nivel" in metadata)
+              resetData.nivel = Number((metadata as any).nivel);
+            if ("ubicacion" in metadata)
+              resetData.ubicacion = (metadata as any).ubicacion;
+            if ("coordinador" in metadata)
+              resetData.coord = (metadata as any).coordinador;
             if ("linea" in metadata) resetData.linea = (metadata as any).linea;
-            if ("picker" in metadata) resetData.picker = (metadata as any).picker;
-            if ("worktable" in metadata) resetData.worktable = (metadata as any).worktable;
+            if ("picker" in metadata)
+              resetData.picker = (metadata as any).picker;
+            if ("worktable" in metadata)
+              resetData.worktable = (metadata as any).worktable;
           }
           methods.reset(resetData);
         } else {
-          setAnnouncement({ isActivated: true, isOk: false, message: response.message });
+          setAnnouncement({
+            isActivated: true,
+            isOk: false,
+            message: response.message,
+          });
           router.push(`/reports/`);
         }
       } else {
         methods.reset({
-          linea: "", coord: "", picker: "", ubicacion: "", worktable: "",
-          nivel: 1, comentarios: "", respuestas: [],
+          linea: "",
+          coord: "",
+          picker: "",
+          ubicacion: "",
+          worktable: "",
+          nivel: 1,
+          comentarios: "",
+          respuestas: [],
         });
       }
       setLoading(false);
@@ -191,26 +206,80 @@ export function InsertUpdateGeneralReportContent({
     setSaving(true);
     try {
       if (!user || !path) {
-        setAnnouncement({ isActivated: true, isOk: false, message: "Error de sesión. Por favor, vuelve a iniciar sesión." });
+        setAnnouncement({
+          isActivated: true,
+          isOk: false,
+          message: "Error de sesión. Por favor, vuelve a iniciar sesión.",
+        });
         setSaving(false);
         return;
       }
 
       let response;
       if (isUpdate) {
-        // ... update logic
+        const area = areas.find((a) => a.slug === path);
+        const area_id = area ? area.id : 0;
+        let metadata: any = {};
+        switch (path) {
+          case "pizza-tray":
+            metadata = { nivel: data.nivel, ubicacion: data.ubicacion };
+            break;
+          case "baldwin-state":
+            metadata = { coordinador: data.coord, linea: data.linea };
+            break;
+          case "baldwin-reserve-supply":
+            metadata = { picker: data.picker };
+            break;
+          case "display-area":
+            metadata = { worktable: data.worktable };
+            break;
+          case "baldwin-reserve-stacking":
+          case "baldwin-reserve-packing":
+          case "baldwin-reserve-general":
+            metadata = { linea: data.linea };
+            break;
+        }
+
+        const reportData = {
+          metadata,
+          data: {
+            auditor_id: user.id,
+            area_id,
+            respuestas: data.respuestas,
+            semana: Number(getWeekNumber()),
+            comentarios: data.comentarios,
+          },
+        };
+
+        response = await updateReporteAction(
+          Number(id),
+          reportData as any,
+          path,
+        );
       } else {
         response = await createReport(data, user, path, areas);
       }
 
       if (response && response.ok) {
-        setAnnouncement({ isActivated: true, isOk: true, message: response.message });
+        setAnnouncement({
+          isActivated: true,
+          isOk: true,
+          message: response.message,
+        });
         if (!isUpdate) methods.reset();
       } else if (response) {
-        setAnnouncement({ isActivated: true, isOk: false, message: response.message });
+        setAnnouncement({
+          isActivated: true,
+          isOk: false,
+          message: response.message,
+        });
       }
     } catch (error) {
-      setAnnouncement({ isActivated: true, isOk: false, message: "Ocurrió un error inesperado. Inténtalo de nuevo." });
+      setAnnouncement({
+        isActivated: true,
+        isOk: false,
+        message: "Ocurrió un error inesperado. Inténtalo de nuevo.",
+      });
     } finally {
       setSaving(false);
     }
@@ -411,7 +480,7 @@ export function InsertUpdateGeneralReportContent({
                   </div>
                 </div>
 
-                 <div className="w-full sticky bottom-0 py-4 bg-white">
+                <div className="w-full sticky bottom-0 py-4 bg-white">
                   <DinamicBouncingButton
                     action={
                       saving || loading

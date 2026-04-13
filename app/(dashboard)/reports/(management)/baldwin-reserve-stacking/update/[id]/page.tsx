@@ -1,12 +1,10 @@
-"use client";
 import { InsertUpdateGeneralReportContent } from "@/content/reports/management/insertUpdateReport/general/InsertUpdateGeneralReportContent";
 
-type Props = {
-  params: {
-    id: string;
-  };
-};
-
-export default function BaldwinReserveStackingUpdatePage({ params: { id } }: Props) {
+export default async function BaldwinReserveStackingUpdatePage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
   return <InsertUpdateGeneralReportContent isUpdate id={id} />;
 }

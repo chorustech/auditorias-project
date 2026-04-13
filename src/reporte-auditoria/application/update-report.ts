@@ -10,7 +10,7 @@ export class UpdateReporte<M extends Metadata> {
     // 1. Crear la entidad de dominio
     // Nota: El auditor_id no se puede actualizar aquí, se asume que es el mismo.
     const reporte = ReporteAuditoria.create(
-      0, // area_id no es necesario para la actualización
+      data.area_id,
       data.auditor_id,
       data.semana,
       data.respuestas,

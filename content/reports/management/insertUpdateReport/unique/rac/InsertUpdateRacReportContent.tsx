@@ -45,6 +45,15 @@ import { RacFormValues } from "@/content/reports/types/forms/racFormValues";
 /* UTILS */
 import { getDate, getWeekNumber } from "@/utils/date";
 
+import { getAllAreas } from "@/src/area/infrastructure/actions/get-all-areas";
+
+type Area = {
+  id: number;
+  nombre: string;
+  slug: string;
+  encargado_email: string;
+};
+
 export function InsertUpdateRacReportContent({
   isUpdate,
   id,
@@ -56,6 +65,7 @@ export function InsertUpdateRacReportContent({
   const { setAnnouncement } = useAnnouncement();
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [areas, setAreasState] = useState<Area[]>([]);
 
   const methods = useForm<RacFormValues>();
 
@@ -67,9 +77,21 @@ export function InsertUpdateRacReportContent({
   };
 
   useEffect(() => {
-    const fetchReport = async () => {
+    const fetchInitialData = async () => {
+      setLoading(true);
+
+      const areasResponse = await getAllAreas();
+      if (areasResponse.ok) {
+        setAreasState(areasResponse.data);
+      } else {
+        setAnnouncement({
+          isActivated: true,
+          isOk: false,
+          message: "Error al cargar las áreas. Inténtalo de nuevo.",
+        });
+      }
+
       if (isUpdate) {
-        setLoading(true);
         const response = await getReporteByIdAction(Number(id));
 
         if (response.ok && response.data) {
@@ -98,7 +120,6 @@ export function InsertUpdateRacReportContent({
           });
           router.push(`/reports/`);
         }
-        setLoading(false);
       } else {
         methods.reset({
           id: 0,
@@ -114,20 +135,25 @@ export function InsertUpdateRacReportContent({
           sizeLote: 0,
           usuario_id: usuario_temp.id,
         });
-        setLoading(false);
       }
+      setLoading(false);
     };
 
-    fetchReport();
+    fetchInitialData();
   }, [id, isUpdate, methods, router, setAnnouncement]);
+
 
   const onSubmit = async (data: RacFormValues) => {
     setSaving(true);
+
+    const area = areas.find((a) => a.slug === 'rac');
+    const area_id = area ? area.id : 0;
 
     const reportData = {
       slug: 'rac',
       data: {
         auditor_id: data.usuario_id,
+        area_id,
         semana: Number(getWeekNumber()),
         respuestas: [],
         comentarios: '',
@@ -151,6 +177,7 @@ export function InsertUpdateRacReportContent({
       : await guardarReporteAction({
           ...reportData,
           slug: 'rac',
+          area_id,
           auditor_id: data.usuario_id,
           semana: getWeekNumber().toString(),
           respuestas: [],
@@ -317,15 +344,15 @@ export function InsertUpdateRacReportContent({
                 />
 
                 {/* ÁREA */}
-                <DinamicCombobox<RacFormValues>
-                  name="area"
-                  label="Área"
-                  items={areas}
-                  placeholder="Seleccionar un área"
-                  rules={{
-                    required: "El área es necesaria",
-                  }}
-                />
+                  <DinamicCombobox<RacFormValues>
+                    name="area"
+                    label="Área"
+                    items={areas.map(area => area.nombre)}
+                    placeholder="Seleccionar un área"
+                    rules={{
+                      required: "El área es necesaria",
+                    }}
+                  />
               </div>
 
               {/* PORCENTAJE DE FALLA */}

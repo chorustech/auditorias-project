@@ -10,6 +10,7 @@ import { EolaRowContent } from "@/content/reports/management/selectReports/rowCo
 import { NcrRowContent } from "@/content/reports/management/selectReports/rowContent/NcrRowContent";
 import { RacRowContent } from "@/content/reports/management/selectReports/rowContent/RacRowContent";
 import { FilterReportsContent } from "@/content/reports/management/selectReports/filterReports/FilterReportsContent";
+import { Input } from "@/components/ui/input";
 
 /* DATA */
 import { reportsColumns } from "@/content/reports/data/columns/reportsColumns";
@@ -56,6 +57,16 @@ export function SelectReportsContent() {
     count: number;
   }>({ data: [], count: 0 });
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
+
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
+
+    return () => clearTimeout(timerId);
+  }, [searchTerm]);
 
   useEffect(() => {
     const fetchReports = async () => {
@@ -65,22 +76,27 @@ export function SelectReportsContent() {
       try {
         setLoading(true);
 
+        const currentFilters =
+          filter.filters?.filter((f) => f.field !== "auditor") ?? [];
+        if (debouncedSearchTerm) {
+          currentFilters.push({
+            field: "auditor",
+            operator: "=",
+            value: debouncedSearchTerm,
+          });
+        }
+
         const response = await getReportesAction(path, {
           page: filter.page,
           perPage: filter.perPage,
           order: filter.order,
           orderBy: filter.orderBy,
-          filters: filter.filters,
+          filters: currentFilters,
         });
 
         if (response.ok) {
-          console.log("Respuesta de getReportesAction:", response);
-          setReports({
-            data: response.data,
-            count: response.count,
-          });
+          setReports({ data: response.data, count: response.count });
         } else {
-          console.error("Error en getReportesAction:", response);
           setAnnouncement({
             isActivated: true,
             isOk: false,
@@ -95,28 +111,7 @@ export function SelectReportsContent() {
     };
 
     fetchReports();
-  }, [path, filter, setAnnouncement]);
-
-  useEffect(() => {
-    setFilter({
-      page: 0,
-      perPage: 10,
-      order: "asc",
-      orderBy: "id",
-      checkFilters: false,
-      filters: [],
-    });
-  }, [setFilter]);
-
-  const generalReportPaths = [
-    "pizza-tray",
-    "baldwin-state",
-    "baldwin-reserve-supply",
-    "display-area",
-    "baldwin-reserve-stacking",
-    "baldwin-reserve-packing",
-    "baldwin-reserve-general",
-  ];
+  }, [path, filter, debouncedSearchTerm, setAnnouncement]);
 
   const nextPage = () => {
     if (filter) {
@@ -129,19 +124,41 @@ export function SelectReportsContent() {
   };
 
   const prevPage = () => {
-    if (filter) {
-      const newPage = filter.page - 1;
-      if (newPage >= 0) {
-        setFilter({ ...filter, page: newPage });
-      }
+    if (filter && filter.page > 0) {
+      setFilter({ ...filter, page: filter.page - 1 });
     }
   };
 
   const hasNextPage =
     filter && reports.count > (filter.page + 1) * filter.perPage;
+  const totalPages = filter ? Math.ceil(reports.count / filter.perPage) : 1;
+
+  const resolvePointer = () => {
+    const validPaths = [
+      "baldwin-state",
+      "baldwin-reserve-packing",
+      "baldwin-reserve-stacking",
+      "baldwin-reserve-general",
+      "baldwin-reserve-supply",
+      "eola",
+      "display-area",
+      "pizza-tray",
+      "rac",
+      "ncr",
+    ];
+    return path && validPaths.includes(path) ? path : "baldwin-reserve-general";
+  };
 
   return (
     <SectionContainer>
+      <div className="p-4 w-full md:w-1/3">
+        <Input
+          type="text"
+          placeholder="Buscar por auditor..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
       <DinamicTable
         theadColumns={reportsColumns[path ?? ""].map(
           (column: string, index: number) => (
@@ -150,29 +167,26 @@ export function SelectReportsContent() {
         )}
         tbodyRows={reports.data.map(
           (report: ReporteAuditoriaConDetalles<Metadata>, index: number) => (
-            <DinamicRow
-              key={index}
-              twBgColor={getTwBgColorTable({ index: index })}
-            >
+            <DinamicRow key={index} twBgColor={getTwBgColorTable({ index })}>
               {generalReportPaths.includes(path ?? "") ? (
                 <GeneralRowContent
                   report={report}
-                  twBgColor={`${getTwBgColorTable({ index: index })}`}
+                  twBgColor={getTwBgColorTable({ index })}
                 />
               ) : path === "eola" ? (
                 <EolaRowContent
                   report={report}
-                  twBgColor={`${getTwBgColorTable({ index: index })}`}
+                  twBgColor={getTwBgColorTable({ index })}
                 />
               ) : path === "ncr" ? (
                 <NcrRowContent
                   report={report}
-                  twBgColor={`${getTwBgColorTable({ index: index })}`}
+                  twBgColor={getTwBgColorTable({ index })}
                 />
               ) : path === "rac" ? (
                 <RacRowContent
                   report={report}
-                  twBgColor={`${getTwBgColorTable({ index: index })}`}
+                  twBgColor={getTwBgColorTable({ index })}
                 />
               ) : (
                 <></>
@@ -194,22 +208,7 @@ export function SelectReportsContent() {
         addAction={() => router.push(`/reports/${path}/add`)}
         excelButtonContent={
           <DownloadReportsExcelButton
-            pointer={
-              path !== null
-                ? path === "baldwin-state" ||
-                  path === "baldwin-reserve-packing" ||
-                  path === "baldwin-reserve-stacking" ||
-                  path === "baldwin-reserve-general" ||
-                  path === "baldwin-reserve-supply" ||
-                  path === "eola" ||
-                  path === "display-area" ||
-                  path === "pizza-tray" ||
-                  path === "rac" ||
-                  path === "ncr"
-                  ? path
-                  : "baldwin-reserve-general"
-                : "baldwin-reserve-general"
-            }
+            pointer={resolvePointer()}
             query={{
               page: 0,
               perPage: reports.count,
@@ -220,17 +219,23 @@ export function SelectReportsContent() {
           />
         }
         backContent={<ArrowLeft className="size-5" />}
-        goNext={!hasNextPage}
-        goBack={filter?.page === 0 ? false : true}
+        goBack={filter?.page !== 0} // true = HAY página anterior = habilitar
+        goNext={!!hasNextPage} // true = HAY siguiente = habilitar
         goNextAction={nextPage}
         goBackAction={prevPage}
         pageFirstHalf={(filter?.page ?? 0) + 1}
-        pageSecondHalf={
-          Math.ceil(reports.count ?? 0) / (filter?.perPage ?? 1) === 0
-            ? "1"
-            : Math.ceil((reports.count ?? 0) / (filter?.perPage ?? 1))
-        }
+        pageSecondHalf={totalPages > 0 ? totalPages : 1}
       />
     </SectionContainer>
   );
 }
+
+const generalReportPaths = [
+  "pizza-tray",
+  "baldwin-state",
+  "baldwin-reserve-supply",
+  "display-area",
+  "baldwin-reserve-stacking",
+  "baldwin-reserve-packing",
+  "baldwin-reserve-general",
+];

@@ -10,6 +10,7 @@ import {
   and,
   AnyColumn,
   asc,
+  count,
   desc,
   eq,
   gt,
@@ -94,6 +95,51 @@ export class ReporteAuditoriaNeon<
       .offset(offset);
   }
 
+  async count(
+    area: number,
+    query: IQuery<ReporteAuditoriaConDetalles<Metadata>>,
+  ): Promise<number> {
+    const columnMap: Record<string, AnyColumn> = {
+      id: ReporteAuditoriaTable.id,
+      area_id: ReporteAuditoriaTable.area_id,
+      auditor_id: ReporteAuditoriaTable.auditor_id,
+      timestamp: ReporteAuditoriaTable.timestamp,
+      semana: ReporteAuditoriaTable.semana,
+      auditor: UsuarioTable.nombre,
+      tipo_auditoria: AreaTable.slug,
+    };
+
+    const filterConditions = query.filters.map(({ field, operator, value }) => {
+      const col = columnMap[field as string];
+      switch (operator) {
+        case "=":
+          return eq(col, value);
+        case "!=":
+          return ne(col, value);
+        case "<":
+          return lt(col, value);
+        case "<=":
+          return lte(col, value);
+        case ">":
+          return gt(col, value);
+        case ">=":
+          return gte(col, value);
+      }
+    });
+
+    const result = await this._db
+      .select({ count: count() }) // count() de drizzle-orm
+      .from(ReporteAuditoriaTable)
+      .innerJoin(AreaTable, eq(ReporteAuditoriaTable.area_id, AreaTable.id))
+      .innerJoin(
+        UsuarioTable,
+        eq(ReporteAuditoriaTable.auditor_id, UsuarioTable.id),
+      )
+      .where(and(eq(ReporteAuditoriaTable.area_id, area), ...filterConditions));
+
+    return result[0]?.count ?? 0;
+  }
+
   async save(reporte: ReporteAuditoria<M>): Promise<void> {
     const primitivo = reporte.toPrimitive();
     console.log("Guardando reporte con metadata:", primitivo.metadata);
@@ -120,6 +166,8 @@ export class ReporteAuditoriaNeon<
         comentarios: primitivo.comentarios,
         es_negativo: primitivo.es_negativo,
         metadata: primitivo.metadata,
+        auditor_id: primitivo.auditor_id,
+        area_id: primitivo.area_id,
       })
       .where(eq(ReporteAuditoriaTable.id, id));
   }

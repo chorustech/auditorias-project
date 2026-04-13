@@ -7,6 +7,7 @@ import { revalidatePath } from 'next/cache';
 
 interface SaveReportFormData {
   slug: string;
+  area_id: number;
   auditor_id: number;
   semana: string;
   respuestas: any;
@@ -30,6 +31,7 @@ export async function guardarReporteAction(
       slug: formData.slug,
       data: {
         auditor_id: formData.auditor_id,
+        area_id: formData.area_id,
         semana: Number(formData.semana),
         respuestas: formData.respuestas,
         comentarios: formData.comentarios || null,

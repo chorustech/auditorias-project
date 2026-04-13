@@ -20,8 +20,8 @@ export async function getReportesAction(
 
     console.log("Reportes obtenidos:", data);
     return {
-      data: data,
-      count: data.length,
+      data: data.reportes,
+      count: data.count,
       ok: true,
       message: "reportes obtenidos correctamente",
     };
