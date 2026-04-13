@@ -105,7 +105,7 @@ export function FilterUsersContent() {
         // FILTERS
         let field: "id" | "numEmpleado" | "nombre" | "email" | "estado" | "rol";
         let operator: "=" | "!=" | "<" | "<=" | ">" | ">=";
-        let value: string | number;
+        let value: string | number | boolean;
 
         if (data.filterBy === "ID") {
           field = "id";
@@ -216,57 +216,33 @@ export function FilterUsersContent() {
         } else if (data.filterBy === "Estado") {
           field = "estado";
           operator = "=";
-
-          if (data.estado !== undefined) {
-            value =
-              data.estado === "Administrador"
-                ? "administrador"
-                : data.estado === "Calidad"
-                  ? "calidad"
-                  : data.estado === "Auditor"
-                    ? "auditor"
-                    : "general";
-          } else {
-            value = "general";
-          }
+          // estado es boolean en la DB
+          value = data.estado === "ACTIVO" ? true : false;
 
           setFilter({
-            page: page,
-            perPage: perPage,
-            order: order,
-            orderBy: orderBy,
-            checkFilters: checkFilters,
-            filters: [
-              {
-                field: field,
-                operator: operator,
-                value: value,
-              },
-            ],
+            page,
+            perPage,
+            order,
+            orderBy,
+            checkFilters,
+            filters: [{ field, operator, value }],
           });
         } else {
+          // Rol
           field = "rol";
           operator = "=";
-
-          if (data.estado !== undefined) {
-            value = data.rol === "INACTIVO" ? "inactivo" : "activo";
-          } else {
-            value = "activo";
-          }
+          value =
+            data.rol !== undefined
+              ? data.rol.toLowerCase() // "Administrador" → "administrador"
+              : "auditor";
 
           setFilter({
-            page: page,
-            perPage: perPage,
-            order: order,
-            orderBy: orderBy,
-            checkFilters: checkFilters,
-            filters: [
-              {
-                field: field,
-                operator: operator,
-                value: value,
-              },
-            ],
+            page,
+            perPage,
+            order,
+            orderBy,
+            checkFilters,
+            filters: [{ field, operator, value }],
           });
         }
       } else {

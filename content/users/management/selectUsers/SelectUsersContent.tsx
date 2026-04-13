@@ -13,7 +13,7 @@ import { ExcelDownloadUsersButton } from "@/components/shared/download/ExcelDown
 import { usersColumns } from "@/content/users/data/columns/usersColumns";
 
 /* HOOKS */
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 
 /* ICONS */
 import { House } from "lucide-react";
@@ -47,77 +47,57 @@ export function SelectUsersContent() {
   const { setAnnouncement } = useAnnouncement();
   const { filter, setFilter } = useUsersFilter();
 
-  const updateFilter = (changes: Partial<typeof filter>) => {
-    if (!filter) return;
+  useEffect(() => {
+    const fetchUsers = async () => {
+      if (!filter) return;
 
-    setFilter({
-      ...filter,
-      ...changes,
-    });
-  };
+      try {
+        setLoading(true);
+
+        // ✅ Pasamos el filter a la action
+        const response = await getAllUsersAction({
+          page: filter.page,
+          perPage: filter.perPage,
+          order: filter.order,
+          orderBy: filter.orderBy,
+          filters: filter.filters ?? [],
+        });
+
+        if (response.ok) {
+          setUsers({ data: response.data, count: response.count });
+        } else {
+          setAnnouncement({
+            isActivated: true,
+            isOk: false,
+            message: response.message,
+          });
+        }
+      } catch (error) {
+        console.log("Hubo un error al obtener los usuarios:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, [filter, setAnnouncement]);
 
   const nextPage = () => {
     if (!filter) return;
-
-    updateFilter({
-      page: filter.page + 1,
-    });
+    const totalPages = Math.ceil(users.count / filter.perPage);
+    if (filter.page + 1 < totalPages) {
+      setFilter({ ...filter, page: filter.page + 1 });
+    }
   };
 
   const prevPage = () => {
-    if (!filter) return;
-
-    updateFilter({
-      page: Math.max(filter.page - 1, 0),
-    });
+    if (!filter || filter.page === 0) return;
+    setFilter({ ...filter, page: filter.page - 1 });
   };
 
   const hasNextPage =
     filter && (filter.page + 1) * filter.perPage < users.count;
-
-  const fetchUsers = useCallback(async () => {
-    if (!filter) return;
-
-    console.log(filter);
-
-    try {
-      setLoading(true);
-
-      const response = await getAllUsersAction();
-
-      if (response.ok) {
-        setUsers({
-          data: response.data,
-          count: response.count,
-        });
-      } else {
-        setAnnouncement({
-          isActivated: true,
-          isOk: false,
-          message: response.message,
-        });
-      }
-    } catch (error) {
-      console.log("Hubo un error al obtener los usuarios:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [filter, setAnnouncement]);
-
-  useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
-
-  useEffect(() => {
-    setFilter({
-      page: 0,
-      perPage: 10,
-      order: "asc",
-      orderBy: "id",
-      checkFilters: false,
-      filters: [],
-    });
-  }, [setFilter]);
+  const totalPages = filter ? Math.ceil(users.count / filter.perPage) : 1;
 
   return (
     <SectionContainer>
@@ -126,13 +106,10 @@ export function SelectUsersContent() {
           <DinamicTh key={index} column={column} />
         ))}
         tbodyRows={users.data.map((user, index) => (
-          <DinamicRow
-            key={index}
-            twBgColor={getTwBgColorTable({ index: index })}
-          >
+          <DinamicRow key={index} twBgColor={getTwBgColorTable({ index })}>
             <UserRowContent
               user={user}
-              twBgColor={`${getTwBgColorTable({ index: index })}`}
+              twBgColor={getTwBgColorTable({ index })}
             />
           </DinamicRow>
         ))}
@@ -160,16 +137,12 @@ export function SelectUsersContent() {
           />
         }
         backContent={<House className="size-5" />}
-        goBack={filter?.page === 0 ? false : true}
-        goNext={hasNextPage ?? false}
+        goBack={filter?.page !== 0}
+        goNext={!!hasNextPage}
         goBackAction={prevPage}
         goNextAction={nextPage}
         pageFirstHalf={(filter?.page ?? 0) + 1}
-        pageSecondHalf={
-          Math.ceil(users.count ?? 0) / (filter?.perPage ?? 1) === 0
-            ? "1"
-            : Math.ceil((users.count ?? 0) / (filter?.perPage ?? 1))
-        }
+        pageSecondHalf={totalPages > 0 ? totalPages : 1}
       />
     </SectionContainer>
   );

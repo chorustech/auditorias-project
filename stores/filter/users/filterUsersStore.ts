@@ -10,7 +10,7 @@ export interface Filter<T> {
   filters: {
     field: keyof T;
     operator: Operator;
-    value: string | number;
+    value: string | number | boolean;
   }[];
 }
 

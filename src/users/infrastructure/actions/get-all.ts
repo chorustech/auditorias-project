@@ -1,17 +1,17 @@
 "use server";
-
 import { UserRepositoryNeon } from "../adapters/user-repository-neon";
 import { GetAllUsers } from "../../application/get-all-users";
+import { UserPrimitive } from "@/src/users";
+import { IQuery } from "@/src/shared/domain/Entities/Query";
 
-export async function getAllUsersAction() {
+export async function getAllUsersAction(query: IQuery<UserPrimitive>) {
   try {
     const repo = new UserRepositoryNeon();
     const useCase = new GetAllUsers(repo);
-    const data = await useCase.execute();
-
+    const { data, count } = await useCase.execute(query);
     return {
-      data: data,
-      count: data.length,
+      data,
+      count,
       ok: true,
       message: "Usuarios obtenidos correctamente",
     };

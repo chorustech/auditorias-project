@@ -15,7 +15,7 @@ export function EolaRowContent({
   report,
   twBgColor,
 }: {
-  report: ReporteAuditoriaConDetalles<Metadata>;
+  report: ReporteAuditoriaConDetalles<EolaMetadata>;
   twBgColor: string;
 }) {
   const router = useRouter();
@@ -25,32 +25,29 @@ export function EolaRowContent({
   const rawPath = pathname.split("/").at(-1);
   const path = rawPath ?? null;
 
+  console.log(report.metadata.numOrden);
+
   return (
     <>
       <DinamicTd twClassName="text-nowrap">
-        <p>{report.auditor}</p>
+        <p>{report.metadata.numOrden}</p> {/* nro. Orden */}
       </DinamicTd>
       <DinamicTd twClassName="text-nowrap">
-        <p>{new Date(report.timestamp).toISOString().split("T")[0]}</p>
+        <p>{report.auditor}</p> {/* Usuario */}
       </DinamicTd>
       <DinamicTd twClassName="text-nowrap">
-        <p>{report.semana}</p>
+        <p>{new Date(report.timestamp).toISOString().split("T")[0]}</p>{" "}
+        {/* Fecha */}
       </DinamicTd>
-
-      {"numOrden" in report.metadata && (
-        <>
-          <DinamicTd twClassName="text-nowrap">
-            <p>{(report.metadata as EolaMetadata).numOrden}</p>
-          </DinamicTd>
-          <DinamicTd twClassName="text-nowrap">
-            <p>{(report.metadata as EolaMetadata).linea}</p>
-          </DinamicTd>
-          <DinamicTd twClassName="text-nowrap">
-            <p>{(report.metadata as EolaMetadata).uniNegocio}</p>
-          </DinamicTd>
-        </>
-      )}
-
+      <DinamicTd twClassName="text-nowrap">
+        <p>{report.semana}</p> {/* Semana */}
+      </DinamicTd>
+      <DinamicTd twClassName="text-nowrap">
+        <p>{report.metadata.uniNegocio}</p> {/* Ud. Negocio */}
+      </DinamicTd>
+      <DinamicTd twClassName="text-nowrap">
+        <p>{report.metadata.linea}</p> {/* Línea */}
+      </DinamicTd>
       <td
         className={`py-6 whitespace-nowrap group-hover:bg-sky-100 transition-all duration-200 px-3 sticky right-0 z-10 ${twBgColor}`}
       >

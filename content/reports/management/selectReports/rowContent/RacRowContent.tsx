@@ -1,5 +1,5 @@
 import { ReporteAuditoriaConDetalles } from "@/src/reporte-auditoria/domain";
-import { RacMetadata, Metadata } from "@/src/reporte-auditoria/domain/entities";
+import { RacMetadata } from "@/src/reporte-auditoria/domain/entities";
 import { useRouter } from "next/navigation";
 import { SquarePen, Trash2 } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -12,7 +12,7 @@ export function RacRowContent({
   report,
   twBgColor,
 }: {
-  report: ReporteAuditoriaConDetalles<Metadata>;
+  report: ReporteAuditoriaConDetalles<RacMetadata>;
   twBgColor: string;
 }) {
   const router = useRouter();
@@ -43,36 +43,29 @@ export function RacRowContent({
   return (
     <>
       <DinamicTd twClassName="text-nowrap">
-        <p>{report.auditor}</p>
+        <p>{report.id}</p> {/* nro. RAC */}
       </DinamicTd>
       <DinamicTd twClassName="text-nowrap">
-        <p>{new Date(report.timestamp).toISOString().split("T")[0]}</p>
+        <p>{new Date(report.timestamp).toISOString().split("T")[0]}</p>{" "}
+        {/* Fecha */}
       </DinamicTd>
       <DinamicTd twClassName="text-nowrap">
-        <p>{report.semana}</p>
+        <p
+          className={`font-bold ${getTwEstadoTextColor(report.metadata.estado)}`}
+        >
+          {report.metadata.estado} {/* Estado */}
+        </p>
       </DinamicTd>
-
-      {"descProd" in report.metadata && (
-        <>
-          <DinamicTd twClassName="text-nowrap">
-            <p
-              className={`font-bold ${getTwEstadoTextColor((report.metadata as RacMetadata).estado)}`}
-            >
-              {(report.metadata as RacMetadata).estado}
-            </p>
-          </DinamicTd>
-          <DinamicTd twClassName="text-nowrap">
-            <p
-              className={`font-bold ${getTwPonderanciaTextColor((report.metadata as RacMetadata).ponderancia)}`}
-            >
-              {(report.metadata as RacMetadata).ponderancia}
-            </p>
-          </DinamicTd>
-          <DinamicTd twClassName="text-nowrap">
-            <p>{(report.metadata as RacMetadata).area}</p>
-          </DinamicTd>
-        </>
-      )}
+      <DinamicTd twClassName="text-nowrap">
+        <p
+          className={`font-bold ${getTwPonderanciaTextColor(report.metadata.ponderancia)}`}
+        >
+          {report.metadata.ponderancia} {/* Ponderancia */}
+        </p>
+      </DinamicTd>
+      <DinamicTd twClassName="text-nowrap">
+        <p>{report.metadata.area}</p> {/* Área */}
+      </DinamicTd>
 
       <td
         className={`py-6 whitespace-nowrap group-hover:bg-sky-100 transition-all duration-200 px-3 sticky right-0 z-10 ${twBgColor}`}
