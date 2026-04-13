@@ -6,7 +6,13 @@ import { DinamicTd } from "@/components/shared/dinamicTable/dinamicRow/DinamicTd
 import { useModal } from "@/stores/modal/modalStore";
 import { DeleteReportContent } from "@/content/reports/management/deleteReport/DeleteReportContent";
 import { ReporteAuditoriaConDetalles } from "@/src/reporte-auditoria/domain";
-import { Metadata, PizzaTrayMetadata, BaldwinStateMetadata, SurtidoMaterialesMetadata, DisplayAreaMetadata } from "@/src/reporte-auditoria/domain/entities";
+import {
+  Metadata,
+  PizzaTrayMetadata,
+  BaldwinStateMetadata,
+  SurtidoMaterialesMetadata,
+  DisplayAreaMetadata,
+} from "@/src/reporte-auditoria/domain/entities";
 
 export function GeneralRowContent({
   report,
@@ -28,33 +34,33 @@ export function GeneralRowContent({
         <p>{report.auditor}</p>
       </DinamicTd>
       <DinamicTd twClassName="text-nowrap">
-        <p>{new Date(report.timestamp).toLocaleDateString()}</p>
+        <p>{new Date(report.timestamp).toISOString().split("T")[0]}</p>
       </DinamicTd>
       <DinamicTd twClassName="text-nowrap">
         <p>{report.semana}</p>
       </DinamicTd>
 
-      {'linea' in report.metadata && (
+      {"linea" in report.metadata && (
         <DinamicTd twClassName="text-nowrap">
           <p>{(report.metadata as BaldwinStateMetadata).linea}</p>
         </DinamicTd>
       )}
-      {'coordinador' in report.metadata && (
+      {"coordinador" in report.metadata && (
         <DinamicTd twClassName="text-nowrap">
           <p>{(report.metadata as BaldwinStateMetadata).coordinador}</p>
         </DinamicTd>
       )}
-      {'picker' in report.metadata && (
+      {"picker" in report.metadata && (
         <DinamicTd twClassName="text-nowrap">
           <p>{(report.metadata as SurtidoMaterialesMetadata).picker}</p>
         </DinamicTd>
       )}
-      {'ubicacion' in report.metadata && (
+      {"ubicacion" in report.metadata && (
         <DinamicTd twClassName="text-nowrap">
           <p>{(report.metadata as PizzaTrayMetadata).ubicacion}</p>
         </DinamicTd>
       )}
-      {'worktable' in report.metadata && (
+      {"worktable" in report.metadata && (
         <DinamicTd twClassName="text-nowrap">
           <p>{(report.metadata as DisplayAreaMetadata).worktable}</p>
         </DinamicTd>
@@ -82,9 +88,7 @@ export function GeneralRowContent({
       >
         <div className="flex gap-2">
           <BouncingButton
-            action={() =>
-              router.push(`/reports/${path}/update/${report.id}`)
-            }
+            action={() => router.push(`/reports/${path}/update/${report.id}`)}
             backgroundColorHover="#ffffff"
             backgroundColor="#fbbf24"
             textColor="#ffffff"
@@ -101,9 +105,7 @@ export function GeneralRowContent({
               setModal({
                 isActivated: true,
                 title: "Eliminar",
-                body: (
-                  <DeleteReportContent report_id={report.id ?? 0} />
-                ),
+                body: <DeleteReportContent report_id={report.id ?? 0} />,
               });
             }}
             backgroundColorHover="#ffffff"

@@ -10,7 +10,6 @@ import { EolaRowContent } from "@/content/reports/management/selectReports/rowCo
 import { NcrRowContent } from "@/content/reports/management/selectReports/rowContent/NcrRowContent";
 import { RacRowContent } from "@/content/reports/management/selectReports/rowContent/RacRowContent";
 import { FilterReportsContent } from "@/content/reports/management/selectReports/filterReports/FilterReportsContent";
-import { Input } from "@/components/ui/input";
 
 /* DATA */
 import { reportsColumns } from "@/content/reports/data/columns/reportsColumns";
@@ -152,14 +151,6 @@ export function SelectReportsContent() {
 
   return (
     <SectionContainer>
-      <div className="p-4 w-full md:w-1/3">
-        <Input
-          type="text"
-          placeholder="Buscar por auditor..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
       <DinamicTable
         theadColumns={reportsColumns[path ?? ""].map(
           (column: string, index: number) => (

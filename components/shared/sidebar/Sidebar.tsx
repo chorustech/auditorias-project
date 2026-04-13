@@ -12,11 +12,11 @@ export function Sidebar({ user }: { user: UserPrimitive | null }) {
   const { expanded, toggleSidebar } = useSidebarStore();
 
   const filteredLinks = links.filter((link) => {
-  if (link.href === "/users") {
-    return user?.rol === "administrador";
-  }
-  return true;
-});
+    if (link.href === "/users") {
+      return user?.rol === "administrador";
+    }
+    return true;
+  });
 
   const pathname = usePathname();
 
@@ -25,6 +25,10 @@ export function Sidebar({ user }: { user: UserPrimitive | null }) {
 
     return `${isActive ? "bg-linear-to-br from-[#d9f2f9] via-[#F0FDFF] to-[#d9f2f9] bg-animated-gradient text-cyan-800" : "text-black hover:bg-neutral-100 transition-all duration-300"}`;
   };
+
+  const userName = user?.nombre.split("")[0] || "U";
+  const userLastname = user?.nombre.split("")[1] || "N";
+  const UserInitials = [userName[0], userLastname][0];
 
   return (
     <>
@@ -83,14 +87,19 @@ export function Sidebar({ user }: { user: UserPrimitive | null }) {
 
         <div className="flex items-center gap-0 p-4 overflow-hidden relative border-t border-t-neutral-200">
           <div className="rounded w-9 h-9 flex justify-center items-center ml-0.5 bg-linear-to-br from-[#00A0D0] via-[#64C8E6] to-[#00A0D0] bg-animated-gradient text-white shadow-md font-semibold">
-            <span>PD</span>
+            <span>
+              {UserInitials[0]}
+              {UserInitials[1]}
+            </span>
           </div>
           <div
             className={`flex items-center max-w-40 transition-all duration-300 gap-2 absolute ${expanded ? "right-4 opacity-100" : "lg:-right-64 right-4 lg:opacity-0 opacity-100 pointer-events-none"}`}
           >
             <div className="flex flex-col truncate">
               <span className="font-semibold truncate">{user?.nombre}</span>
-              <span className="text-xs text-neutral-400 truncate">{user?.email}</span>
+              <span className="text-xs text-neutral-400 truncate">
+                {user?.email}
+              </span>
             </div>
             <Link
               href={"/"}

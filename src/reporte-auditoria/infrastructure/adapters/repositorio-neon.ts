@@ -44,22 +44,28 @@ export class ReporteAuditoriaNeon<
       tipo_auditoria: AreaTable.slug,
     };
 
-    // Traducir filters a condiciones Drizzle
     const filterConditions = query.filters.map(({ field, operator, value }) => {
       const col = columnMap[field as string];
+
+      // Si el campo es timestamp y el valor es string, convertir a Date
+      const parsedValue =
+        field === "timestamp" && typeof value === "string"
+          ? new Date(value)
+          : value;
+
       switch (operator) {
         case "=":
-          return eq(col, value);
+          return eq(col, parsedValue);
         case "!=":
-          return ne(col, value);
+          return ne(col, parsedValue);
         case "<":
-          return lt(col, value);
+          return lt(col, parsedValue);
         case "<=":
-          return lte(col, value);
+          return lte(col, parsedValue);
         case ">":
-          return gt(col, value);
+          return gt(col, parsedValue);
         case ">=":
-          return gte(col, value);
+          return gte(col, parsedValue);
       }
     });
 
@@ -109,23 +115,41 @@ export class ReporteAuditoriaNeon<
       tipo_auditoria: AreaTable.slug,
     };
 
+    console.log("=== DEBUG FILTROS ===");
+    console.log("filters recibidos:", query.filters);
+
     const filterConditions = query.filters.map(({ field, operator, value }) => {
       const col = columnMap[field as string];
+
+      const parsedValue =
+        field === "timestamp" && typeof value === "string"
+          ? new Date(value)
+          : value;
+
+      console.log("field:", field);
+      console.log("operator:", operator);
+      console.log("value original:", value, typeof value);
+      console.log("parsedValue:", parsedValue, typeof parsedValue);
+      console.log("col:", col);
+
       switch (operator) {
         case "=":
-          return eq(col, value);
+          return eq(col, parsedValue);
         case "!=":
-          return ne(col, value);
+          return ne(col, parsedValue);
         case "<":
-          return lt(col, value);
+          return lt(col, parsedValue);
         case "<=":
-          return lte(col, value);
+          return lte(col, parsedValue);
         case ">":
-          return gt(col, value);
+          return gt(col, parsedValue);
         case ">=":
-          return gte(col, value);
+          return gte(col, parsedValue);
       }
     });
+
+    console.log("filterConditions:", filterConditions);
+    console.log("=== FIN DEBUG ===");
 
     const result = await this._db
       .select({ count: count() }) // count() de drizzle-orm

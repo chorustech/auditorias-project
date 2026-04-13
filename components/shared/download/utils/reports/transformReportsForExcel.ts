@@ -155,7 +155,9 @@ export function transformReportsForExcel(
         // Compartidos
         final_report.push(report.id.toString());
         final_report.push(report.auditor);
-        final_report.push(new Date(report.timestamp).toLocaleDateString());
+        final_report.push(
+          new Date(report.timestamp).toISOString().split("T")[0],
+        );
         final_report.push(report.semana.toString());
 
         // Específicos
@@ -200,38 +202,28 @@ export function transformReportsForExcel(
         final_report.push(report.id.toString());
 
         if ("numOrden" in report.metadata) {
-          final_report.push(
-            (report.metadata as EolaMetadata).numOrden ?? "",
-          );
+          final_report.push((report.metadata as EolaMetadata).numOrden ?? "");
         } else final_report.push("N/A");
 
         final_report.push(report.auditor);
-        final_report.push(new Date(report.timestamp).toLocaleDateString());
+        final_report.push(
+          new Date(report.timestamp).toISOString().split("T")[0],
+        );
         final_report.push(report.semana.toString());
         if ("uniNegocio" in report.metadata) {
-          final_report.push(
-            (report.metadata as EolaMetadata).uniNegocio ?? "",
-          );
+          final_report.push((report.metadata as EolaMetadata).uniNegocio ?? "");
         }
         if ("linea" in report.metadata) {
-          final_report.push(
-            (report.metadata as EolaMetadata).linea ?? "",
-          );
+          final_report.push((report.metadata as EolaMetadata).linea ?? "");
         }
         if ("tipo" in report.metadata) {
-          final_report.push(
-            (report.metadata as EolaMetadata).tipo ?? "",
-          );
+          final_report.push((report.metadata as EolaMetadata).tipo ?? "");
         }
         if ("sku" in report.metadata) {
-          final_report.push(
-            (report.metadata as EolaMetadata).sku ?? "",
-          );
+          final_report.push((report.metadata as EolaMetadata).sku ?? "");
         }
         if ("upc" in report.metadata) {
-          final_report.push(
-            (report.metadata as EolaMetadata).upc ?? "",
-          );
+          final_report.push((report.metadata as EolaMetadata).upc ?? "");
         }
         if ("sizeOrden" in report.metadata) {
           final_report.push(
@@ -240,9 +232,7 @@ export function transformReportsForExcel(
         }
         if ("cantInspeccionada" in report.metadata) {
           final_report.push(
-            (
-              report.metadata as EolaMetadata
-            ).cantInspeccionada.toString(),
+            (report.metadata as EolaMetadata).cantInspeccionada.toString(),
           );
         }
         if ("cantAceptada" in report.metadata) {
@@ -254,41 +244,33 @@ export function transformReportsForExcel(
         else final_report.push("N/A");
       } else if (report.type === "ncr") {
         final_report.push(report.id.toString());
-        final_report.push(new Date(report.timestamp).toLocaleDateString());
+        final_report.push(
+          new Date(report.timestamp).toISOString().split("T")[0],
+        );
         final_report.push(report.semana.toString());
         if ("numParte" in report.metadata) {
-          final_report.push(
-            (report.metadata as NcrMetadata).numParte ?? "",
-          );
+          final_report.push((report.metadata as NcrMetadata).numParte ?? "");
         }
         if ("proveedor" in report.metadata) {
-          final_report.push(
-            (report.metadata as NcrMetadata).proveedor ?? "",
-          );
+          final_report.push((report.metadata as NcrMetadata).proveedor ?? "");
         }
         if ("defecto" in report.metadata) {
-          final_report.push(
-            (report.metadata as NcrMetadata).defecto ?? "",
-          );
+          final_report.push((report.metadata as NcrMetadata).defecto ?? "");
         }
       } else {
         final_report.push(report.id.toString());
         final_report.push(report.auditor);
-        final_report.push(new Date(report.timestamp).toLocaleDateString());
+        final_report.push(
+          new Date(report.timestamp).toISOString().split("T")[0],
+        );
         if ("responsable" in report.metadata) {
-          final_report.push(
-            (report.metadata as RacMetadata).responsable ?? "",
-          );
+          final_report.push((report.metadata as RacMetadata).responsable ?? "");
         }
         if ("numParte" in report.metadata) {
-          final_report.push(
-            (report.metadata as RacMetadata).numParte ?? "",
-          );
+          final_report.push((report.metadata as RacMetadata).numParte ?? "");
         }
         if ("descProd" in report.metadata) {
-          final_report.push(
-            (report.metadata as RacMetadata).descProd ?? "",
-          );
+          final_report.push((report.metadata as RacMetadata).descProd ?? "");
         }
         if ("sizeLote" in report.metadata) {
           final_report.push(
@@ -296,27 +278,19 @@ export function transformReportsForExcel(
           );
         }
         if ("ponderancia" in report.metadata) {
-          final_report.push(
-            (report.metadata as RacMetadata).ponderancia ?? "",
-          );
+          final_report.push((report.metadata as RacMetadata).ponderancia ?? "");
         }
         if ("codigoFecha" in report.metadata) {
-          final_report.push(
-            (report.metadata as RacMetadata).codigoFecha ?? "",
-          );
+          final_report.push((report.metadata as RacMetadata).codigoFecha ?? "");
         }
         if ("area" in report.metadata) {
           final_report.push((report.metadata as RacMetadata).area ?? "");
         }
         if ("porcFalla" in report.metadata) {
-          final_report.push(
-            (report.metadata as RacMetadata).porcFalla ?? "",
-          );
+          final_report.push((report.metadata as RacMetadata).porcFalla ?? "");
         }
         if ("descProb" in report.metadata) {
-          final_report.push(
-            (report.metadata as RacMetadata).descProb ?? "",
-          );
+          final_report.push((report.metadata as RacMetadata).descProb ?? "");
         }
       }
 

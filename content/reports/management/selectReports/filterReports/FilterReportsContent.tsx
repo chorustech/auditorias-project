@@ -31,6 +31,7 @@ import { useModal } from "@/stores/modal/modalStore";
 import { ReportsFilterFormValues } from "@/content/reports/types/forms/reportsFilterFormValues";
 import { ReporteAuditoriaConDetalles } from "@/src/reporte-auditoria/domain";
 import { Metadata } from "@/src/reporte-auditoria/domain/entities";
+import { toISODate } from "@/utils/date";
 
 export function FilterReportsContent() {
   const [filtering, setFiltering] = useState(false);
@@ -86,8 +87,8 @@ export function FilterReportsContent() {
         data.orderBy === "ID"
           ? "id"
           : data.orderBy === "Fecha"
-          ? "timestamp"
-          : "auditor";
+            ? "timestamp"
+            : "auditor";
 
       // CHECKFILTERS
       const checkFilters = data.filterBy === "Ninguno" ? false : true;
@@ -137,7 +138,11 @@ export function FilterReportsContent() {
           }
 
           if (data.fecha_unica !== undefined) {
-            value = data.fecha_unica.toDateString();
+            value = toISODate(data.fecha_unica);
+            console.log(
+              "Fecha unica despues de la conversion: ",
+              data.fecha_unica,
+            );
           } else {
             value = "2026-01-01";
           }
@@ -172,7 +177,7 @@ export function FilterReportsContent() {
               operator: ">=",
               value:
                 fecha_comienzo !== undefined
-                  ? fecha_comienzo.toDateString()
+                  ? toISODate(fecha_comienzo)
                   : "2026-01-01",
             };
 
@@ -185,7 +190,7 @@ export function FilterReportsContent() {
               operator: "<=",
               value:
                 fecha_termino !== undefined
-                  ? fecha_termino.toDateString()
+                  ? toISODate(fecha_termino)
                   : "2026-02-01",
             };
 
@@ -194,7 +199,7 @@ export function FilterReportsContent() {
               perPage: perPage,
               order: order,
               orderBy: orderBy,
-              checkFilters: false,
+              checkFilters: true,
               filters: [filtro_1, filtro_2],
             });
           } else {

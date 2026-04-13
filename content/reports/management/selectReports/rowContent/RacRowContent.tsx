@@ -46,21 +46,25 @@ export function RacRowContent({
         <p>{report.auditor}</p>
       </DinamicTd>
       <DinamicTd twClassName="text-nowrap">
-        <p>{new Date(report.timestamp).toLocaleDateString()}</p>
+        <p>{new Date(report.timestamp).toISOString().split("T")[0]}</p>
       </DinamicTd>
       <DinamicTd twClassName="text-nowrap">
         <p>{report.semana}</p>
       </DinamicTd>
 
-      {'descProd' in report.metadata && (
+      {"descProd" in report.metadata && (
         <>
-        <DinamicTd twClassName="text-nowrap">
-            <p className={`font-bold ${getTwEstadoTextColor((report.metadata as RacMetadata).estado)}`}>
+          <DinamicTd twClassName="text-nowrap">
+            <p
+              className={`font-bold ${getTwEstadoTextColor((report.metadata as RacMetadata).estado)}`}
+            >
               {(report.metadata as RacMetadata).estado}
             </p>
           </DinamicTd>
           <DinamicTd twClassName="text-nowrap">
-            <p className={`font-bold ${getTwPonderanciaTextColor((report.metadata as RacMetadata).ponderancia)}`}>
+            <p
+              className={`font-bold ${getTwPonderanciaTextColor((report.metadata as RacMetadata).ponderancia)}`}
+            >
               {(report.metadata as RacMetadata).ponderancia}
             </p>
           </DinamicTd>
@@ -75,9 +79,7 @@ export function RacRowContent({
       >
         <div className="flex gap-2">
           <BouncingButton
-            action={() =>
-              router.push(`/reports/${path}/update/${report.id}`)
-            }
+            action={() => router.push(`/reports/${path}/update/${report.id}`)}
             backgroundColorHover="#ffffff"
             backgroundColor="#fbbf24"
             textColor="#ffffff"
@@ -94,9 +96,7 @@ export function RacRowContent({
               setModal({
                 isActivated: true,
                 title: "Eliminar",
-                body: (
-                  <DeleteReportContent report_id={report.id ?? 0} />
-                ),
+                body: <DeleteReportContent report_id={report.id ?? 0} />,
               });
             }}
             backgroundColorHover="#ffffff"

@@ -1,5 +1,8 @@
 import { ReporteAuditoriaConDetalles } from "@/src/reporte-auditoria/domain";
-import { EolaMetadata, Metadata } from "@/src/reporte-auditoria/domain/entities";
+import {
+  EolaMetadata,
+  Metadata,
+} from "@/src/reporte-auditoria/domain/entities";
 import { useRouter } from "next/navigation";
 import { SquarePen, Trash2 } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -28,13 +31,13 @@ export function EolaRowContent({
         <p>{report.auditor}</p>
       </DinamicTd>
       <DinamicTd twClassName="text-nowrap">
-        <p>{new Date(report.timestamp).toLocaleDateString()}</p>
+        <p>{new Date(report.timestamp).toISOString().split("T")[0]}</p>
       </DinamicTd>
       <DinamicTd twClassName="text-nowrap">
         <p>{report.semana}</p>
       </DinamicTd>
 
-      {'numOrden' in report.metadata && (
+      {"numOrden" in report.metadata && (
         <>
           <DinamicTd twClassName="text-nowrap">
             <p>{(report.metadata as EolaMetadata).numOrden}</p>
@@ -53,9 +56,7 @@ export function EolaRowContent({
       >
         <div className="flex gap-2">
           <BouncingButton
-            action={() =>
-              router.push(`/reports/${path}/update/${report.id}`)
-            }
+            action={() => router.push(`/reports/${path}/update/${report.id}`)}
             backgroundColorHover="#ffffff"
             backgroundColor="#fbbf24"
             textColor="#ffffff"
@@ -72,9 +73,7 @@ export function EolaRowContent({
               setModal({
                 isActivated: true,
                 title: "Eliminar",
-                body: (
-                  <DeleteReportContent report_id={report.id ?? 0} />
-                ),
+                body: <DeleteReportContent report_id={report.id ?? 0} />,
               });
             }}
             backgroundColorHover="#ffffff"

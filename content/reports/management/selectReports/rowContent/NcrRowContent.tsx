@@ -30,7 +30,7 @@ export function NcrRowContent({
             <p>{(report.metadata as NcrMetadata).ncr}</p>
           </DinamicTd>
           <DinamicTd twClassName="text-nowrap">
-            <p>{new Date(report.timestamp).toLocaleDateString()}</p>
+            <p>{new Date(report.timestamp).toISOString().split("T")[0]}</p>
           </DinamicTd>
           <DinamicTd twClassName="text-nowrap">
             <p>{report.semana}</p>

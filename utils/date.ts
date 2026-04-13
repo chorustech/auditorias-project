@@ -1,3 +1,5 @@
+
+
 export function getWeekNumber(date: Date = new Date()): string {
   // Copiamos la fecha para no mutar la original
   const d = new Date(
@@ -28,4 +30,12 @@ export const getDate = () => {
   const year = date.getFullYear();
 
   return `${day}/${month < 10 ? `0${month}` : month}/${year}`;
+};
+
+export const toISODate = (value: Date | string): string => {
+  const date = value instanceof Date ? value : new Date(value);
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 };
