@@ -5,7 +5,9 @@ export class LoginService {
     constructor(private userRepository: UserRepository) { }
 
     async exec({email, password}: {email: string, password: string}): Promise<UserPrimitive> {
+        console.log("Intentando iniciar sesión con email:", email) // Agrega este log para verificar el email recibido
         const user = await this.userRepository.findByEmail(email)
+        console.log("Usuario encontrado:", user) // Agrega este log para verificar el usuario encontrado
         if (!user) {
             throw new Error("Usuario no encontrado")
         }

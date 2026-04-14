@@ -122,57 +122,61 @@ export function InsertUpdateNcrReportContent({
 
   const onSubmit = async (data: NcrFormValues) => {
     setSaving(true);
+    try {
+      const area = areas.find((a) => a.slug === "ncr");
+      const area_id = area?.id ?? 0;
 
-    const area = areas.find((a) => a.slug === 'ncr');
-    const area_id = area ? area.id : 0;
+      const archivo =
+        data.archivo instanceof FileList ? data.archivo.item(0) : null;
 
-    const reportData = {
-      slug: 'ncr',
-      data: {
-        auditor_id: data.usuario_id,
-        area_id,
-        semana: Number(getWeekNumber()),
-        respuestas: [],
-        comentarios: '',
-      },
-      metadata: {
-        ncr: data.ncr,
-        numParte: data.numParte,
-        proveedor: data.proveedor,
-        defecto: data.defecto,
-      },
-    };
+      const buildFormData = () => {
+        const formData = new FormData();
+        if (archivo && archivo.size > 0) formData.append("archivo", archivo);
+        formData.append(
+          "data",
+          JSON.stringify({
+            slug: "ncr",
+            area_id,
+            auditor_id: usuario_temp.id,
+            semana: Number(getWeekNumber()),
+            respuestas: [],
+            comentarios: null,
+            metadata: {
+              ncr: data.ncr,
+              numParte: data.numParte,
+              proveedor: data.proveedor,
+              defecto: data.defecto,
+            },
+          }),
+        );
+        return formData;
+      };
 
-    const response = isUpdate
-      ? await updateReporteAction(Number(id), reportData, 'ncr')
-      : await guardarReporteAction({
-          ...reportData,
-          slug: 'ncr',
-          area_id,
-          auditor_id: data.usuario_id,
-          semana: getWeekNumber().toString(),
-          respuestas: [],
-        });
+      let response;
 
-    if (('ok' in response && response.ok) || ('success' in response && response.success)) {
-      setAnnouncement({
-        isActivated: true,
-        isOk: true,
-        message: response.message,
-      });
+      if (isUpdate) {
+        response = await updateReporteAction(Number(id), buildFormData());
+      } else {
+        const result = await guardarReporteAction(buildFormData());
+        response = { ok: result.success, message: result.message };
+      }
 
-      if (!isUpdate) methods.reset();
-    } else {
+      if (response.ok) {
+        setAnnouncement({ isActivated: true, isOk: true, message: response.message });
+        if (!isUpdate) methods.reset();
+      } else {
+        setAnnouncement({ isActivated: true, isOk: false, message: response.message });
+      }
+    } catch (error) {
       setAnnouncement({
         isActivated: true,
         isOk: false,
-        message: response.message,
+        message: "Ocurrió un error inesperado. Inténtalo de nuevo.",
       });
+    } finally {
+      setSaving(false);
     }
-
-    setSaving(false);
   };
-
   return (
     <FormProvider {...methods}>
       <DinamicInsertUpdateUI
@@ -328,7 +332,7 @@ export function InsertUpdateNcrReportContent({
                   <DinamicBouncingButton
                     action={
                       saving || loading
-                        ? () => {}
+                        ? () => { }
                         : methods.handleSubmit(onSubmit)
                     }
                     disabled={saving || loading ? true : false}

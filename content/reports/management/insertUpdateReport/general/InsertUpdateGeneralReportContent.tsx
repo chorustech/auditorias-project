@@ -29,7 +29,6 @@ import { Save } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 
 /* SERVER ACTION */
-import { createReportAction } from "@/src/reporte-auditoria/infrastructure/actions/create-report";
 import { getReporteByIdAction } from "@/src/reporte-auditoria/infrastructure/actions/get-by-id";
 import { updateReporteAction } from "@/src/reporte-auditoria/infrastructure/actions/update";
 import { logoutAction } from "@/src/shared/infrastructure/utils/logout-action";
@@ -55,53 +54,7 @@ import { getDate, getWeekNumber } from "@/utils/date";
 
 /* LIBS */
 import { motion } from "framer-motion";
-
-const createReport = async (
-  data: ReportFormValues,
-  user: UserPrimitive,
-  path: string,
-  areas: Area[],
-) => {
-  const area = areas.find((a) => a.slug === path);
-  const area_id = area ? area.id : 0;
-  console.log("Debug: Correct area_id to save:", area_id, "from slug:", path);
-
-  const es_negativo =
-    data.respuestas.filter((r) => r).length < data.respuestas.length / 2;
-
-  let metadata: any = {};
-  switch (path) {
-    case "pizza-tray":
-      metadata = { nivel: data.nivel, ubicacion: data.ubicacion };
-      break;
-    case "baldwin-state":
-      metadata = { coordinador: data.coord, linea: data.linea };
-      break;
-    case "baldwin-reserve-supply":
-      metadata = { picker: data.picker };
-      break;
-    case "display-area":
-      metadata = { worktable: data.worktable };
-      break;
-    case "baldwin-reserve-stacking":
-    case "baldwin-reserve-packing":
-    case "baldwin-reserve-general":
-      metadata = { linea: data.linea };
-      break;
-  }
-
-  const reportData = {
-    area_id,
-    semana: Number(getWeekNumber()),
-    respuestas: data.respuestas,
-    comentarios: data.comentarios,
-    metadata,
-    es_negativo,
-  };
-
-  console.log("Debug: reportData to send:", reportData);
-  return await createReportAction(reportData as any);
-};
+import { guardarReporteAction } from "@/src/reporte-auditoria/infrastructure/actions/save";
 
 export function InsertUpdateGeneralReportContent({
   isUpdate,
@@ -211,68 +164,69 @@ export function InsertUpdateGeneralReportContent({
           isOk: false,
           message: "Error de sesión. Por favor, vuelve a iniciar sesión.",
         });
-        setSaving(false);
         return;
       }
 
-      let response;
-      if (isUpdate) {
-        const area = areas.find((a) => a.slug === path);
-        const area_id = area ? area.id : 0;
-        let metadata: any = {};
-        switch (path) {
-          case "pizza-tray":
-            metadata = { nivel: data.nivel, ubicacion: data.ubicacion };
-            break;
-          case "baldwin-state":
-            metadata = { coordinador: data.coord, linea: data.linea };
-            break;
-          case "baldwin-reserve-supply":
-            metadata = { picker: data.picker };
-            break;
-          case "display-area":
-            metadata = { worktable: data.worktable };
-            break;
-          case "baldwin-reserve-stacking":
-          case "baldwin-reserve-packing":
-          case "baldwin-reserve-general":
-            metadata = { linea: data.linea };
-            break;
-        }
+      const area = areas.find((a) => a.slug === path);
+      const area_id = area?.id ?? 0;
 
-        const reportData = {
-          metadata,
-          data: {
-            auditor_id: user.id,
-            area_id,
-            respuestas: data.respuestas,
-            semana: Number(getWeekNumber()),
-            comentarios: data.comentarios,
-          },
-        };
-
-        response = await updateReporteAction(
-          Number(id),
-          reportData as any,
-          path,
-        );
-      } else {
-        response = await createReport(data, user, path, areas);
+      // Metadata según path
+      let metadata: any = {};
+      switch (path) {
+        case "pizza-tray":
+          metadata = { nivel: data.nivel, ubicacion: data.ubicacion };
+          break;
+        case "baldwin-state":
+          metadata = { coordinador: data.coord, linea: data.linea };
+          break;
+        case "baldwin-reserve-supply":
+          metadata = { picker: data.picker };
+          break;
+        case "display-area":
+          metadata = { worktable: data.worktable };
+          break;
+        case "baldwin-reserve-stacking":
+        case "baldwin-reserve-packing":
+        case "baldwin-reserve-general":
+          metadata = { linea: data.linea };
+          break;
       }
 
-      if (response && response.ok) {
-        setAnnouncement({
-          isActivated: true,
-          isOk: true,
-          message: response.message,
-        });
+      const archivo = data.archivo instanceof FileList ? data.archivo.item(0) : null;
+
+      let response;
+
+      const buildFormData = () => {
+        const formData = new FormData();
+        // ✅ Solo agregar archivo si existe y tiene contenido
+        if (archivo && archivo.size > 0) formData.append("archivo", archivo);
+        formData.append("data", JSON.stringify({
+          slug: path,
+          area_id,
+          auditor_id: user!.id,
+          semana: Number(getWeekNumber()),
+          respuestas: data.respuestas,
+          comentarios: data.comentarios || null,
+          metadata,
+        }));
+        return formData;
+      };
+
+      if (isUpdate) {
+        // Update no usa FormData aún — si necesitas R2 en update avísame
+        response = await updateReporteAction(Number(id), buildFormData());
+
+      } else {
+        const result = await guardarReporteAction(buildFormData());
+        // Normalizar respuesta al mismo formato que updateReporteAction
+        response = { ok: result.success, message: result.message };
+      }
+
+      if (response.ok) {
+        setAnnouncement({ isActivated: true, isOk: true, message: response.message });
         if (!isUpdate) methods.reset();
-      } else if (response) {
-        setAnnouncement({
-          isActivated: true,
-          isOk: false,
-          message: response.message,
-        });
+      } else {
+        setAnnouncement({ isActivated: true, isOk: false, message: response.message });
       }
     } catch (error) {
       setAnnouncement({
@@ -335,16 +289,16 @@ export function InsertUpdateGeneralReportContent({
                     path === "baldwin-reserve-stacking" ||
                     path === "baldwin-reserve-packing" ||
                     path === "baldwin-reserve-general") && (
-                    <DinamicCombobox<ReportFormValues>
-                      name="linea"
-                      label="Línea"
-                      items={lineas}
-                      placeholder="Seleccionar línea"
-                      rules={{
-                        required: "La línea es necesaria",
-                      }}
-                    />
-                  )}
+                      <DinamicCombobox<ReportFormValues>
+                        name="linea"
+                        label="Línea"
+                        items={lineas}
+                        placeholder="Seleccionar línea"
+                        rules={{
+                          required: "La línea es necesaria",
+                        }}
+                      />
+                    )}
 
                   {path === "baldwin-state" && (
                     <DinamicInputText<ReportFormValues>
@@ -484,7 +438,7 @@ export function InsertUpdateGeneralReportContent({
                   <DinamicBouncingButton
                     action={
                       saving || loading
-                        ? () => {}
+                        ? () => { }
                         : methods.handleSubmit(onSubmit)
                     }
                     disabled={saving || loading ? true : false}

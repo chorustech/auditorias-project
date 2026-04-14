@@ -148,68 +148,65 @@ export function InsertUpdateEolaReportContent({
 
   const onSubmit = async (data: EolaFormValues) => {
     setSaving(true);
+    try {
+      const area = areas.find((a) => a.slug === "eola");
+      const area_id = area?.id ?? 0;
 
-    const area = areas.find((a) => a.slug === 'eola');
-    const area_id = area ? area.id : 0;
+      const archivo =
+        data.archivo instanceof FileList ? data.archivo.item(0) : null;
 
-    const reportData = {
-      slug: 'eola',
-      data: {
-        auditor_id: data.usuario_id,
-        area_id,
-        semana: Number(getWeekNumber()), // Ensure semana is a number
-        respuestas: [],
-        comentarios: data.comentarios,
-      },
-      metadata: {
-        numOrden: data.numOrden,
-        cantAceptada: data.cantAceptada,
-        cantInspeccionada: data.cantInspeccionada,
-        linea: data.linea,
-        sizeOrden: data.sizeOrden,
-        sku: data.sku,
-        tipo: data.tipo,
-        uniNegocio: data.uniNegocio,
-        upc: data.upc,
-      },
-    };
+      const buildFormData = () => {
+        const formData = new FormData();
+        if (archivo && archivo.size > 0) formData.append("archivo", archivo);
+        formData.append(
+          "data",
+          JSON.stringify({
+            slug: "eola",
+            area_id,
+            auditor_id: usuario_temp.id,
+            semana: Number(getWeekNumber()),
+            respuestas: [],
+            comentarios: data.comentarios || null,
+            metadata: {
+              numOrden: data.numOrden,
+              cantAceptada: data.cantAceptada,
+              cantInspeccionada: data.cantInspeccionada,
+              linea: data.linea,
+              sizeOrden: data.sizeOrden,
+              sku: data.sku,
+              tipo: data.tipo,
+              uniNegocio: data.uniNegocio,
+              upc: data.upc,
+            },
+          }),
+        );
+        return formData;
+      };
 
-    const response = isUpdate
-      ? await updateReporteAction(Number(id), reportData, 'eola')
-      : await guardarReporteAction({
-          ...reportData,
-          slug: 'eola',
-          area_id,
-          auditor_id: data.usuario_id,
-          semana: getWeekNumber().toString(),
-          respuestas: [], // Changed to an empty array
-        });
+      let response;
 
-    if ('ok' in response && response.ok) {
-      setAnnouncement({
-        isActivated: true,
-        isOk: true,
-        message: response.message,
-      });
+      if (isUpdate) {
+        response = await updateReporteAction(Number(id), buildFormData());
+      } else {
+        const result = await guardarReporteAction(buildFormData());
+        response = { ok: result.success, message: result.message };
+      }
 
-      if (!isUpdate) methods.reset();
-    } else if ('success' in response && response.success) {
-      setAnnouncement({
-        isActivated: true,
-        isOk: true,
-        message: response.message,
-      });
-
-      if (!isUpdate) methods.reset();
-    } else {
+      if (response.ok) {
+        setAnnouncement({ isActivated: true, isOk: true, message: response.message });
+        if (!isUpdate) methods.reset();
+      } else {
+        setAnnouncement({ isActivated: true, isOk: false, message: response.message });
+      }
+    } catch (error) {
       setAnnouncement({
         isActivated: true,
         isOk: false,
-        message: response.message,
+        message: "Ocurrió un error inesperado. Inténtalo de nuevo.",
       });
+    } finally {
+      setSaving(false);
     }
-
-    setSaving(false);
   };
 
   return (
@@ -444,7 +441,7 @@ export function InsertUpdateEolaReportContent({
                   <DinamicBouncingButton
                     action={
                       saving || loading
-                        ? () => {}
+                        ? () => { }
                         : methods.handleSubmit(onSubmit)
                     }
                     disabled={saving || loading ? true : false}

@@ -31,10 +31,14 @@ export class UserRepositoryNeon implements UserRepository {
   }
 
   async findByEmail(email: string): Promise<UserPrimitive | null> {
+
+    console.log("UserRepositoryNeon.findByEmail - email:", email); // Agrega este log para verificar el email recibido
     const user = await this._db
       .select()
       .from(UsuarioTable)
       .where(eq(UsuarioTable.email, email));
+    
+      console.log("UserRepositoryNeon.findByEmail - user:", user); // Agrega este log para verificar el resultado de la consulta
 
     return user[0] || null;
   }

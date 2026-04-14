@@ -23,7 +23,7 @@ import { IQuery } from "@/src/shared/domain/Entities/Query";
 export class ReporteAuditoriaNeon<
   M extends Metadata,
 > implements ReporteAuditoriaRepositorio<M> {
-  constructor(private readonly _db = db) {}
+  constructor(private readonly _db = db) { }
 
   async getAll(
     area: number,
@@ -162,7 +162,6 @@ export class ReporteAuditoriaNeon<
 
   async save(reporte: ReporteAuditoria<M>): Promise<void> {
     const primitivo = reporte.toPrimitive();
-    console.log("Guardando reporte con metadata:", primitivo.metadata);
 
     await this._db.insert(ReporteAuditoriaTable).values({
       area_id: primitivo.area_id,
@@ -172,6 +171,7 @@ export class ReporteAuditoriaNeon<
       comentarios: primitivo.comentarios,
       es_negativo: primitivo.es_negativo,
       metadata: primitivo.metadata,
+      archivo_url: primitivo.archivo_url, // ✅
     });
   }
 
@@ -214,7 +214,7 @@ export class ReporteAuditoriaNeon<
         es_negativo: ReporteAuditoriaTable.es_negativo,
         metadata: ReporteAuditoriaTable.metadata,
         tipo_auditoria: AreaTable.slug,
-        archivo_url: ReporteAuditoriaTable.archivo_url
+        archivo_url: ReporteAuditoriaTable.archivo_url,
         type: AreaTable.slug as any,
       })
       .from(ReporteAuditoriaTable)

@@ -145,63 +145,68 @@ export function InsertUpdateRacReportContent({
 
   const onSubmit = async (data: RacFormValues) => {
     setSaving(true);
+    try {
+      const area = areas.find((a) => a.slug === "rac");
+      const area_id = area?.id ?? 0;
 
-    const area = areas.find((a) => a.slug === 'rac');
-    const area_id = area ? area.id : 0;
+      const archivo =
+        data.archivo instanceof FileList ? data.archivo.item(0) : null;
 
-    const reportData = {
-      slug: 'rac',
-      data: {
-        auditor_id: data.usuario_id,
-        area_id,
-        semana: Number(getWeekNumber()),
-        respuestas: [],
-        comentarios: '',
-      },
-      metadata: {
-        estado: data.estado,
-        responsable: data.responsable,
-        numParte: data.numParte,
-        descProd: data.descProd,
-        sizeLote: data.sizeLote,
-        ponderancia: data.ponderancia,
-        codigoFecha: data.codigoFecha,
-        area: data.area,
-        porcFalla: data.porcFalla,
-        descProb: data.descProb,
-      },
-    };
+      const buildFormData = () => {
+        const formData = new FormData();
+        if (archivo && archivo.size > 0) formData.append("archivo", archivo);
+        formData.append(
+          "data",
+          JSON.stringify({
+            slug: "rac",
+            area_id,
+            auditor_id: usuario_temp.id,
+            semana: Number(getWeekNumber()),
+            respuestas: [],
+            comentarios: null,
+            metadata: {
+              estado: data.estado,
+              responsable: data.responsable,
+              numParte: data.numParte,
+              descProd: data.descProd,
+              sizeLote: data.sizeLote,
+              ponderancia: data.ponderancia,
+              codigoFecha: data.codigoFecha,
+              area: data.area,
+              porcFalla: data.porcFalla,
+              descProb: data.descProb,
+            },
+          }),
+        );
+        return formData;
+      };
 
-    const response = isUpdate
-      ? await updateReporteAction(Number(id), reportData, 'rac')
-      : await guardarReporteAction({
-          ...reportData,
-          slug: 'rac',
-          area_id,
-          auditor_id: data.usuario_id,
-          semana: getWeekNumber().toString(),
-          respuestas: [],
-        });
+      let response;
 
-    if (('ok' in response && response.ok) || ('success' in response && response.success)) {
-      setAnnouncement({
-        isActivated: true,
-        isOk: true,
-        message: response.message,
-      });
+      if (isUpdate) {
+        response = await updateReporteAction(Number(id), buildFormData());
+      } else {
+        const result = await guardarReporteAction(buildFormData());
+        response = { ok: result.success, message: result.message };
+      }
 
-      if (!isUpdate) methods.reset();
-    } else {
+      if (response.ok) {
+        setAnnouncement({ isActivated: true, isOk: true, message: response.message });
+        if (!isUpdate) methods.reset();
+      } else {
+        setAnnouncement({ isActivated: true, isOk: false, message: response.message });
+      }
+    } catch (error) {
       setAnnouncement({
         isActivated: true,
         isOk: false,
-        message: response.message,
+        message: "Ocurrió un error inesperado. Inténtalo de nuevo.",
       });
+    } finally {
+      setSaving(false);
     }
-
-    setSaving(false);
   };
-
+  
   return (
     <FormProvider {...methods}>
       <DinamicInsertUpdateUI
@@ -344,15 +349,15 @@ export function InsertUpdateRacReportContent({
                 />
 
                 {/* ÁREA */}
-                  <DinamicCombobox<RacFormValues>
-                    name="area"
-                    label="Área"
-                    items={areas.map(area => area.nombre)}
-                    placeholder="Seleccionar un área"
-                    rules={{
-                      required: "El área es necesaria",
-                    }}
-                  />
+                <DinamicCombobox<RacFormValues>
+                  name="area"
+                  label="Área"
+                  items={areas.map(area => area.nombre)}
+                  placeholder="Seleccionar un área"
+                  rules={{
+                    required: "El área es necesaria",
+                  }}
+                />
               </div>
 
               {/* PORCENTAJE DE FALLA */}
@@ -435,7 +440,7 @@ export function InsertUpdateRacReportContent({
                   <DinamicBouncingButton
                     action={
                       saving || loading
-                        ? () => {}
+                        ? () => { }
                         : methods.handleSubmit(onSubmit)
                     }
                     disabled={saving || loading ? true : false}
