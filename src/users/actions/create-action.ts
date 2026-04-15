@@ -1,7 +1,7 @@
-"use server"
+"use server";
 
 import { ROLES } from "@/db/schemas/usuario";
-import { DrizzleUserRepository } from "../repositories/drizzle";
+import { UserRepositoryNeon } from "../infrastructure/adapters/user-repository-neon";
 import { CreateService } from "../services/create";
 import { z } from "zod";
 
@@ -26,7 +26,7 @@ export async function insertUser(formData: FormData) {
       };
     }
 
-    const repo = new DrizzleUserRepository();
+    const repo = new UserRepositoryNeon();
     const uc = new CreateService(repo);
 
     await uc.exec(validatedFields.data);

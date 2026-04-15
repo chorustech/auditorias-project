@@ -60,7 +60,11 @@ export function SelectUsersContent() {
           perPage: filter.perPage,
           order: filter.order,
           orderBy: filter.orderBy,
-          filters: filter.filters ?? [],
+          filters: (filter.filters ?? []).map((f) => ({
+            field: f.field,
+            operator: f.operator,
+            value: f.value as string | number,
+          })),
         });
 
         if (response.ok) {
@@ -132,7 +136,11 @@ export function SelectUsersContent() {
               perPage: users.count,
               order: filter?.order ?? "asc",
               orderBy: filter?.orderBy ?? "id",
-              filters: filter?.filters ?? [],
+              filters: (filter?.filters ?? []).map((f) => ({
+                field: f.field,
+                operator: f.operator,
+                value: f.value as string | number,
+              })),
             }}
           />
         }

@@ -87,7 +87,7 @@ export function ExcelDownloadUsersButton({
       await new Promise((r) => setTimeout(r, 200));
       await animateProgressTo(99);
 
-      const result = await getAllUsersAction();
+      const result = await getAllUsersAction(query);
 
       if (!result.ok) {
         finish();

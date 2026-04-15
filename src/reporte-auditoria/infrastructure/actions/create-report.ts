@@ -26,6 +26,7 @@ export async function createReportAction(
       reportData.respuestas,
       reportData.metadata,
       reportData.comentarios,
+      null,
     );
     await repo.save(newReport);
 

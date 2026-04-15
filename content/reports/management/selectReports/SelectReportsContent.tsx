@@ -34,7 +34,7 @@ import { useModal } from "@/stores/modal/modalStore";
 
 /* TYPES */
 import { ReporteAuditoriaConDetalles } from "@/src/reporte-auditoria/domain";
-import { Metadata } from "@/src/reporte-auditoria/domain/entities";
+import { EolaMetadata, Metadata, RacMetadata } from "@/src/reporte-auditoria/domain/entities";
 
 /* UTILS */
 import { isPointerArea } from "@/utils/pointerArea";
@@ -167,7 +167,7 @@ export function SelectReportsContent() {
                 />
               ) : path === "eola" ? (
                 <EolaRowContent
-                  report={report}
+                  report={report as ReporteAuditoriaConDetalles<EolaMetadata>}
                   twBgColor={getTwBgColorTable({ index })}
                 />
               ) : path === "ncr" ? (
@@ -177,7 +177,7 @@ export function SelectReportsContent() {
                 />
               ) : path === "rac" ? (
                 <RacRowContent
-                  report={report}
+                  report={report as ReporteAuditoriaConDetalles<RacMetadata>}
                   twBgColor={getTwBgColorTable({ index })}
                 />
               ) : (
